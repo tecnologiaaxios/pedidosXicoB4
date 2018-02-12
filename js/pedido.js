@@ -35,20 +35,7 @@ $('#btnPerfil').click( function(e) {
 haySesion();
 
 function mostrarDatos() {
-  let tabla = $(`#productos`).DataTable({
-    scrollY: "500px",
-    scrollCollapse: true,
-    destroy: true,
-    language: {
-      url: "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json",
-      searchPlaceholder: "Buscar"
-    },
-    ordering: false,
-    paging: false,
-    searching: false,
-    dom: 'Bfrtip',
-    buttons: ['excel']
-  });
+
 
   let idPedido = getQueryVariable('id');
   let pedidoRef = db.ref(`pedidoEntrada/${idPedido}`);
@@ -110,8 +97,22 @@ function mostrarDatos() {
               <td></td>
             </tr>`;
 
-    //$('#tbodyProductos').empty().append(filas);
-    tabla.rows.add($(filas)).columns.adjust().draw();
+    //$('#tbodyProductos').html(filas);
+    $('#tbodyProductos').html(filas)
+    let tabla = $(`#productos`).DataTable({
+      scrollY: "500px",
+      scrollCollapse: true,
+      destroy: true,
+      language: {
+        url: "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json",
+        searchPlaceholder: "Buscar"
+      },
+      ordering: false,
+      paging: false,
+      searching: false,
+      dom: 'Bfrtip',
+      buttons: ['excel']
+    });
   });
 }
 

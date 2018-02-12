@@ -126,11 +126,16 @@ function mostrarPedidos() {
     var arreglo = [],
         arregloID = [];
     for (var pedido in pedidos) {
-      arreglo.push(pedidos[pedido]);
-      arregloID.push(pedido);
+      var agrupado = pedidos[pedido].encabezado.agrupado;
+      console.log(agrupado);
+      if (typeof agrupado != "undefined" && agrupado == true) {
+        console.warn("TIGREEEE!");
+        arreglo.unshift(pedidos[pedido]);
+        arregloID.unshift(pedido);
+      }
     }
-    arreglo.reverse();
-    arregloID.reverse();
+    // arreglo.reverse();
+    // arregloID.reverse();
 
     for (var _pedido2 in arreglo) {
       var estado = "";
@@ -159,7 +164,7 @@ function mostrarPedidos() {
       var numeroOrden = encabezado.numOrden || "";
       // ${(encabezado.numOrden != undefined) ? encabezado.numOrden : "" }
 
-      filas += "<tr style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td>" + arregloID[_pedido2] + "</td>\n                  <td>" + numeroOrden + "</td>\n                  <td>" + fechaCapturaMostrar + "</td>\n                  <td>" + encabezado.tienda + "</td>\n                  <td>" + encabezado.ruta + "</td>\n                  <td class=\"no-padding text-center\"><a href=\"pedido.html?id=" + arregloID[_pedido2] + "\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a></td>\n                  " + estado + "\n                  <td class=\"text-center\"><button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=\"abrirModalEliminarPedido('" + arregloID[_pedido2] + "')\"><i class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></i></button></td>\n                </tr>";
+      filas += "<tr style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td>" + arregloID[_pedido2] + "</td>\n                  <td>" + encabezado.clave + "</td>\n                  <td>" + numeroOrden + "</td>\n                  <td>" + fechaCapturaMostrar + "</td>\n                  <td>" + encabezado.tienda + "</td>\n                  <td>" + encabezado.ruta + "</td>\n                  <td class=\"no-padding text-center\"><a href=\"pedido.html?id=" + arregloID[_pedido2] + "\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a></td>\n                  " + estado + "\n                  <td class=\"text-center\"><button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=\"abrirModalEliminarPedido('" + arregloID[_pedido2] + "')\"><i class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></i></button></td>\n                </tr>";
     }
 
     $('#loaderPedidos').remove();
@@ -208,8 +213,10 @@ function mostrarHistorialPedidos() {
     var arreglo = [],
         arregloID = [];
     for (var pedido in pedidos) {
-      arreglo.push(pedidos[pedido]);
-      arregloID.push(pedido);
+      if (pedidos[pedido].encabezado.agrupado) {
+        arreglo.push(pedidos[pedido]);
+        arregloID.push(pedido);
+      }
     }
     arreglo.reverse();
     arregloID.reverse();
@@ -790,7 +797,9 @@ function generarPedidoPadre() {
               // let regionRef = db.ref(`regiones/${region}/${idTienda}/historialPedidos`);
               // regionRef.push(pedidos[pedido]);
 
-              pedidoEntradaRef.child(claves[pedido]).remove();
+              pedidoEntradaRef.child(claves[pedido]).update({
+                agrupado: true
+              });
             });
           });
         };
@@ -801,7 +810,6 @@ function generarPedidoPadre() {
 
         pedidoPadreRefKey.set(datosPedidosHijos);
         //historialPedidosEntradaRef.push(datosPedidosHijos);
-
 
         var row = "<tr id=\"vacio\" style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                </tr>";
         $('#tbodyTablaPedidoPadre').html(row);
@@ -871,7 +879,9 @@ function generarPedidoPadre() {
               // let regionRef = db.ref(`regiones/${region}/${idTienda}/historialPedidos`);
               // regionRef.push(pedidos[pedido]);
 
-              pedidoEntradaRef.child(claves[pedido]).remove();
+              pedidoEntradaRef.child(claves[pedido]).update({
+                agrupado: true
+              });
             });
           });
         };

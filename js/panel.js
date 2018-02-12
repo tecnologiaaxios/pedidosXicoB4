@@ -58,7 +58,6 @@ function mostrarOrdenesCompra() {
       "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json",
       "searchPlaceholder": "Buscar"
     },
-
     "ordering": false
   });
 
@@ -115,6 +114,7 @@ function mostrarOrdenesCompra() {
 }
 
 function mostrarPedidos() {
+  console.log('mostrar pedidos inicio')
   let tabla = $(`#tablaPedidos`).DataTable({
     "oLanguage": { "sSearch": '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>' },
     destroy: true,
@@ -126,17 +126,24 @@ function mostrarPedidos() {
   });
 
   let pedidosEntradaRef = db.ref('pedidoEntrada/');
+  console.log('ref')
   pedidosEntradaRef.on('value', function(snapshot) {
-    let pedidos = snapshot.val();
+    console.log('entro')
+    var pedidos = snapshot.val();
+    console.log('pedidos', pedidos)
     tabla.clear();
     let filas = "";
     let arreglo = [], arregloID = [];
     for(let pedido in pedidos) {
-      arreglo.push(pedidos[pedido]);
-      arregloID.push(pedido);
+      let agrupado = pedidos[pedido].encabezado.agrupado;
+      
+      if((typeof agrupado != "undefined") && (agrupado == false)) {
+        arreglo.unshift(pedidos[pedido]);
+        arregloID.unshift(pedido);
+      }
     }
-    arreglo.reverse();
-    arregloID.reverse();
+    // arreglo.reverse();
+    // arregloID.reverse();
 
     for(let pedido in arreglo) {
       let estado = "";
@@ -167,6 +174,7 @@ function mostrarPedidos() {
 
       filas += `<tr style="padding:0px 0px 0px;" class="no-pading">
                   <td>${arregloID[pedido]}</td>
+                  <td>${encabezado.clave}</td>
                   <td>${numeroOrden}</td>
                   <td>${fechaCapturaMostrar}</td>
                   <td>${encabezado.tienda}</td>
@@ -222,8 +230,10 @@ function mostrarHistorialPedidos() {
     let filas = "";
     let arreglo = [], arregloID = [];
     for(let pedido in pedidos) {
-      arreglo.push(pedidos[pedido]);
-      arregloID.push(pedido);
+      if(pedidos[pedido].encabezado.agrupado) {
+        arreglo.push(pedidos[pedido]);
+        arregloID.push(pedido);
+      }
     }
     arreglo.reverse();
     arregloID.reverse();
@@ -735,7 +745,7 @@ function generarPedidoPadre() {
 
           let pedidoEntradaRef = db.ref(`pedidoEntrada/${clave}/encabezado`);
           pedidoEntradaRef.once('value', function(snapshot) {
-            promotora = snapshot.val().promotora;
+            let promotora = snapshot.val().promotora;
             promotoras.push(promotora);
           });
         }
@@ -825,11 +835,6 @@ function generarPedidoPadre() {
       let datosPedidosHijos = {};
       for(let pedido in pedidos) {
         datosPedidosHijos[claves[pedido]] = pedidos[pedido];
-        
-        //Las siguientes dos líneas guardan en historial los pedidos que se estan agrupando tal
-        //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
-        let rutaHistorialPedidosEntrada = db.ref(`historialPedidosEntrada/${claves[pedido]}/`);
-        rutaHistorialPedidosEntrada.set(pedidos[pedido]);
 
         let promotoraRef = db.ref(`usuarios/tiendas/supervisoras/${pedidos[pedido].encabezado.promotora}`);
         promotoraRef.once('value', function(snapshot) {
@@ -844,14 +849,23 @@ function generarPedidoPadre() {
             // let regionRef = db.ref(`regiones/${region}/${idTienda}/historialPedidos`);
             // regionRef.push(pedidos[pedido]);
 
-            pedidoEntradaRef.child(claves[pedido]).remove();
+            //pedidoEntradaRef.child(claves[pedido]).remove();
+            pedidoEntradaRef.child(claves[pedido]).child("encabezado").update({
+              agrupado: true
+            }).then(function(snapshot) {
+
+
+              //Las siguientes dos líneas guardan en historial los pedidos que se estan agrupando tal
+              //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
+              let rutaHistorialPedidosEntrada = db.ref(`historialPedidosEntrada/${claves[pedido]}/`);
+              rutaHistorialPedidosEntrada.set();
+            });  
           });
         });
       }
 
       pedidoPadreRefKey.set(datosPedidosHijos);
       //historialPedidosEntradaRef.push(datosPedidosHijos);
-
 
       let row = `<tr id="vacio" style="padding:0px 0px 0px;" class="no-pading">
                   <td></td>
@@ -911,11 +925,6 @@ function generarPedidoPadre() {
       for(let pedido in pedidos) {
         datosPedidosHijos[claves[pedido]] = pedidos[pedido];
 
-        //Las siguientes dos líneas guardan en historial los pedidos que se estan agrupando tal
-        //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
-        let rutaHistorialPedidosEntrada = db.ref(`historialPedidosEntrada/${claves[pedido]}/`);
-        rutaHistorialPedidosEntrada.set(pedidos[pedido]);
-
         let promotoraRef = db.ref(`usuarios/tiendas/supervisoras/${pedidos[pedido].encabezado.promotora}`);
         promotoraRef.once('value', function(snapshot) {
           let region = snapshot.val().region;
@@ -928,7 +937,14 @@ function generarPedidoPadre() {
             // let regionRef = db.ref(`regiones/${region}/${idTienda}/historialPedidos`);
             // regionRef.push(pedidos[pedido]);
 
-            pedidoEntradaRef.child(claves[pedido]).remove();
+            pedidoEntradaRef.child(claves[pedido]).child("encabezado").update({
+              agrupado: true
+            }).then(function() {
+              //Las siguientes dos líneas guardan en historial los pedidos que se estan agrupando tal
+              //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
+              let rutaHistorialPedidosEntrada = db.ref(`historialPedidosEntrada/${claves[pedido]}/`);
+              rutaHistorialPedidosEntrada.set(pedidos[pedido]);
+            });
           });
         });
       }
