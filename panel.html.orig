@@ -501,15 +501,20 @@
     <script src="./node_modules/jquery/dist/jquery.min.js"></script>
     <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
     <!-- <script>window.$ = window.jQuery = require('jquery');</script> -->
-    <script src="js/panel.min.js"></script><!--Todos los javascript están concatenados y minificados en este archivo --> 
+    <!-- <script src="js/panel.min.js"></script> --><!--Todos los javascript están concatenados y minificados en este archivo --> 
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-    <!-- <script src="dist/js/bootstrap-select.js"></script>
+    <script src="dist/js/bootstrap-select.js"></script>
     <script src="vendor/metisMenu/metisMenu.min.js"></script>
     <script src="dist/js/sb-admin-2.js"></script>
     <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
+<<<<<<< HEAD
     <script src="vendor/datatables-plugins/dataTables.bootstrap.min.js"></script> -->
+
+=======
+    <script src="vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+>>>>>>> 020008782e6346a2d5f087ff0f89f92492a9c764
     <!-- <script src="vendor/datatables-responsive/dataTables.responsive.js"></script> -->
-    <!-- <script src="js/bootstrap-datepicker.min.js"></script>
+    <script src="js/bootstrap-datepicker.min.js"></script>
     <script src="js/bootstrap-datepicker.es.min.js"></script>
     <script src="js/bootstrap-tooltip.js"></script>
     <script src="js/jquery.toaster.js"></script>
@@ -518,6 +523,10 @@
     <script src="js/moment-with-locales.js"></script>
     <script src="js/panel.js"></script>
     <script src="js/perfil.js"></script>
+<<<<<<< HEAD
     <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+=======
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+>>>>>>> 020008782e6346a2d5f087ff0f89f92492a9c764
   </body>
 </html>
