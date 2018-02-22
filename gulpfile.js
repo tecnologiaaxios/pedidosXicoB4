@@ -12,7 +12,7 @@ gulp.task('es6', function() {
     'js/perfil.js',
     'js/login.js'
   ])
-		.pipe( babel({presets : ['es2015']}))
+		.pipe( babel({presets : ['es2015'], plugins: ["transform-object-rest-spread"]}))
 		.pipe(gulp.dest(`babel/`));
 });
 

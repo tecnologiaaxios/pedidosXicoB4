@@ -5,6 +5,12 @@ function logout() {
   auth.signOut();
 }
 
+$(document).ready(function() {
+  $('[data-toggle="tooltip"]').tooltip();
+
+  mostrarDatos();
+});
+
 function getQueryVariable(variable) {
   let query = window.location.search.substring(1);
   let vars = query.split("&");
@@ -26,63 +32,50 @@ function haySesion() {
   });
 }
 
+haySesion();
+
 $('#btnPerfil').click( function(e) {
   e.preventDefault();
 
   $('#modalPerfil').modal('show');
-})
-
-haySesion();
+});
 
 function mostrarDatos() {
-  let tabla = $(`#productos`).DataTable({
-    scrollY: "500px",
-    scrollCollapse: true,
-    destroy: true,
-    language: {
-      url: "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json",
-      searchPlaceholder: "Buscar"
-    },
-    ordering: false,
-    paging: false,
-    searching: false,
-    dom: 'Bfrtip',
-    buttons: ['excel']
-  });
+  let datos = JSON.parse(localStorage.getItem('datosPedido')),
+      encabezado = datos.encabezado,
+      detalle = datos.detalle,
+      fecha = encabezado.fechaCaptura;
+
+  if((encabezado.numOrden != "") && (typeof encabezado.numOrden != "undefined")) {
+    $('#contenedorDatos').prepend(`<p id="numOrden" class="lead"><small>Núm. de orden: <strong>${encabezado.numOrden}</strong></small></p>`);
+  }
 
   let idPedido = getQueryVariable('id');
-  let pedidoRef = db.ref(`pedidoEntrada/${idPedido}`);
-  pedidoRef.on('value', function(snapshot) {
-    let datos = snapshot.val();
+  $('#numPedido').html(`Pedido: ${idPedido}`);
+  let diaCaptura = fecha.substr(0,2),
+      mesCaptura = fecha.substr(3,2),
+      añoCaptura = fecha.substr(6,4),
+      fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
+  
+  moment.locale('es');
+  let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
+    
+  $('#fechaPedido').html(`Recibido el ${fechaCapturaMostrar}`);
+  $('#tienda').html(`Tienda: ${encabezado.tienda}`);
 
-    if(datos.encabezado.numOrden != "" && datos.encabezado.numOrden != undefined) {
-      $('#contenedorDatos').prepend(`<p id="numOrden" class="lead"><small>Núm. de orden: <strong>${datos.encabezado.numOrden}</strong></small></p>`);
-    }
+  let cantidadProductos = encabezado.cantidadProductos;
+  $('#cantidad').html(`<small class="lead">${cantidadProductos}</small>`);
+  let filas = "", kgTotal = 0, degusTotal = 0, pedidoPzTotal = 0, piezaTotal = 0, precioUnitarioTotal = 0, cambioFisicoTotal = 0;
 
-    $('#numPedido').html("Pedido: " + idPedido);
-    let diaCaptura = datos.encabezado.fechaCaptura.substr(0,2);
-    let mesCaptura = datos.encabezado.fechaCaptura.substr(3,2);
-    let añoCaptura = datos.encabezado.fechaCaptura.substr(6,4);
-    let fechaCaptura = mesCaptura + '/' + diaCaptura + '/' + añoCaptura;
-    moment.locale('es');
-    let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
-    $('#fechaPedido').html("Recibido el "+fechaCapturaMostrar);
-    $('#tienda').html('Tienda: ' + datos.encabezado.tienda);
-    let detalle = datos.detalle;
-    let cantidadProductos = datos.encabezado.cantidadProductos;
-    $('#cantidad').html(`<small class="lead">${cantidadProductos}</small>`);
-    let filas = "", kgTotal = 0, degusTotal = 0, pedidoPzTotal = 0, piezaTotal = 0, precioUnitarioTotal = 0, cambioFisicoTotal = 0;
-    tabla.clear();
-
-    for(let producto in detalle) {
-      let datosProducto = detalle[producto];
-      kgTotal += datosProducto.totalKg;
-      degusTotal += datosProducto.degusPz;
-      pedidoPzTotal += datosProducto.pedidoPz;
-      piezaTotal += datosProducto.totalPz;
-      precioUnitarioTotal += datosProducto.precioUnitario;
-      cambioFisicoTotal += datosProducto.cambioFisicoPz;
-      filas += `<tr>
+  for(let producto in detalle) {
+    let datosProducto = detalle[producto];
+    kgTotal += datosProducto.totalKg;
+    degusTotal += datosProducto.degusPz;
+    pedidoPzTotal += datosProducto.pedidoPz;
+    piezaTotal += datosProducto.totalPz;
+    precioUnitarioTotal += datosProducto.precioUnitario;
+    cambioFisicoTotal += datosProducto.cambioFisicoPz;
+    filas += `<tr>
                 <td class="text-center">${datosProducto.clave}</td>
                 <td>${datosProducto.nombre}</td>
                 <td class="text-right">${datosProducto.pedidoPz}</td>
@@ -95,8 +88,8 @@ function mostrarDatos() {
                 <td class="text-center"><button class="btn btn-warning btn-xs" onclick="abrirModalEditarProducto('${producto}', '${datosProducto.clave}')"><i class="glyphicon glyphicon-pencil" aria-hidden="true"></i></button></td>
                 <td class="text-center"><button class="btn btn-danger btn-xs" onclick="abrirModalEliminarProducto('${producto}', '${datosProducto.clave}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
               </tr>`;
-    }
-    filas += `<tr>
+  }
+  filas += `<tr>
               <td></td>
               <td class="text-right"><strong>Totales</strong></td>
               <td class="text-right"><strong>${pedidoPzTotal}</strong></td>
@@ -110,15 +103,80 @@ function mostrarDatos() {
               <td></td>
             </tr>`;
 
-    //$('#tbodyProductos').empty().append(filas);
-    tabla.rows.add($(filas)).columns.adjust().draw();
+  $('#productos tbody').html(filas);
+
+  let datatable = $('#productos').DataTable({
+    destroy: true,
+    autoWidth: true,
+    ordering: false,
+    paging: false,
+    searching: false,
+    dom: 'Bfrtip',
+    buttons: ['excel'],
+    scrollY: "500px",
+    scrollCollapse: true,
+    language: {
+      sProcessing: 'Procesando...',
+      sLengthMenu: 'Mostrar _MENU_ registros',
+      sZeroRecords: 'No se encontraron resultados',
+      sEmptyTable: 'Ningún dato disponible en esta tabla',
+      sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+      sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+      sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+      sInfoPostFix: '',   
+      sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
+      sUrl: '',
+      sInfoThousands: ',',
+      sLoadingRecords: 'Cargando...',
+      oPaginate: {
+        sFirst: 'Primero',
+        sLast: 'Último',
+        sNext: 'Siguiente',
+        sPrevious: 'Anterior'
+      },
+      oAria: {
+        sSortAscending:
+          ': Activar para ordenar la columna de manera ascendente',
+        sSortDescending:
+          ': Activar para ordenar la columna de manera descendente'
+      }
+    }
   });
+
+  //datatable.rows.add($(filas)).columns.adjust().draw();
 }
 
 function abrirModal() {
   $('#modalAgregarProducto').modal('show');
   llenarSelectProductos();
 }
+
+$('#modalAgregarProducto').on('hide.bs.modal', () => {
+  $('#listaProductos').val('');
+  $('#nombre').val('');
+  $('#claveConsorcio').val('');
+  $('#pedidoPz').val('');
+  $('#degusPz').val('');
+  $('#cambioFisicoPz').val('');
+  $('#empaque').val('');
+  $('#precioUnitario').val('');
+  $('#unidad').val('');
+  $('#totalPz').val('');
+  $('#totalKg').val('');
+});
+
+$('#modalEditarProducto').on('hide.bs.modal', () => {
+  $('#nombreEditar').val('');
+  $('#claveConsorcioEditar').val('');
+  $('#pedidoPzEditar').val('');
+  $('#degusPzEditar').val('');
+  $('#cambioFisicoPzEditar').val('');
+  $('#empaqueEditar').val('');
+  $('#precioUnitarioEditar').val('');
+  $('#unidadEditar').val('');
+  $('#totalPzEditar').val('');
+  $('#totalKgEditar').val('');
+});
 
 function llenarSelectProductos() {
   let idPedido = getQueryVariable('id');
@@ -169,7 +227,7 @@ $('#listaProductos').change(function() {
 });
 
 $('#pedidoPz').keyup(function(){
-  let pedidoPz = Number($('#pedidoPz').val());
+  let pedidoPz = Number($(this).val());
   let degusPz = Number($('#degusPz').val());
   let cambioFisicoPz = Number($('#cambioFisicoPz').val());
   let empaque = Number($('#empaque').val());
@@ -189,9 +247,32 @@ $('#pedidoPz').keyup(function(){
   }
 });
 
+$("#pedidoPz").bind('keyup change click', function (e) {
+  if (! $(this).data("previousValue") || $(this).data("previousValue") != $(this).val()) {
+    let pedidoPz = Number($(this).val());
+    let degusPz = Number($('#degusPz').val());
+    let cambioFisicoPz = Number($('#cambioFisicoPz').val());
+    let empaque = Number($('#empaque').val());
+    let totalPz = pedidoPz+degusPz+cambioFisicoPz;
+    let totalKg = (totalPz*empaque).toFixed(4);
+  
+    $('#totalPz').val(totalPz);
+    $('#totalKg').val(totalKg);
+  
+    if(this.value.length < 1) {
+      $('#pedidoPz').parent().addClass('has-error');
+      $('#helpblockPedidoPz').show();
+    }
+    else {
+      $('#pedidoPz').parent().removeClass('has-error');
+      $('#helpblockPedidoPz').hide();
+    }
+  }
+});
+
 $('#degusPz').keyup(function(){
   let pedidoPz = Number($('#pedidoPz').val());
-  let degusPz = Number($('#degusPz').val());
+  let degusPz = Number($(this).val());
   let cambioFisicoPz = Number($('#cambioFisicoPz').val());
   let empaque = Number($('#empaque').val());
   let totalPz = pedidoPz+degusPz+cambioFisicoPz;
@@ -199,6 +280,20 @@ $('#degusPz').keyup(function(){
 
   $('#totalPz').val(totalPz);
   $('#totalKg').val(totalKg);
+});
+
+$("#degusPz").bind('keyup change click', function (e) {
+  if(! $(this).data("previousValue") || $(this).data("previousValue") != $(this).val()) {
+    let pedidoPz = Number($("#pedidoPz").val());
+    let degusPz = Number($(this).val());
+    let cambioFisicoPz = Number($('#cambioFisicoPz').val());
+    let empaque = Number($('#empaque').val());
+    let totalPz = pedidoPz+degusPz+cambioFisicoPz;
+    let totalKg = (totalPz*empaque).toFixed(4);
+
+    $('#totalPz').val(totalPz);
+    $('#totalKg').val(totalKg);
+  }
 });
 
 $('#cambioFisicoPz').keyup(function(){
@@ -214,6 +309,23 @@ $('#cambioFisicoPz').keyup(function(){
 
   $('#totalPz').val(totalPz);
   $('#totalKg').val(totalKg);
+});
+
+$("#cambioFisicoPz").bind('keyup change click', function (e) {
+  if(! $(this).data("previousValue") || $(this).data("previousValue") != $(this).val()) {
+    let pedidoPz = Number($('#pedidoPz').val());
+    let degusPz = Number($('#degusPz').val());
+    let cambioFisicoPz = Number($(this).val());
+    if(cambioFisicoPz == undefined || cambioFisicoPz == null) {
+      cambioFisicoPz = 0;
+    }
+    let empaque = Number($('#empaque').val());
+    let totalPz = pedidoPz+degusPz+cambioFisicoPz;
+    let totalKg = (totalPz*empaque).toFixed(4);
+
+    $('#totalPz').val(totalPz);
+    $('#totalKg').val(totalKg);
+  }
 });
 
 function agregarProducto() {
@@ -342,7 +454,7 @@ function abrirModalEditarProducto(idProducto, claveProducto) {
 }
 
 $('#pedidoPzEditar').keyup(function(){
-  let pedidoPz = Number($('#pedidoPzEditar').val());
+  let pedidoPz = Number($(this).val());
   let degusPz = Number($('#degusPzEditar').val());
   let cambioFisicoPz = Number($('#cambioFisicoEditarPz').val());
   let empaque = Number($('#empaqueEditar').val());
@@ -363,9 +475,33 @@ $('#pedidoPzEditar').keyup(function(){
   }
 });
 
+$("#pedidoPzEditar").bind('keyup change click', function (e) {
+  if(! $(this).data("previousValue") || $(this).data("previousValue") != $(this).val()) {
+    let pedidoPz = Number($(this).val());
+    let degusPz = Number($('#degusPzEditar').val());
+    let cambioFisicoPz = Number($('#cambioFisicoEditarPz').val());
+    let empaque = Number($('#empaqueEditar').val());
+
+    let totalPz = pedidoPz+degusPz+cambioFisicoPz;
+    let totalKg = (totalPz*empaque).toFixed(4);
+
+    $('#totalPzEditar').val(totalPz);
+    $('#totalKgEditar').val(totalKg);
+
+    if(this.value.length < 1) {
+      $('#pedidoPzEditar').parent().addClass('has-error');
+      $('#helpblockPedidoPzEditar').show();
+    }
+    else {
+      $('#pedidoPzEditar').parent().removeClass('has-error');
+      $('#helpblockPedidoPzEditar').hide();
+    }
+  }
+});
+
 $('#degusPzEditar').keyup(function(){
   let pedidoPz = Number($('#pedidoPzEditar').val());
-  let degusPz = Number($('#degusPzEditar').val());
+  let degusPz = Number($(this).val());
   let cambioFisicoPz = Number($('#cambioFisicoPzEditar').val());
   let empaque = Number($('#empaqueEditar').val());
   let totalPz = pedidoPz+degusPz+cambioFisicoPz;
@@ -373,6 +509,20 @@ $('#degusPzEditar').keyup(function(){
 
   $('#totalPzEditar').val(totalPz);
   $('#totalKgEditar').val(totalKg);
+});
+
+$("#degusPzEditar").bind('keyup change click', function (e) {
+  if(! $(this).data("previousValue") || $(this).data("previousValue") != $(this).val()) {
+    let pedidoPz = Number($('#pedidoPzEditar').val());
+    let degusPz = Number($(this).val());
+    let cambioFisicoPz = Number($('#cambioFisicoPzEditar').val());
+    let empaque = Number($('#empaqueEditar').val());
+    let totalPz = pedidoPz+degusPz+cambioFisicoPz;
+    let totalKg = (totalPz*empaque).toFixed(4);
+
+    $('#totalPzEditar').val(totalPz);
+    $('#totalKgEditar').val(totalKg);
+  }
 });
 
 $('#cambioFisicoPzEditar').keyup(function(){
@@ -388,6 +538,23 @@ $('#cambioFisicoPzEditar').keyup(function(){
 
   $('#totalPzEditar').val(totalPz);
   $('#totalKgEditar').val(totalKg);
+});
+
+$("#cambioFisicoPzEditar").bind('keyup change click', function (e) {
+  if(! $(this).data("previousValue") || $(this).data("previousValue") != $(this).val()) {
+    let pedidoPz = Number($('#pedidoPzEditar').val());
+    let degusPz = Number($('#degusPzEditar').val());
+    let cambioFisicoPz = Number($(this).val());
+    if(cambioFisicoPz == undefined || cambioFisicoPz == null) {
+      cambioFisico = 0;
+    }
+    let empaque = Number($('#empaqueEditar').val());
+    let totalPz = pedidoPz+degusPz+cambioFisicoPz;
+    let totalKg = (totalPz*empaque).toFixed(4);
+
+    $('#totalPzEditar').val(totalPz);
+    $('#totalKgEditar').val(totalKg);
+  }
 });
 
 function editarProducto(idProducto) {
@@ -489,11 +656,6 @@ function verNotificaciones() {
 
 $('#campana').click(function() {
   verNotificaciones();
-});
-
-$(document).ready(function() {
-  mostrarDatos();
-  $('[data-toggle="tooltip"]').tooltip();
 });
 
 function generarPDF(){

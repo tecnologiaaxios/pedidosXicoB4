@@ -1,6 +1,5 @@
 "use strict";
 
-// Initialize Firebase
 var config = {
   apiKey: "AIzaSyA19j6-VLNcXLJfBkfd_lZfFFbzg6z0Imc",
   authDomain: "xico-netcontrol.firebaseapp.com",
@@ -13,6 +12,73 @@ firebase.initializeApp(config);
 
 const db = firebase.database();
 const auth = firebase.auth();
+
+$(document).ready(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+
+  $.toaster({
+    settings: {
+      'timeout': 3000
+    }
+  });
+
+  db.ref('pedidoEntrada').on('value', (pedidos) => {
+    let arrayPedidos = [];
+
+    pedidos.forEach((pedido) => {
+      let agrupado = pedido.val().encabezado.agrupado;
+
+      if ((typeof agrupado != "undefined") && (agrupado == false)) {
+        arrayPedidos.unshift({
+          id: pedido.key,
+          ...pedido.val()
+        });
+      }
+    })
+    localStorage.setItem('pedidos', JSON.stringify(arrayPedidos));
+    mostrarPedidos();
+  });
+
+  db.ref('pedidoPadre').on('value', (pedidos) => {
+    let arrayPedidosEnProceso = [], arrayPedidosFinalizados = [];
+    pedidos.forEach((pedido) => {
+      let estado = pedido.val().estado;
+      if (estado === "En proceso") {
+        arrayPedidosEnProceso.unshift({
+          id: pedido.key,
+          ...pedido.val()
+        })
+      }
+      if(estado === "Finalizado") {
+        arrayPedidosFinalizados.unshift({
+          id: pedido.key,
+          ...pedido.val()
+        }) 
+      }
+    });
+    localStorage.setItem('pedidosEnProceso', JSON.stringify(arrayPedidosEnProceso));
+    localStorage.setItem('pedidosFinalizados', JSON.stringify(arrayPedidosFinalizados));
+    mostrarPedidosEnProceso();
+    mostrarPedidosFinalizados();
+  });
+
+  db.ref('historialPedidosEntrada').on('value', (pedidos) => {
+    let arrayPedidos = [];
+    pedidos.forEach((pedido) => {
+      let agrupado = pedido.val().encabezado.agrupado;
+      if(agrupado) {
+        arrayPedidos.unshift({
+          id: pedido.key,
+          ...pedido.val()
+        });
+      }
+    });
+    
+    localStorage.setItem('historialPedidos', JSON.stringify(arrayPedidos));
+    mostrarHistorialPedidos();
+  });
+});
+
 let agenteAsignado = "";
 
 function logout() {
@@ -20,10 +86,9 @@ function logout() {
 }
 
 function haySesion() {
-  auth.onAuthStateChanged(function (user) {
+  auth.onAuthStateChanged((user) => {
     //si hay un usuario
     if (user) {
-      mostrarPedidos();
       mostrarContador();
     }
     else {
@@ -34,153 +99,80 @@ function haySesion() {
 
 haySesion();
 
-$('#pestañaPedidos').on('shown.bs.tab', function (e) {
-  mostrarPedidos();
-  $('#botonCollapse').attr({
-    'data-target': '#collapse1',
-    'aria-controls': 'collapse1'
-  });
-});
-
-$('#pestañaOrdenesCompra').on('shown.bs.tab', function (e) {
-  mostrarOrdenesCompra();
-  $('#botonCollapse').attr({
-    'data-target': '#collapse2',
-    'aria-controls': 'collapse2'
-  });
-});
-
-function mostrarOrdenesCompra() {
-  let hola = $(`#tablaOrdenesCompra`).DataTable({
-    "oLanguage": { "sSearch": '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>' },
-    destroy: true,
-    "language": {
-      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json",
-      "searchPlaceholder": "Buscar"
-    },
-
-    "ordering": false
-  });
-
-  let ordenesCompraRef = db.ref('ordenesCompra/');
-  ordenesCompraRef.on('value', function(snapshot) {
-    let pedidos = snapshot.val();
-    tabla.clear();
-    let filas = "";
-    let arreglo = [], arregloID = [];
-    for(let pedido in pedidos) {
-      arreglo.push(pedidos[pedido]);
-      arregloID.push(pedido);
-    }
-    arreglo.reverse();
-    arregloID.reverse();
-
-    $('#tablaPedidos tbody').empty();
-    for(let pedido in arreglo) {
-      let estado = "";
-      switch(arreglo[pedido].encabezado.estado) {
-        case "Pendiente":
-          estado = `<td class="no-padding text-center"><i style="color:#d50000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
-          break;
-        case "En proceso":
-          estado = `<td class="no-padding text-center"><i style="color:#FF8000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
-          break;
-        case "Lista":
-          estado = `<td class="no-padding text-center"><i style="color:#70E707; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
-          break;
-      }
-
-      let diaCaptura = arreglo[pedido].encabezado.fechaCaptura.substr(0,2);
-      let mesCaptura = arreglo[pedido].encabezado.fechaCaptura.substr(3,2);
-      let añoCaptura = arreglo[pedido].encabezado.fechaCaptura.substr(6,4);
-      let fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
-      moment.locale('es');
-      let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
-
-      filas += `<tr style="padding:0px 0px 0px;" class="no-pading">
-                  <td>${arregloID[pedido]}</td>
-                  <td>${fechaCapturaMostrar}</td>
-                  <td>${arreglo[pedido].encabezado.tienda}</td>
-                  <td>${arreglo[pedido].encabezado.ruta}</td>
-                  <td class="no-padding text-center"><a href="orden.html?id=${arregloID[pedido]}" class="btn btn-default btn-sm"><span style="padding-bottom:0px;" class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
-                  ${estado}
-                  <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="abrirModalEliminarOrden('${arregloID[pedido]}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
-                </tr>`;
-    }
-
-    $('#loaderPedidos').remove();
-    $('#tablaPedidos').removeClass('hidden');
-    tabla.rows.add($(filas)).columns.adjust().draw();
+function guardarDatosPedido(idPedido) {
+  db.ref(`pedidoEntrada/${idPedido}`).on('value', (pedido) => {
+    let datos = pedido.val();
+    localStorage.setItem('datosPedido', JSON.stringify(datos));
+    $(location).attr("href", `pedido.html?id=${idPedido}`);
   });
 }
 
 function mostrarPedidos() {
-  let tabla = $(`#tablaPedidos`).DataTable({
-    "oLanguage": { "sSearch": '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>' },
-    destroy: true,
-    "language": {
-      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json",
-      "searchPlaceholder": "Buscar"
-    },
-    "ordering": false
-  });
+  let pedidos = JSON.parse(localStorage.getItem('pedidos'));
 
-  let pedidosEntradaRef = db.ref('pedidoEntrada/');
-  pedidosEntradaRef.on('value', function(snapshot) {
-    let pedidos = snapshot.val();
-    tabla.clear();
-    let filas = "";
-    let arreglo = [], arregloID = [];
-    for(let pedido in pedidos) {
-      arreglo.push(pedidos[pedido]);
-      arregloID.push(pedido);
-    }
-    arreglo.reverse();
-    arregloID.reverse();
+  $('#loaderPedidos').remove();
+  $('#tablaPedidos').removeClass('hidden');
 
-    for(let pedido in arreglo) {
-      let estado = "";
-      switch(arreglo[pedido].encabezado.estado) {
-        case "Pendiente":
-          //estado = `<td class="no-padding text-center"><i style="color:#d50000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
-          estado = `<td class="no-padding text-center"><span style="background-color:#d50000; color:#FFFFFF;" class="badge">Pendiente</span></td>`;
-          break;
-        case "En proceso":
-          estado = `<td class="no-padding text-center"><i style="color:#FF8000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
-          break;
-        case "Lista":
-          estado = `<td class="no-padding text-center"><i style="color:#70E707; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
-          break;
+  let datatable = $('#tablaPedidos').DataTable({
+    data: pedidos,
+    pageLength: 10,
+    columns: [
+      { data: 'id' },
+      { data: 'encabezado.clave', className: 'text-center' },
+      { data: 'encabezado.numOrden' },
+      {
+        data: 'encabezado.fechaCaptura',
+        render: (fechaCaptura) => {
+          moment.locale('es');
+          return moment(`${fechaCaptura.substr(3,2)}/${fechaCaptura.substr(0,2)}/${fechaCaptura.substr(6,4)}`).format('LL')
+        }
+      },
+      { data: 'encabezado.tienda' },
+      { data: 'encabezado.ruta', className: 'text-center' },
+      { className: 'text-center', defaultContent: '<span style="background-color:#d50000; color:#FFFFFF;" class="badge">Pendiente</span>'},
+      { data: 'id', 
+        className: 'text-center', 
+        render: (id) => { 
+          return `<button type="button" onclick="guardarDatosPedido('${id}')" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-eye-open"></span> Ver más</button>`
+        } 
+      },
+      { data: 'id',
+        className: 'text-center', 
+        render: (id) => {
+          return `<button type="button" class="btn btn-danger btn-sm" onclick="abrirModalEliminarPedido('${id}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button>`
+        }
       }
-
-      let encabezado = arreglo[pedido].encabezado;
-
-      let diaCaptura = encabezado.fechaCaptura.substr(0,2);
-      let mesCaptura = encabezado.fechaCaptura.substr(3,2);
-      let añoCaptura = encabezado.fechaCaptura.substr(6,4);
-      let fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
-      moment.locale('es');
-      let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
-
-      let numeroOrden = encabezado.numOrden || "";
-      // ${(encabezado.numOrden != undefined) ? encabezado.numOrden : "" }
-
-      filas += `<tr style="padding:0px 0px 0px;" class="no-pading">
-                  <td>${arregloID[pedido]}</td>
-                  <td>${numeroOrden}</td>
-                  <td>${fechaCapturaMostrar}</td>
-                  <td>${encabezado.tienda}</td>
-                  <td>${encabezado.ruta}</td>
-                  <td class="no-padding text-center"><a href="pedido.html?id=${arregloID[pedido]}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
-                  ${estado}
-                  <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="abrirModalEliminarPedido('${arregloID[pedido]}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
-                </tr>`;
+    ],
+    destroy: true,
+    ordering: false,
+    language: {
+      sProcessing: 'Procesando...',
+      sLengthMenu: 'Mostrar _MENU_ registros',
+      sZeroRecords: 'No se encontraron resultados',
+      sEmptyTable: 'Ningún dato disponible en esta tabla',
+      sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+      sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+      sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+      sInfoPostFix: '',   
+      sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
+      sUrl: '',
+      sInfoThousands: ',',
+      sLoadingRecords: 'Cargando...',
+      oPaginate: {
+        sFirst: 'Primero',
+        sLast: 'Último',
+        sNext: 'Siguiente',
+        sPrevious: 'Anterior'
+      },
+      oAria: {
+        sSortAscending: ': Activar para ordenar la columna de manera ascendente',
+        sSortDescending: ': Activar para ordenar la columna de manera descendente'
+      }
     }
-
-    $('#loaderPedidos').remove();
-    $('#tablaPedidos').removeClass('hidden');
-    tabla.rows.add($(filas)).columns.adjust().draw();
   });
+
+  // datatable.clear();
+  // datatable.rows.add($(filas)).columns.adjust().draw();
 }
 
 function abrirModalEliminarPedido(idPedido) {
@@ -190,7 +182,7 @@ function abrirModalEliminarPedido(idPedido) {
 
 function eliminarPedido(idPedido) {
   db.ref('pedidoEntrada').child(idPedido).remove();
-  $.toaster({priority: 'success', title: 'Mensaje de información', message: `El pedido ${idPedido} fue eliminado con exito`});
+  $.toaster({ priority: 'success', title: 'Mensaje de información', message: `El pedido ${idPedido} fue eliminado con exito` });
 }
 
 function abrirModalEliminarOrden(idOrden) {
@@ -200,59 +192,101 @@ function abrirModalEliminarOrden(idOrden) {
 
 function eliminarOrden(idOrden) {
   db.ref('ordenesCompra').child(idOrden).remove();
-  $.toaster({priority: 'success', title: 'Mensaje de información', message: `La orden ${idOrden} fue eliminada con exito`});
+  $.toaster({ priority: 'success', title: 'Mensaje de información', message: `La orden ${idOrden} fue eliminada con exito` });
 }
 
 function mostrarHistorialPedidos() {
-  let tabla = $(`#tablaHistorialPedidos`).DataTable({
-    destroy: true,
-    // "scrollY": "300px",
-    // "scrollCollapse": true,
-    "language": {
-      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
-    },
-    "searching": false,
-    "ordering": false
-  });
+  let pedidos = JSON.parse(localStorage.getItem('historialPedidos'));
 
-  let historialPedidosRef = db.ref('historialPedidosEntrada/');
-  historialPedidosRef.on('value', function(snapshot) {
-    let pedidos = snapshot.val();
-    tabla.clear();
-    let filas = "";
-    let arreglo = [], arregloID = [];
-    for(let pedido in pedidos) {
-      arreglo.push(pedidos[pedido]);
-      arregloID.push(pedido);
-    }
-    arreglo.reverse();
-    arregloID.reverse();
+  $('#loaderPedidos').remove();
+  
+  if(pedidos.length > 0) {
+    let datatable = $('#tablaHistorialPedidos').DataTable({
+      data: pedidos,
+      pageLength: 10,
+      columns: [
+        { data: 'id' },
+        { data: 'encabezado.numOrden' },
+        {
+          data: 'encabezado.fechaCaptura',
+          render: (fechaCaptura) => {
+            moment.locale('es');
+            return moment(`${fechaCaptura.substr(3,2)}/${fechaCaptura.substr(0,2)}/${fechaCaptura.substr(6,4)}`).format('LL')
+          }
+        },
+        { data: 'encabezado.tienda' },
+        { data: 'encabezado.ruta', className: 'text-center' },
+        { data: 'id', 
+          className: 'text-center', 
+          render: (id) => { 
+            return `<a href="pedidoHistorial.html?id=${id}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a>`
+          } 
+          }
+      ],
+      destroy: true,
+      ordering: false,
+      language: {
+        sProcessing: 'Procesando...',
+        sLengthMenu: 'Mostrar _MENU_ registros',
+        sZeroRecords: 'No se encontraron resultados',
+        sEmptyTable: 'Ningún dato disponible en esta tabla',
+        sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+        sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+        sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+        sInfoPostFix: '',   
+        sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
+        sUrl: '',
+        sInfoThousands: ',',
+        sLoadingRecords: 'Cargando...',
+        oPaginate: {
+          sFirst: 'Primero',
+          sLast: 'Último',
+          sNext: 'Siguiente',
+          sPrevious: 'Anterior'
+        },
+        oAria: {
+          sSortAscending:
+            ': Activar para ordenar la columna de manera ascendente',
+          sSortDescending:
+            ': Activar para ordenar la columna de manera descendente'
+        }
+      }
+    });
+  }
+  else {
+    let datatable = $('#tablaHistorialPedidos').DataTable({
+      pageLength: 10,
+      destroy: true,
+      ordering: false,
+      language: {
+        sProcessing: 'Procesando...',
+        sLengthMenu: 'Mostrar _MENU_ registros',
+        sZeroRecords: 'No se encontraron resultados',
+        sEmptyTable: 'Ningún dato disponible en esta tabla',
+        sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+        sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+        sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+        sInfoPostFix: '',   
+        sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
+        sUrl: '',
+        sInfoThousands: ',',
+        sLoadingRecords: 'Cargando...',
+        oPaginate: {
+          sFirst: 'Primero',
+          sLast: 'Último',
+          sNext: 'Siguiente',
+          sPrevious: 'Anterior'
+        },
+        oAria: {
+          sSortAscending:
+            ': Activar para ordenar la columna de manera ascendente',
+          sSortDescending:
+            ': Activar para ordenar la columna de manera descendente'
+        }
+      }
+    });
+  }
 
-    for(let pedido in arreglo) {
-
-      let encabezado = arreglo[pedido].encabezado;
-
-      let diaCaptura = encabezado.fechaCaptura.substr(0,2);
-      let mesCaptura = encabezado.fechaCaptura.substr(3,2);
-      let añoCaptura = encabezado.fechaCaptura.substr(6,4);
-      let fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
-      moment.locale('es');
-      let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
-
-      filas += `<tr style="padding:0px 0px 0px;" class="no-pading">
-                  <td>${arregloID[pedido]}</td>
-                  <td>${(encabezado.numOrden != undefined) ? encabezado.numOrden : "" }</td>
-                  <td>${fechaCapturaMostrar}</td>
-                  <td>${encabezado.tienda}</td>
-                  <td>${encabezado.ruta}</td>
-                  <td class="no-padding text-center"><a href="pedidoHistorial.html?id=${arregloID[pedido]}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
-                </tr>`;
-    }
-
-    $('#loaderPedidos').remove();
-    $('#tablaPedidos').removeClass('hidden');
-    tabla.rows.add($(filas)).columns.adjust().draw();
-  });
 }
 
 function guardarFechaRuta(idPedidoPadre) {
@@ -272,139 +306,187 @@ function guardarRuta(idPedidoPadre) {
   });
 }
 
-function mostrarPedidosEnProceso() {
-  let tabla = $(`#tablaPedidosEnProceso`).DataTable({
-    destroy: true,
-    "language": {
-      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
-    },
-    "searching": false,
-    "ordering": false
+function guardarDatosPedidoPadre(idPedidoPadre) {
+  db.ref(`pedidoPadre/${idPedidoPadre}`).on('value', (pedidoPadre) => {
+    let datos = pedidoPadre.val();
+    localStorage.setItem('datosPedidoPadre', JSON.stringify(datos));
+    $(location).attr("href", `pedidoPadre.html?id=${idPedidoPadre}`);
   });
+}
 
-  let pedidosPadreRef = db.ref('pedidoPadre');
-  pedidosPadreRef.on('value', function(snapshot) {
-    let loader = $('#loaderPedidosEnProceso');
-    let pedidosPadre = snapshot.val();
-    if(pedidosPadre == null || pedidosPadre == undefined) {
-      loader.remove();
-      $('#pPedidosProceso').html('No se encontraron pedidos en proceso');
-    }
-    let filas = "";
-    tabla.clear();
-    for(let pedidoPadre in pedidosPadre) {
-      if(pedidosPadre[pedidoPadre].estado == "En proceso") {
-        let diaCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(0,2);
-        let mesCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(3,2);
-        let añoCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(6,4);
-        let fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
-        moment.locale('es');
+function mostrarPedidosEnProceso() {
+  let pedidos = JSON.parse(localStorage.getItem('pedidosEnProceso'));
+  
+  let loader = $('#loaderPedidosEnProceso');
+  /* if (pedidosPadre == null || pedidosPadre == undefined) {
+    loader.remove();
+    $('#pPedidosProceso').html('No se encontraron pedidos en proceso');
+  } */
 
-        let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
-
-        let fechaRutaMostrar;
-        let rutaMostrar;
-        if(pedidosPadre[pedidoPadre].fechaRuta.length > 0) {
-          let diaRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(0,2);
-          let mesRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(3,2);
-          let añoRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(6,4);
-          let fechaRuta = `${mesRuta}/${diaRuta}/${añoRuta}`;
-
-          fechaRutaMostrar = moment(fechaRuta).format('LL');
-        } else {
-          fechaRutaMostrar = "Fecha pendiente";
+  let datatable = $('#tablaPedidosEnProceso').DataTable({
+    data: pedidos,
+    pageLength: 10,
+    columns: [
+      { data: 'clave' },
+      {
+        data: 'fechaCreacionPadre',
+        render: (fechaCreacionPadre) => {
+          moment.locale('es');
+          return moment(`${fechaCreacionPadre.substr(3,2)}/${fechaCreacionPadre.substr(0,2)}/${fechaCreacionPadre.substr(6,4)}`).format('LL')
         }
-        if(pedidosPadre[pedidoPadre].ruta.length == 0) {
-          rutaMostrar = "Ruta pendiente";
-        } else {
-          rutaMostrar = pedidosPadre[pedidoPadre].ruta;
+      },
+      {
+        data: 'fechaRuta',
+        render: (fechaRuta) => {
+          moment.locale('es');
+          if(fechaRuta.length > 0) {
+            return moment(`${fechaRuta.substr(3,2)}/${fechaRuta.substr(0,2)}/${fechaRuta.substr(6,4)}`).format('LL');
+          }
+          else {
+            return "Fecha pendiente";
+          }
         }
-
-        filas += `<tr>
-                    <td>${pedidosPadre[pedidoPadre].clave}</td>
-                    <td>${fechaCapturaMostrar}</td>
-                    <td>${fechaRutaMostrar}</td>
-                    <td>${rutaMostrar}</td>
-                    <td class="text-center">${(typeof pedidosPadre[pedidoPadre].agente != "undefined") ? '<div class="radioBtn btn-group"><a class="btn btn-sm btn-agente">'+pedidosPadre[pedidoPadre].agente+'</a></div>' : ""}</td>
-                    <td class="text-center"><button onclick="abrirModalModificarRuta('${pedidoPadre}')" class="btn btn-warning btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button></td>
-                    <td class="text-center">
-                      <span style="background-color:#FFCC25; color:#000000;" class="badge">En proceso</span>
-                    </td>
-                    <td class="text-center"><a class="btn btn-default btn-sm" href="pedidoPadre.html?id=${pedidoPadre}"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
-                    <td class="text-center"><button onclick="abrirModalSeparar('${pedidoPadre}')" class="btn btn-danger btn-sm"><i class="fa fa-arrows-h" aria-hidden="true"></i></button></td>
-                    <td class="text-center"><button onclick="verificarPedidoPadre('${pedidoPadre}')" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button></td>
-                    <td class="text-center"><button class="btn btn-success btn-sm" onclick="abrirModalFinalizarPedidoPadre('${pedidoPadre}')"><i class="fa fa-check" aria-hidden="true"></i></button></td>
-                  </tr>`;
-
-        /*filas += `<tr>
-                    <td>${pedidosPadre[pedidoPadre].clave}</td>
-                    <td>${fechaCapturaMostrar}</td>
-                    <td>${fechaRutaMostrar}</td>
-                    <!--<td class="text-center">
-                      <form class="form-inline">
-                        <div class="form-group">
-                          <div class="input-group date" style="width: 200px;">
-                            <input class="form-control input-sm" type="text" placeholder="Fecha de ruta" id="fechaRuta-${pedidoPadre}">
-                            <span style="color: white;" class="input-group-addon btn-primary btn-sm"><i class="fa fa-calendar"></i></span>
-                          </div>
-                        </div>
-                        <button class="btn btn-success btn-sm" type="button" onclick="guardarFechaRuta('${pedidoPadre}')"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
-                      </form>
-                    </td>-->
-                    <td>${rutaMostrar}</td>
-                    <!--<td class="text-center">
-                      <div class="form-group">
-                        <div class="input-group" style="width: 200px;">
-                          <input class="form-control input-sm" type="text" style="" placeholder="Ruta" id="ruta-${pedidoPadre}"/>
-                          <span class="input-group-btn"><button class="btn btn-success btn-sm" onclick="guardarRuta(${pedidoPadre})"><i class="fa fa-floppy-o" aria-hidden="true"></i></button></span>
-                        </div>
-                      </div>
-                    </td>-->
-                    <td class="text-center"><button onclick="abrirModalModificarRuta('${pedidoPadre}')" class="btn btn-warning btn-sm">Modificar</button></td>
-                    <td class="text-center">
-                      <i style="color:#FFCC25; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i>
-                    </td>
-                    <td class="text-center"><a class="btn btn-default btn-sm" href="pedidoPadre.html?id=${pedidoPadre}"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
-                  </tr>`;*/
+      },
+      { data: 'ruta',
+        render: (ruta) => {
+          if(ruta.length > 0) {
+            return ruta;
+          }else {
+            return "Ruta pendiente";
+          }
+        }
+      },
+      { data: 'agente',
+      className: 'text-center',
+        render: (agente) => {
+          if(typeof agente != "undefined") {
+            return `<div class="radioBtn btn-group"><a class="btn btn-sm btn-agente">${agente}</a></div>`;   
+          }
+          else {
+            return "";
+          }
+        }
+      },
+      { data: 'id', 
+        className: 'text-center', 
+        render: (id) => {
+          return `<button onclick="abrirModalModificarRuta('${id}')" class="btn btn-warning btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>` 
+        }
+      },
+      { className: 'text-center', defaultContent: '<span style="background-color:#FFCC25; color:#000000;" class="badge">En proceso</span>' },
+      { data: 'id',
+        className: 'text-center', 
+        render: (id) => {
+          return `<a class="btn btn-default btn-sm" onclick="guardarDatosPedidoPadre('${id}')"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a>`
+        }
+      },
+      { data: 'id',
+        className: 'text-center', 
+        render: (id) => {
+          return `<button onclick="abrirModalSeparar('${id}')" class="btn btn-danger btn-sm"><i class="fa fa-arrows-h" aria-hidden="true"></i></button>`
+        }
+      },
+      { data: 'id',
+        className: 'text-center', 
+        render: (id) => {
+          return `<button onclick="verificarPedidoPadre('${id}')" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>`
+        }
+      },
+      { data: 'id',
+        className: 'text-center', 
+        render: (id) => {
+          return `<button class="btn btn-success btn-sm" onclick="abrirModalFinalizarPedidoPadre('${id}')"><i class="fa fa-check" aria-hidden="true"></i></button>` 
+        }
+      }
+    ],
+    destroy: true,
+    ordering: false,
+    language: {
+      sProcessing: 'Procesando...',
+      sLengthMenu: 'Mostrar _MENU_ registros',
+      sZeroRecords: 'No se encontraron resultados',
+      sEmptyTable: 'Ningún dato disponible en esta tabla',
+      sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+      sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+      sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+      sInfoPostFix: '',   
+      sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
+      sUrl: '',
+      sInfoThousands: ',',
+      sLoadingRecords: 'Cargando...',
+      oPaginate: {
+        sFirst: 'Primero',
+        sLast: 'Último',
+        sNext: 'Siguiente',
+        sPrevious: 'Anterior'
+      },
+      oAria: {
+        sSortAscending:
+          ': Activar para ordenar la columna de manera ascendente',
+        sSortDescending:
+          ': Activar para ordenar la columna de manera descendente'
       }
     }
-    $('#pPedidosProceso').remove();
-    $('#loaderPedidosEnProceso').remove();
-    $('#tablaPedidosEnProceso').removeClass('hidden');
-    tabla.rows.add($(filas)).columns.adjust().draw();
+  });
+    /* $('#pPedidosProceso').remove();
+    $('#loaderPedidosEnProceso').remove(); */
+    // $('#tablaPedidosEnProceso').removeClass('hidden');
+    /* tabla.rows.add($(filas)).columns.adjust().draw(); */
 
-    $('.input-group.date').datepicker({
+    /* $('.input-group.date').datepicker({
       autoclose: true,
       format: "dd/mm/yyyy",
       startDate: "today",
       language: "es"
-    });
-  });
+    }); */
 }
 
 dragula([document.getElementById('tbodyTablaPedidoSeparar'), document.getElementById('tbodyTablaPedidoSeparado')]);
 
 function abrirModalSeparar(idPedidoPadre) {
-  let tabla = $(`#tablaPedidoSeparar`).DataTable({
+  let datatable = $('#tablaPedidoSeparar').DataTable({
     destroy: true,
-    language: {
-      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
-    },
-    searching: false,
     scrollY: "200px",
     ordering: false,
     paging: false,
     info: false,
-    responsive: true
+    responsive: true,
+    searching: false,
+    language: {
+      sProcessing: 'Procesando...',
+      sLengthMenu: 'Mostrar _MENU_ registros',
+      sZeroRecords: 'No se encontraron resultados',
+      sEmptyTable: 'Ningún dato disponible en esta tabla',
+      sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+      sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+      sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+      sInfoPostFix: '',   
+      sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
+      sUrl: '',
+      sInfoThousands: ',',
+      sLoadingRecords: 'Cargando...',
+      oPaginate: {
+        sFirst: 'Primero',
+        sLast: 'Último',
+        sNext: 'Siguiente',
+        sPrevious: 'Anterior'
+      },
+      oAria: {
+        sSortAscending:
+          ': Activar para ordenar la columna de manera ascendente',
+        sSortDescending:
+          ': Activar para ordenar la columna de manera descendente'
+      }
+    }
   });
 
   let rutaPedidoPadre = db.ref(`pedidoPadre/${idPedidoPadre}`);
-  rutaPedidoPadre.on('value', function(snapshot) {
+  rutaPedidoPadre.on('value', function (snapshot) {
     let pedidosHijos = snapshot.val().pedidosHijos;
 
     let filas = "";
-    tabla.clear();
-    for(let pedido in pedidosHijos) {
+    datatable.clear();
+    for (let pedido in pedidosHijos) {
       filas += `<tr>
                   <td>${pedido}</td>
                   <td>${pedidosHijos[pedido].encabezado.numOrden}</td>
@@ -413,7 +495,7 @@ function abrirModalSeparar(idPedidoPadre) {
                   <td>${pedidosHijos[pedido].encabezado.ruta}</td>
                 </tr>`;
     }
-    tabla.rows.add($(filas)); //columns.adjust().draw();
+    datatable.rows.add($(filas)); //columns.adjust().draw();
 
   });
 
@@ -422,25 +504,24 @@ function abrirModalSeparar(idPedidoPadre) {
 }
 
 $('#modalSeparar').on('shown.bs.modal', function () {
-  $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+  $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
 });
 
 function separar(idPedidoPadre) {
   var pedidos = [], claves = [], datosNuevoPedidoPadre, pedidosHijos = {},
-  productosRepetidos = [], productosNoRepetidos = [];
+    productosRepetidos = [], productosNoRepetidos = [];
   let rutaPedidoPadre = db.ref(`pedidoPadre/${idPedidoPadre}`);
 
-  $("#tablaPedidoSeparado tbody tr").each(function (i)
-  {
+  $("#tablaPedidoSeparado tbody tr").each(function (i) {
     var clave;
     $(this).children("td").each(function (j) {
-      if(j == 0) {
-        if($(this).text().length > 0) {
+      if (j == 0) {
+        if ($(this).text().length > 0) {
           clave = $(this).text();
           claves.push(clave);
 
           let pedidoEntradaRef = db.ref(`pedidoPadre/${idPedidoPadre}/pedidosHijos/${clave}/`);
-          pedidoEntradaRef.once('value', function(snapshot) {
+          pedidoEntradaRef.once('value', function (snapshot) {
             let pedidoHijo = snapshot.val();
             pedidosHijos[clave] = pedidoHijo;
           });
@@ -448,14 +529,14 @@ function separar(idPedidoPadre) {
       }
     });
 
-    if($(this).attr('id') != "filavacia") {
+    if ($(this).attr('id') != "filavacia") {
       let pedidoRef = db.ref(`pedidoPadre/${idPedidoPadre}/pedidosHijos/${clave}`);
-      pedidoRef.once('value', function(snapshot) {
+      pedidoRef.once('value', function (snapshot) {
         let pedido = snapshot.val();
         pedidos.push(pedido);
 
         let detalle = pedido.detalle;
-        for(let producto in detalle) {
+        for (let producto in detalle) {
           let datosProducto = {
             claveConsorcio: detalle[producto].claveConsorcio,
             clave: detalle[producto].clave,
@@ -478,15 +559,15 @@ function separar(idPedidoPadre) {
     }
   });
 
-  for(let i in productosRepetidos) {
-    if(productosNoRepetidos.length == 0) {
+  for (let i in productosRepetidos) {
+    if (productosNoRepetidos.length == 0) {
       productosNoRepetidos.push(productosRepetidos[i]);
     }
     else {
       let bandera = false;
-      for(let j in productosNoRepetidos) {
+      for (let j in productosNoRepetidos) {
 
-        if(productosRepetidos[i].clave == productosNoRepetidos[j].clave) {
+        if (productosRepetidos[i].clave == productosNoRepetidos[j].clave) {
           bandera = true;
 
           let productoNoRepetido = productosNoRepetidos[j];
@@ -496,46 +577,46 @@ function separar(idPedidoPadre) {
           productoNoRepetido.totalPz = productoNoRepetido.totalPz + productoRepetido.totalPz;
         }
       }
-      if(bandera == false) {
+      if (bandera == false) {
         productosNoRepetidos.push(productosRepetidos[i]);
       }
     }
   }
 
   let pedidosPadreRef = db.ref('pedidoPadre/');
-  pedidosPadreRef.once('value', function(snapshot) {
+  pedidosPadreRef.once('value', function (snapshot) {
     let existe = (snapshot.val() != null);
-    if(existe) {
+    if (existe) {
       let listapedidos = snapshot.val(),
-          keys = Object.keys(listapedidos),
-          last = keys[keys.length-1],
-          ultimoPedido = listapedidos[last],
-          lastclave = ultimoPedido.clave,
-          fechaCreacionPadre = moment().format('DD/MM/YYYY'),
-          datosPedidoPadre = {
-            // agente: "",
-            fechaCreacionPadre: fechaCreacionPadre,
-            fechaRuta: "",
-            verificado: false,
-            ruta: "",
-            productos: productosNoRepetidos,
-            clave: lastclave+1,
-            estado: "En proceso",
-            pedidosHijos: pedidosHijos
-          };
+        keys = Object.keys(listapedidos),
+        last = keys[keys.length - 1],
+        ultimoPedido = listapedidos[last],
+        lastclave = ultimoPedido.clave,
+        fechaCreacionPadre = moment().format('DD/MM/YYYY'),
+        datosPedidoPadre = {
+          // agente: "",
+          fechaCreacionPadre: fechaCreacionPadre,
+          fechaRuta: "",
+          verificado: false,
+          ruta: "",
+          productos: productosNoRepetidos,
+          clave: lastclave + 1,
+          estado: "En proceso",
+          pedidosHijos: pedidosHijos
+        };
 
       pedidosPadreRef.push(datosPedidoPadre);
 
-      for(let clave in claves) {
+      for (let clave in claves) {
         let rutaPedidosHijos = db.ref(`pedidoPadre/${idPedidoPadre}/pedidosHijos`);
         rutaPedidosHijos.child(claves[clave]).remove();
       }
       limpiarTablaSeparado();
 
-      rutaPedidoPadre.once('value', function(snapshot) {
+      rutaPedidoPadre.once('value', function (snapshot) {
         let pedidosHijos = snapshot.val().pedidosHijos;
 
-        if(pedidosHijos == null) {
+        if (pedidosHijos == null) {
           let rutaPedidosPadre = db.ref('pedidoPadre');
           rutaPedidosPadre.child(idPedidoPadre).remove();
           $('#modalSeparar').modal('hide');
@@ -555,82 +636,99 @@ function limpiarTablaSeparado() {
                 </tr>`;
 
   $('#tbodyTablaPedidoSeparado').html(row);
-  $.toaster({priority: 'success', title: 'Mensaje de información', message: `Se ha separado el pedido`});
+  $.toaster({ priority: 'success', title: 'Mensaje de información', message: `Se ha separado el pedido` });
 }
 
 function mostrarPedidosFinalizados() {
-  let tabla = $(`#tablaPedidosFinalizados`).DataTable({
-    destroy: true,
-    "language": {
-      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
-    },
-    "searching": false,
-    "ordering": false
-  });
+  let pedidos = JSON.parse(localStorage.getItem('pedidosFinalizados'));
 
-  let pedidosPadreRef = db.ref('pedidoPadre');
-  pedidosPadreRef.on('value', function(snapshot) {
-    let loader = $('#loaderPedidosFinalizados');
-    let pedidosPadre = snapshot.val();
-    if(pedidosPadre == null || pedidosPadre == undefined) {
-      loader.remove();
-      $('#pPedidosFinalizados').html('No se encontraron pedidos finalizados');
-    }
-    let filas = "";
-    tabla.clear();
-    for(let pedidoPadre in pedidosPadre) {
-      if(pedidosPadre[pedidoPadre].estado == "Finalizado") {
-        let diaCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(0,2);
-        let mesCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(3,2);
-        let añoCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(6,4);
-        let fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
-        moment.locale('es');
-
-        let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
-
-        let fechaRutaMostrar;
-        let rutaMostrar;
-        if(pedidosPadre[pedidoPadre].fechaRuta.length > 0) {
-          let diaRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(0,2);
-          let mesRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(3,2);
-          let añoRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(6,4);
-          let fechaRuta = `${mesRuta}/${diaRuta}/${añoRuta}`;
-
-          fechaRutaMostrar = moment(fechaRuta).format('LL');
-        } else {
-          fechaRutaMostrar = "Fecha pendiente";
+  //let loader = $('#loaderPedidosFinalizados');
+  /* if (pedidosPadre == null || pedidosPadre == undefined) {
+    loader.remove();
+    $('#pPedidosFinalizados').html('No se encontraron pedidos finalizados');
+  } */
+      
+  let datatable = $('#tablaPedidosFinalizados').DataTable({
+      data: pedidos,
+      pageLength: 10,
+      columns: [
+        { data: 'clave'},
+        {
+          data: 'fechaCreacionPadre',
+          render: (fechaCreacionPadre) => {
+            moment.locale('es');
+            return moment(`${fechaCreacionPadre.substr(3,2)}/${fechaCreacionPadre.substr(0,2)}/${fechaCreacionPadre.substr(6,4)}`).format('LL')
+          }
+        },
+        {
+          data: 'fechaRuta',
+          render: (fechaRuta) => {
+            moment.locale('es');
+            if(fechaRuta.length > 0) {
+              return moment(`${fechaRuta.substr(3,2)}/${fechaRuta.substr(0,2)}/${fechaRuta.substr(6,4)}`).format('LL');
+            }
+            else {
+              return "Fecha pendiente";
+            }
+          }
+        },
+        { data: 'ruta',
+          render: (ruta) => {
+            if(ruta.length > 0) {
+              return ruta;
+            }else {
+              return "Ruta pendiente";
+            }
+          }
+        },
+        { data: 'agente',
+        className: 'text-center',
+          render: (agente) => {
+            if(typeof agente != "undefined") {
+              return `<div class="radioBtn btn-group"><a class="btn btn-sm btn-agente">${agente}</a></div>`;   
+            }
+            else {
+              return "";
+            }
+          }
+        },
+        { className: 'text-center', defaultContent: '<span style="background-color:#42f486; color:#000000;" class="badge">Finalizado</span>' },
+        { data: 'id',
+          className: 'text-center', 
+          render: (id) => {
+            return `<a class="btn btn-default btn-sm" href="pedidoPadre.html?id=${id}"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a>`
+          }
         }
-        if(pedidosPadre[pedidoPadre].ruta.length == 0) {
-          rutaMostrar = "Ruta pendiente";
-        } else {
-          rutaMostrar = pedidosPadre[pedidoPadre].ruta;
+      ],
+      destroy: true,
+      ordering: false,
+      language: {
+        sProcessing: 'Procesando...',
+        sLengthMenu: 'Mostrar _MENU_ registros',
+        sZeroRecords: 'No se encontraron resultados',
+        sEmptyTable: 'Ningún dato disponible en esta tabla',
+        sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+        sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+        sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+        sInfoPostFix: '',   
+        sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
+        sUrl: '',
+        sInfoThousands: ',',
+        sLoadingRecords: 'Cargando...',
+        oPaginate: {
+          sFirst: 'Primero',
+          sLast: 'Último',
+          sNext: 'Siguiente',
+          sPrevious: 'Anterior'
+        },
+        oAria: {
+          sSortAscending:
+            ': Activar para ordenar la columna de manera ascendente',
+          sSortDescending:
+            ': Activar para ordenar la columna de manera descendente'
         }
-
-        filas += `<tr>
-                    <td>${pedidosPadre[pedidoPadre].clave}</td>
-                    <td>${fechaCapturaMostrar}</td>
-                    <td>${fechaRutaMostrar}</td>
-                    <td>${rutaMostrar}</td>
-                    <td class="text-center">${(pedidosPadre[pedidoPadre].agente != undefined) ? '<div class="radioBtn btn-group"><a class="btn btn-sm btn-agente">'+pedidosPadre[pedidoPadre].agente+'</a></div>' : ""}</td>
-                    <td class="text-center">
-                      <span style="background-color:#42f486; color:#000000;" class="badge">Finalizado</span>
-                    </td>
-                    <td class="text-center"><a class="btn btn-default btn-sm" href="pedidoPadre.html?id=${pedidoPadre}"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
-                  </tr>`;
       }
-    }
-    $('#pPedidosFinalizados').remove();
-    $('#loaderPedidosFinalizados').remove();
-    $('#tablaPedidosFinalizados').removeClass('hidden');
-    tabla.rows.add($(filas)).columns.adjust().draw();
-
-    $('.input-group.date').datepicker({
-      autoclose: true,
-      format: "dd/mm/yyyy",
-      startDate: "today",
-      language: "es"
     });
-  });
 }
 
 function abrirModalFinalizarPedidoPadre(idPedidoPadre) {
@@ -640,11 +738,11 @@ function abrirModalFinalizarPedidoPadre(idPedidoPadre) {
 
 function llenarSelectAgentes() {
   let rutaAgentes = db.ref(`usuarios/administrativo/ventas/agentes`);
-  rutaAgentes.on('value', function(snapshot) {
+  rutaAgentes.on('value', function (snapshot) {
     let agentes = snapshot.val();
 
     let options = "<option value='Seleccionar'>Seleccionar</option>";
-    for(let agente in agentes) {
+    for (let agente in agentes) {
       options += `<option value="${agentes[agente].nombre}">${agentes[agente].nombre}</option>`;
     }
 
@@ -664,12 +762,12 @@ function verificarPedidoPadre(idPedidoPadre) {
   rutaPedidoPadre.update({
     verificado: true
   });
-    $.toaster({priority: 'success', title: 'Mensaje de información', message: `Pedido verificado`});
+  $.toaster({ priority: 'success', title: 'Mensaje de información', message: `Pedido verificado` });
 }
- 
+
 function abrirModalModificarRuta(idPedidoPadre) {
   let rutaPedidosPadre = db.ref(`pedidoPadre/${idPedidoPadre}`);
-  rutaPedidosPadre.once('value', function(snapshot) {
+  rutaPedidosPadre.once('value', function (snapshot) {
     $('#fechaRuta').val(snapshot.val().fechaRuta);
     $('#ruta').val(snapshot.val().ruta);
     let agente = snapshot.val().agente;
@@ -682,7 +780,7 @@ function abrirModalModificarRuta(idPedidoPadre) {
 
     $('#modalModificarRuta').modal('show');
     llenarSelectAgentes();
-    if(agente != undefined) {
+    if (agente != undefined) {
       $('#agente').val(agente);
     }
     $('#btnGuardarRuta').attr('onclick', `guardarDatos('${idPedidoPadre}')`);
@@ -712,7 +810,7 @@ function guardarDatos(idPedidoPadre) {
   });
 
   // agenteAsignado = "";
-  $.toaster({priority: 'success', title: 'Mensaje de información', message: `Datos guardados`});
+  $.toaster({ priority: 'success', title: 'Mensaje de información', message: `Datos guardados` });
   $('#modalModificarRuta').modal('hide');
 }
 
@@ -723,33 +821,31 @@ function generarPedidoPadre() {
   var pedidos = [], claves = [], promotoras = [];
   var productosRepetidos = [], productosNoRepetidos = [];
 
-  $("#tablaPedidoPadre tbody tr").each(function (i)
-  {
+  $("#tablaPedidoPadre tbody tr").each(function (i) {
     var clave;
-    $(this).children("td").each(function (j)
-    {
-      if(j == 0) {
-        if($(this).text().length > 0) {
+    $(this).children("td").each(function (j) {
+      if (j == 0) {
+        if ($(this).text().length > 0) {
           clave = $(this).text();
           claves.push(clave);
 
           let pedidoEntradaRef = db.ref(`pedidoEntrada/${clave}/encabezado`);
-          pedidoEntradaRef.once('value', function(snapshot) {
-            promotora = snapshot.val().promotora;
+          pedidoEntradaRef.once('value', function (snapshot) {
+            let promotora = snapshot.val().promotora;
             promotoras.push(promotora);
           });
         }
       }
     });
 
-    if($(this).attr('id') != "vacio"){
+    if ($(this).attr('id') != "vacio") {
       let pedidoRef = db.ref(`pedidoEntrada/${clave}`);
-      pedidoRef.once('value', function(snapshot) {
+      pedidoRef.once('value', function (snapshot) {
         let pedido = snapshot.val();
         pedidos.push(pedido);
 
         let detalle = pedido.detalle;
-        for(let producto in detalle) {
+        for (let producto in detalle) {
           let datosProducto = {
             claveConsorcio: detalle[producto].claveConsorcio,
             clave: detalle[producto].clave,
@@ -772,15 +868,15 @@ function generarPedidoPadre() {
     }
   });
 
-  for(let i in productosRepetidos) {
-    if(productosNoRepetidos.length == 0) {
+  for (let i in productosRepetidos) {
+    if (productosNoRepetidos.length == 0) {
       productosNoRepetidos.push(productosRepetidos[i]);
     }
     else {
       let bandera = false;
-      for(let j in productosNoRepetidos) {
+      for (let j in productosNoRepetidos) {
 
-        if(productosRepetidos[i].clave == productosNoRepetidos[j].clave) {
+        if (productosRepetidos[i].clave == productosNoRepetidos[j].clave) {
           bandera = true;
 
           let productoNoRepetido = productosNoRepetidos[j];
@@ -790,32 +886,32 @@ function generarPedidoPadre() {
           productoNoRepetido.totalPz = productoNoRepetido.totalPz + productoRepetido.totalPz;
         }
       }
-      if(bandera == false) {
+      if (bandera == false) {
         productosNoRepetidos.push(productosRepetidos[i]);
       }
     }
   }
 
   let pedidosPadresRef = db.ref('pedidoPadre/');
-  pedidosPadresRef.once('value', function(snapshot) {
+  pedidosPadresRef.once('value', function (snapshot) {
     let existe = (snapshot.val() != null);
-    if(existe) {
+    if (existe) {
       let listapedidos = snapshot.val(),
-          keys = Object.keys(listapedidos),
-          last = keys[keys.length-1],
-          ultimoPedido = listapedidos[last],
-          lastclave = ultimoPedido.clave,
-          fechaCreacionPadre = moment().format('DD/MM/YYYY'),
-          pedidoPadreRef = db.ref('pedidoPadre/'),
-          datosPedidoPadre = {
-            fechaCreacionPadre: fechaCreacionPadre,
-            fechaRuta: "",
-            verificado: false,
-            ruta: "",
-            productos: productosNoRepetidos,
-            clave: lastclave+1,
-            estado: "En proceso"
-          };
+        keys = Object.keys(listapedidos),
+        last = keys[keys.length - 1],
+        ultimoPedido = listapedidos[last],
+        lastclave = ultimoPedido.clave,
+        fechaCreacionPadre = moment().format('DD/MM/YYYY'),
+        pedidoPadreRef = db.ref('pedidoPadre/'),
+        datosPedidoPadre = {
+          fechaCreacionPadre: fechaCreacionPadre,
+          fechaRuta: "",
+          verificado: false,
+          ruta: "",
+          productos: productosNoRepetidos,
+          clave: lastclave + 1,
+          estado: "En proceso"
+        };
 
       let key = pedidoPadreRef.push(datosPedidoPadre).getKey();
       let pedidoPadreRefKey = db.ref(`pedidoPadre/${key}/pedidosHijos`);
@@ -823,35 +919,39 @@ function generarPedidoPadre() {
       let pedidoEntradaRef = db.ref('pedidoEntrada');
 
       let datosPedidosHijos = {};
-      for(let pedido in pedidos) {
+      for (let pedido in pedidos) {
         datosPedidosHijos[claves[pedido]] = pedidos[pedido];
-        
-        //Las siguientes dos líneas guardan en historial los pedidos que se estan agrupando tal
-        //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
-        let rutaHistorialPedidosEntrada = db.ref(`historialPedidosEntrada/${claves[pedido]}/`);
-        rutaHistorialPedidosEntrada.set(pedidos[pedido]);
 
         let promotoraRef = db.ref(`usuarios/tiendas/supervisoras/${pedidos[pedido].encabezado.promotora}`);
-        promotoraRef.once('value', function(snapshot) {
+        promotoraRef.once('value', function (snapshot) {
           let region = snapshot.val().region;
 
           /*Se entra a pedidosEntrada para obtener el id de la tienda de ese pedido y mandar el pedido a historial de regiones
-           *Y después removerlo de pedidosEntrada */  
+           *Y después removerlo de pedidosEntrada */
           let pedidoRef = db.ref(`pedidoEntrada/${claves[pedido]}`);
-          pedidoRef.once('value', function(snappy) {
+          pedidoRef.once('value', function (snappy) {
 
             // let idTienda = snappy.val().encabezado.tienda.split(" ")[0];
             // let regionRef = db.ref(`regiones/${region}/${idTienda}/historialPedidos`);
             // regionRef.push(pedidos[pedido]);
 
-            pedidoEntradaRef.child(claves[pedido]).remove();
+            //pedidoEntradaRef.child(claves[pedido]).remove();
+            pedidoEntradaRef.child(claves[pedido]).child("encabezado").update({
+              agrupado: true
+            }).then(function (snapshot) {
+
+
+              //Las siguientes dos líneas guardan en historial los pedidos que se estan agrupando tal
+              //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
+              let rutaHistorialPedidosEntrada = db.ref(`historialPedidosEntrada/${claves[pedido]}/`);
+              rutaHistorialPedidosEntrada.set();
+            });
           });
         });
       }
 
       pedidoPadreRefKey.set(datosPedidosHijos);
       //historialPedidosEntradaRef.push(datosPedidosHijos);
-
 
       let row = `<tr id="vacio" style="padding:0px 0px 0px;" class="no-pading">
                   <td></td>
@@ -864,7 +964,7 @@ function generarPedidoPadre() {
                   <td></td>
                 </tr>`;
       $('#tbodyTablaPedidoPadre').html(row);
-      $.toaster({priority: 'success', title: 'Mensaje de información', message: `Se generó el pedido padre correctamente`});
+      $.toaster({ priority: 'success', title: 'Mensaje de información', message: `Se generó el pedido padre correctamente` });
 
       // for(let promotora in promotoras) {
       //   let notificacionesListaRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}/lista`);
@@ -908,27 +1008,29 @@ function generarPedidoPadre() {
       let pedidoEntradaRef = db.ref('pedidoEntrada');
 
       let datosPedidosHijos = {};
-      for(let pedido in pedidos) {
+      for (let pedido in pedidos) {
         datosPedidosHijos[claves[pedido]] = pedidos[pedido];
 
-        //Las siguientes dos líneas guardan en historial los pedidos que se estan agrupando tal
-        //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
-        let rutaHistorialPedidosEntrada = db.ref(`historialPedidosEntrada/${claves[pedido]}/`);
-        rutaHistorialPedidosEntrada.set(pedidos[pedido]);
-
         let promotoraRef = db.ref(`usuarios/tiendas/supervisoras/${pedidos[pedido].encabezado.promotora}`);
-        promotoraRef.once('value', function(snapshot) {
+        promotoraRef.once('value', function (snapshot) {
           let region = snapshot.val().region;
 
           /*Se entra a pedidosEntrada para obtener el id de la tienda de ese pedido y mandar el pedido a historial de regiones
            *Y después removerlo de pedidosEntrada */
           let pedidoRef = db.ref(`pedidoEntrada/${claves[pedido]}`);
-          pedidoRef.once('value', function(snappy) {
+          pedidoRef.once('value', function (snappy) {
             // let idTienda = snappy.val().encabezado.tienda.split(" ")[0];
             // let regionRef = db.ref(`regiones/${region}/${idTienda}/historialPedidos`);
             // regionRef.push(pedidos[pedido]);
 
-            pedidoEntradaRef.child(claves[pedido]).remove();
+            pedidoEntradaRef.child(claves[pedido]).child("encabezado").update({
+              agrupado: true
+            }).then(function () {
+              //Las siguientes dos líneas guardan en historial los pedidos que se estan agrupando tal
+              //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
+              let rutaHistorialPedidosEntrada = db.ref(`historialPedidosEntrada/${claves[pedido]}/`);
+              rutaHistorialPedidosEntrada.set(pedidos[pedido]);
+            });
           });
         });
       }
@@ -946,7 +1048,7 @@ function generarPedidoPadre() {
                 </tr>`;
       $('#tbodyTablaPedidoPadre').html(row);
 
-      $.toaster({priority: 'success', title: 'Mensaje de información', message: `Se generó el pedido padre correctamente`});
+      $.toaster({ priority: 'success', title: 'Mensaje de información', message: `Se generó el pedido padre correctamente` });
 
       // for(let promotora in promotoras) {
       //   let notificacionesListaRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}/lista`);
@@ -975,7 +1077,7 @@ function generarPedidoPadre() {
 }
 
 function enviarNotificacion(promotoras, claves) {
-  for(let promotora in promotoras) {
+  for (let promotora in promotoras) {
     let notificacionesListaRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}/lista`);
     moment.locale('es');
     let formato = moment().format("MMMM DD YYYY, HH:mm:ss");
@@ -988,34 +1090,17 @@ function enviarNotificacion(promotoras, claves) {
 
     notificacionesListaRef.push(notificacion);
 
-    let notificacionesRef = db.ref('notificaciones/tiendas/'+promotoras[promotora]);
-    notificacionesRef.once('value', function(snapshot) {
+    let notificacionesRef = db.ref('notificaciones/tiendas/' + promotoras[promotora]);
+    notificacionesRef.once('value', function (snapshot) {
       let notusuario = snapshot.val();
       let cont = notusuario.cont + 1;
 
-      notificacionesRef.update({cont: cont});
+      notificacionesRef.update({ cont: cont });
     });
   }
 }
 
 function cancelarPedidoPadre() {
-  /*let filas = $('#tablaPedidoPadre tbody tr');
-
-  filas.each(function (i) {
-    $('#tablaPedidos tbody').append(filas[i]);
-    $('#tablaPedidoPadre tbody').remove(filas[i]);
-    $('#tablaPedidoPadre tbody')
-      .append(`<tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>`);
-  });*/
   $('#tablaPedidoPadre tbody').empty()
     .append(`<tr>
               <td></td>
@@ -1039,25 +1124,7 @@ function pedidosRecibidos() {
   mostrarPedidos();
 }
 
-// $('#tabPedidosRecibidos').on('shown.bs.tab', function (e) {
-//   mostrarPedidos();
-//   $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
-
-//   console.log("pedidos recibidos")
-// });
-
-// $('#tabPedidosEnProcesoTerminados').on('shown.bs.tab', function (e) {
-//   mostrarPedidosEnProceso();
-//   $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
-// });
-
-// $('#tabHistorialPedidos').on('shown.bs.tab', function (e) {
-//   mostrarHistorialPedidos();
-//   console.log("tabHistorial")
-//   $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
-// })
-
-function pedidosEnProceso() {
+function pedidosEnProceso()  {
   $('#pedidosRecibidos').hide();
   $('#historialPedidos').hide();
   $('#pedidosFinalizados').hide();
@@ -1087,18 +1154,18 @@ function pedidosFinalizados() {
 function mostrarNotificaciones() {
   let usuario = auth.currentUser.uid;
   let notificacionesRef = db.ref(`notificaciones/almacen/${usuario}lista`);
-  notificacionesRef.on('value', function(snapshot) {
+  notificacionesRef.on('value', function (snapshot) {
     let lista = snapshot.val();
     let lis = "";
 
     let arrayNotificaciones = [];
-    for(let notificacion in lista) {
+    for (let notificacion in lista) {
       arrayNotificaciones.push(lista[notificacion]);
     }
 
     arrayNotificaciones.reverse();
 
-    for(let i in arrayNotificaciones) {
+    for (let i in arrayNotificaciones) {
       let date = arrayNotificaciones[i].fecha;
       moment.locale('es');
       let fecha = moment(date, "MMMM DD YYYY, HH:mm:ss").fromNow();
@@ -1121,10 +1188,10 @@ function mostrarNotificaciones() {
 function mostrarContador() {
   let uid = auth.currentUser.uid;
   let notificacionesRef = db.ref(`notificaciones/almacen/${uid}`);
-  notificacionesRef.on('value', function(snapshot) {
+  notificacionesRef.on('value', function (snapshot) {
     let cont = snapshot.val().cont;
 
-    if(cont > 0) {
+    if (cont > 0) {
       $('#spanNotificaciones').html(cont).show();
     }
     else {
@@ -1136,19 +1203,9 @@ function mostrarContador() {
 function verNotificaciones() {
   let uid = auth.currentUser.uid;
   let notificacionesRef = db.ref(`notificaciones/almacen/${uid}`);
-  notificacionesRef.update({cont: 0});
+  notificacionesRef.update({ cont: 0 });
 }
 
-$('#campana').click(function() {
+$('#campana').click(function () {
   verNotificaciones();
-});
-
-$(document).ready(function() {
-  $('[data-toggle="tooltip"]').tooltip();
-
-  $.toaster({
-    settings: {
-      'timeout': 3000
-    }
-  });
 });

@@ -168,28 +168,28 @@
                 </div>
                 <div class="col-md-4">
                   <label for="pedidoPz">Pedido Pz:</label>
-                  <input type="number" id="pedidoPz" name="pedidoPz" class="form-control" placeholder="Pedido Pz">
+                  <input type="number" id="pedidoPz" min="0" name="pedidoPz" class="form-control" placeholder="Pedido Pz">
                   <span style="display: none;" id="helpblockPedidoPz" class="help-block">Campo obligatorio</span>
                 </div>
                 <div class="col-md-4">
                   <label for="degusPz">Degustación Pz:</label>
-                  <input type="number" id="degusPz" name="degusPz" class="form-control" placeholder="Degustación Pz">
+                  <input type="number" id="degusPz" min="0" name="degusPz" class="form-control" placeholder="Degustación Pz">
                   <span style="display: none;" id="helpblockDegusPz" class="help-block">Campo obligatorio</span>
                 </div>
               </div>
               <div class="form-group row">
                 <div class="col-md-4">
                   <label for="cambioFisico">Cambio físico:</label>
-                  <input type="number" id="cambioFisicoPz" name="cambioFisicoPz" class="form-control" placeholder="Cambio físico">
+                  <input type="number" id="cambioFisicoPz" min="0" name="cambioFisicoPz" class="form-control" placeholder="Cambio físico">
                   <span style="display: none;" id="helpblockCambioFisicoPz" class="help-block">Campo obligatorio</span>
                 </div>
                 <div class="hidden col-md-4">
                   <label for="empaque" class="">Empaque:</label>
-                  <input type="number" id="empaque" name="empaque" class="form-control">
+                  <input type="number" id="empaque" min="0" name="empaque" class="form-control">
                 </div>
                 <div class="col-md-4">
                   <label for="precioUnitario">Precio unitario:</label>
-                  <input type="number" id="precioUnitario" name="precioUnitario" class="form-control" placeholder="Precio unitario" readonly>
+                  <input type="number" id="precioUnitario" min="0" name="precioUnitario" class="form-control" placeholder="Precio unitario" readonly>
                 </div>
                 <div class="col-md-4">
                   <label for="unidad">Unidad:</label>
@@ -237,28 +237,28 @@
                 </div>
                 <div class="col-md-3">
                   <label for="pedidoPzEditar">Pedido Pz:</label>
-                  <input type="number" id="pedidoPzEditar" name="pedidoPzEditar" class="form-control" placeholder="Pedido Pz">
+                  <input type="number" id="pedidoPzEditar" min="0" name="pedidoPzEditar" class="form-control" placeholder="Pedido Pz">
                   <span style="display: none;" id="helpblockPedidoPzEditar" class="help-block">Campo obligatorio</span>
                 </div>
                 <div class="col-md-3">
                   <label for="degusPzEditar">Degustación Pz:</label>
-                  <input type="number" id="degusPzEditar" name="degusPzEditar" class="form-control" placeholder="Degustación Pz">
+                  <input type="number" id="degusPzEditar" min="0" name="degusPzEditar" class="form-control" placeholder="Degustación Pz">
                   <span style="display: none;" id="helpblockDegusPzEditar" class="help-block">Campo obligatorio</span>
                 </div>
                 <div class="col-md-3">
                   <label for="cambioFisicoEditar">Cambio físico:</label>
-                  <input type="number" id="cambioFisicoPzEditar" name="cambioFisicoPzEditar" class="form-control" placeholder="Cambio físico">
+                  <input type="number" id="cambioFisicoPzEditar" min="0" name="cambioFisicoPzEditar" class="form-control" placeholder="Cambio físico">
                   <span style="display: none;" id="helpblockCambioFisicoPzEditar" class="help-block">Campo obligatorio</span>
                 </div>
                 <div class="hidden col-md-3">
                   <label for="empaqueEditar">Empaque:</label>
-                  <input type="text" id="empaqueEditar" name="empaqueEditar" class="form-control" readonly>
+                  <input type="text" id="empaqueEditar" min="0" name="empaqueEditar" class="form-control" readonly>
                 </div>
               </div>
               <div class="form-group row">
                 <div class="col-md-3">
                   <label for="precioUnitarioEditar">Precio unitario:</label>
-                  <input type="text" id="precioUnitarioEditar" name="precioUnitarioEditar" class="form-control" placeholder="Precio unitario" readonly>
+                  <input type="text" id="precioUnitarioEditar" min="0" name="precioUnitarioEditar" class="form-control" placeholder="Precio unitario" readonly>
                 </div>
                 <div class="col-md-3">
                   <label for="unidadEditar">Unidad:</label>
@@ -300,8 +300,8 @@
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
     <!-- jQuery -->
-    <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
-    <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="dist/js/bootstrap-select.js"></script>
     <script src="vendor/metisMenu/metisMenu.min.js"></script>

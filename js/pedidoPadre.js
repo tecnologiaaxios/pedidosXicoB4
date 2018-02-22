@@ -6,6 +6,17 @@ function logout() {
   auth.signOut();
 }
 
+$(document).ready(function () {
+  //$('#Imprimir').attr('disabled', true);
+
+  $('.loader').hide();
+  $('#panel').show();
+  $('[data-toggle="tooltip"]').tooltip();
+
+  mostrarDatos();
+  mostrarTodas();
+});
+
 function haySesion() {
   auth.onAuthStateChanged(function (user) {
     //si hay un usuario
@@ -24,52 +35,46 @@ haySesion();
 function getQueryVariable(variable) {
   var query = window.location.search.substring(1);
   var vars = query.split("&");
-  for (var i=0;i<vars.length;i++) {
+  for (var i = 0; i < vars.length; i++) {
     var pair = vars[i].split("=");
-    if(pair[0] == variable){return pair[1];}
+    if (pair[0] == variable) { return pair[1]; }
   }
-  return(false);
+  return (false);
 }
 
 function mostrarDatos() {
-  let idPedidoPadre = getQueryVariable('id');
+  let datos = JSON.parse(localStorage.getItem('datosPedidoPadre')),
+    fecha = datos.fechaCreacionPadre;
 
-  let pedidoPadreRef = db.ref('pedidoPadre/'+idPedidoPadre);
-  pedidoPadreRef.on('value', function(snapshot) {
-    let datos = snapshot.val();
-    $('#numPedido').html("Pedido: " + datos.clave);
+  $('#numPedido').html(`Pedido: ${datos.clave}`);
 
-    let diaCaptura = datos.fechaCreacionPadre.substr(0,2);
-    let mesCaptura = datos.fechaCreacionPadre.substr(3,2);
-    let añoCaptura = datos.fechaCreacionPadre.substr(6,4);
-    let fechaCreacion = mesCaptura + '/' + diaCaptura + '/' + añoCaptura;
-    moment.locale('es');
-    let fechaCreacionMostrar = moment(fechaCreacion).format('LL');
-    $('#fechaPedido').html("Recibido el " + fechaCreacionMostrar);
-  });
+  let dia = fecha.substr(0, 2),
+    mes = fecha.substr(3, 2),
+    año = fecha.substr(6, 4),
+    fechaCreacion = `${mes}/${dia}/${año}`;
+  moment.locale('es');
+  let fechaCreacionMostrar = moment(fechaCreacion).format('LL');
+  $('#fechaPedido').html(`Recibido el ${fechaCreacionMostrar}`);
 }
 
 function llenarSelectTiendas() {
-  let idPedidoPadre = getQueryVariable('id');
-  let tiendasRef = db.ref('pedidoPadre/'+idPedidoPadre+'/pedidosHijos');
+  let pedidoPadre = JSON.parse(localStorage.getItem('datosPedidoPadre')),
+    pedidosHijos = pedidoPadre.pedidosHijos,
+    options = `<option value="Todas">Todas las tiendas</option>`,
+    optionsChecado = "";
 
-  tiendasRef.on('value', function(snapshot) {
-    let pedidosHijos = snapshot.val();
-    let options = `<option value="Todas">Todas las tiendas</option>`;
-    let optionsChecado = "";
-    for(pedidoHijo in pedidosHijos) {
-      options += `<option value="${pedidoHijo}">${pedidosHijos[pedidoHijo].encabezado.tienda}</option>`;
-      optionsChecado += `<option value="${pedidoHijo}">${pedidosHijos[pedidoHijo].encabezado.tienda}</option>`;
-    }
+  for (pedidoHijo in pedidosHijos) {
+    options += `<option value="${pedidoHijo}">${pedidosHijos[pedidoHijo].encabezado.tienda}</option>`;
+    optionsChecado += `<option value="${pedidoHijo}">${pedidosHijos[pedidoHijo].encabezado.tienda}</option>`;
+  }
 
-    $('#tiendas').html(options);
-    $('#tiendasChecado').html(optionsChecado);
-  });
+  $('#tiendas').html(options);
+  $('#tiendasChecado').html(optionsChecado);
 }
 
 llenarSelectTiendas();
 
-$('#tiendasChecado').change(function() {
+$('#tiendasChecado').change(function () {
   let tiendaChecada = $(this).val();
   mostrarUnaChecada(tiendaChecada);
 });
@@ -85,130 +90,171 @@ $('#tipoPedidoChecado').change(function () {
 });
 
 $('#aPedidosChecados').on('shown.bs.tab', function (e) {
-  $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+  $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
 });
 
 function mostrarPedidosChecados() {
-  let tabla = $(`#pedidosChecados`).DataTable({
-    destroy: true,
-    "lengthChange": false,
-    "scrollY": "200px",
-    "scrollCollapse": true,
-    "language": {
-      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
-    },
-    "ordering": false
-  });
-  let idPedidoPadre = getQueryVariable('id');
-  let rutaPedidos = db.ref(`pedidoPadre/${idPedidoPadre}`);
-  rutaPedidos.on('value', function(snapshot) {
-    let pedidosHijos = snapshot.val().pedidosHijos;
+  let pedidoPadre = JSON.parse(localStorage.getItem('datosPedidoPadre')),
+    pedidosHijos = pedidoPadre.pedidosHijos;
 
-    let filas = '';
-    tabla.clear();
-  
-    for(let pedidoHijo in pedidosHijos) {
-      if(pedidosHijos[pedidoHijo].encabezado.checado == true) {
-        filas += `<tr>
-                    <td>${pedidoHijo}</td>
-                    <td>${pedidosHijos[pedidoHijo].encabezado.tienda}</td>
-                    <td>${pedidosHijos[pedidoHijo].encabezado.cantidadProductos}</td>
-                    <td>${pedidosHijos[pedidoHijo].encabezado.totalKilos}</td>
-                    <td>${pedidosHijos[pedidoHijo].encabezado.totalPiezas}</td>
-                  </tr>`;
+  let datatable = $(`#pedidosChecados`).DataTable({
+    destroy: true,
+    lengthChange: false,
+    scrollY: "200px",
+    scrollCollapse: true,
+    ordering: false,
+    language: {
+      sProcessing: 'Procesando...',
+      sLengthMenu: 'Mostrar _MENU_ registros',
+      sZeroRecords: 'No se encontraron resultados',
+      sEmptyTable: 'Ningún dato disponible en esta tabla',
+      sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+      sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+      sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+      sInfoPostFix: '',
+      sSearch: 'Buscar',
+      sUrl: '',
+      sInfoThousands: ',',
+      sLoadingRecords: 'Cargando...',
+      oPaginate: {
+        sFirst: 'Primero',
+        sLast: 'Último',
+        sNext: 'Siguiente',
+        sPrevious: 'Anterior'
+      },
+      oAria: {
+        sSortAscending: ': Activar para ordenar la columna de manera ascendente',
+        sSortDescending: ': Activar para ordenar la columna de manera descendente'
       }
     }
-
-    //$('#pedidosChecados tbody').html(filas);
-    tabla.rows.add($(filas)).columns.adjust().draw();
   });
+
+  datatable.clear();
+  let filas = '';
+
+  for (let pedidoHijo in pedidosHijos) {
+    if (pedidosHijos[pedidoHijo].encabezado.checado == true) {
+      filas += `<tr>
+                  <td>${pedidoHijo}</td>
+                  <td>${pedidosHijos[pedidoHijo].encabezado.tienda}</td>
+                  <td>${pedidosHijos[pedidoHijo].encabezado.cantidadProductos}</td>
+                  <td>${pedidosHijos[pedidoHijo].encabezado.totalKilos}</td>
+                  <td>${pedidosHijos[pedidoHijo].encabezado.totalPiezas}</td>
+                </tr>`;
+    }
+  }
+
+  //$('#pedidosChecados tbody').html(filas);
+  datatable.rows.add($(filas)).columns.adjust().draw();
 }
 
 function mostrarTodas() {
-  let tabla = $(`#tablaPedidos`).DataTable();
-  tabla.destroy();
-  $('#tablaPedidos').empty();
+  let datos = JSON.parse(localStorage.getItem('datosPedidoPadre')),
+    productos = datos.productos;
 
-  tabla = $(`#tablaPedidos`).DataTable({
-    scrollY: "500px",
-    scrollCollapse: true,
-    // destroy: true,
-    language: {
-      url: "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json",
-      searchPlaceholder: "Buscar"
-    },
+  let datatable = $(`#tablaPedidos`).DataTable();
+  datatable.destroy();
+
+  $('#tablaPedidos').empty();
+  datatable = $('#tablaPedidos').DataTable({
+    pageLength: 10,
     ordering: false,
     paging: false,
     searching: false,
     dom: 'Bfrtip',
     buttons: ['excel'],
-    "columns": [
-      { "title": "Clave" },
-      { "title": "Descripción" },
-      { "title": "Total Pz" },
-      { "title": "Total Kg" },
-      { "title": "Precio unit." },
-      { "title": "Importe" }
-    ]
+    scrollY: "500px",
+    scrollCollapse: true,
+    columns: [
+      { title: "Clave" },
+      { title: "Descripción" },
+      { title: "Total Pz" },
+      { title: "Total Kg" },
+      { title: "Precio unit." },
+      { title: "Importe" }
+    ],
+    language: {
+      sProcessing: 'Procesando...',
+      sLengthMenu: 'Mostrar _MENU_ registros',
+      sZeroRecords: 'No se encontraron resultados',
+      sEmptyTable: 'Ningún dato disponible en esta tabla',
+      sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+      sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+      sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+      sInfoPostFix: '',
+      sSearch: 'Buscar',
+      sUrl: '',
+      sInfoThousands: ',',
+      sLoadingRecords: 'Cargando...',
+      oPaginate: {
+        sFirst: 'Primero',
+        sLast: 'Último',
+        sNext: 'Siguiente',
+        sPrevious: 'Anterior'
+      },
+      oAria: {
+        sSortAscending: ': Activar para ordenar la columna de manera ascendente',
+        sSortDescending: ': Activar para ordenar la columna de manera descendente'
+      }
+    }
   });
 
   $('#tableinfo').hide();
-  let idPedidoPadre = getQueryVariable('id');
-  let tiendasRef = db.ref(`pedidoPadre/${idPedidoPadre}/productos`);
-  tiendasRef.on('value', function(snapshot) {
-    let productos = snapshot.val();
+  datatable.clear();
 
-    let filas = "";
-    tabla.clear();
+  let filas = "",
+    TotalPz, TotalKg,
+    TotalPzs = 0, TotalKgs = 0, TotalPrecUni = 0, TotalImporte = 0;
 
-    let TotalPz, TotalKg;
-    let TotalPzs = 0, TotalKgs = 0, TotalPrecUni = 0, TotalImporte = 0;
-
-    for(producto in productos) {
-      let importe = 0;
-      if(productos[producto].unidad == "PZA") {
-        importe = productos[producto].totalPz * productos[producto].precioUnitario;
-      }
-      if(productos[producto].unidad == "KG") {
-        importe = productos[producto].totalKg * productos[producto].precioUnitario;
-      }
-      filas += `<tr>
-                  <td>${productos[producto].clave}</td>
-                  <td>${productos[producto].nombre}</td>
-                  <td class="text-right TotalPz">${productos[producto].totalPz}</td>
-                  <td class="text-right TotalKg">${productos[producto].totalKg.toFixed(2)}</td>
-                  <td class="text-right precioUnitario">$ ${productos[producto].precioUnitario.toFixed(2)}</td>
-                  <td class="text-right Importe">$ ${importe.toFixed(2)}</td>
-                </tr>`;
-      TotalPzs += productos[producto].totalPz;
-      TotalKgs += productos[producto].totalKg;
-      TotalPrecUni += productos[producto].precioUnitario;
-      TotalImporte += importe;
+  for (producto in productos) {
+    let importe = 0;
+    if (productos[producto].unidad == "PZA") {
+      importe = productos[producto].totalPz * productos[producto].precioUnitario;
+    }
+    if (productos[producto].unidad == "KG") {
+      importe = productos[producto].totalKg * productos[producto].precioUnitario;
     }
     filas += `<tr>
-                <td>&nbsp</td>
-                <td class="text-right"><strong>Totales</strong></td>
-                <td class="text-right"><strong>${TotalPzs}</strong></td>
-                <td class="text-right"><strong>${TotalKgs.toFixed(2)}</strong></td>
-                <td class="text-right"><strong>$ ${TotalPrecUni.toFixed(2)}</strong></td>
-                <td class="text-right"><strong>$ ${TotalImporte.toFixed(2)}</strong></td>
+                <td>${productos[producto].clave}</td>
+                <td>${productos[producto].nombre}</td>
+                <td class="text-right TotalPz">${productos[producto].totalPz}</td>
+                <td class="text-right TotalKg">${productos[producto].totalKg.toFixed(2)}</td>
+                <td class="text-right precioUnitario">$ ${productos[producto].precioUnitario.toFixed(2)}</td>
+                <td class="text-right Importe">$ ${importe.toFixed(2)}</td>
               </tr>`;
-    // $('#theadTablaPedidos').html('<tr><th>Clave</th><th>Descripción</th><th>Total Pz</th><th>Total Kg</th><th>Precio unit.</th><th>Importe</th></tr>');
-    // $('#tbodyTablaPedidos').html(filas);
+    TotalPzs += productos[producto].totalPz;
+    TotalKgs += productos[producto].totalKg;
+    TotalPrecUni += productos[producto].precioUnitario;
+    TotalImporte += importe;
+  }
+  filas += `<tr>
+              <td>&nbsp</td>
+              <td class="text-right"><strong>Totales</strong></td>
+              <td class="text-right"><strong>${TotalPzs}</strong></td>
+              <td class="text-right"><strong>${TotalKgs.toFixed(2)}</strong></td>
+              <td class="text-right"><strong>$ ${TotalPrecUni.toFixed(2)}</strong></td>
+              <td class="text-right"><strong>$ ${TotalImporte.toFixed(2)}</strong></td>
+            </tr>`;
+  // $('#theadTablaPedidos').html('<tr><th>Clave</th><th>Descripción</th><th>Total Pz</th><th>Total Kg</th><th>Precio unit.</th><th>Importe</th></tr>');
+  // $('#tbodyTablaPedidos').html(filas);
 
-    tabla.rows.add($(filas)).columns.adjust().draw();
-  });
+  //$('#tablaPedidos tbody').html(filas);
+
+  datatable.rows.add($(filas)).columns.adjust().draw();
 }
 
 function mostrarUna(idPedidoHijo) {
-  let tabla = $(`#tablaPedidos`).DataTable();
-  tabla.destroy();
-  $('#tablaPedidos').empty();
+  let pedidoPadre = JSON.parse(localStorage.getItem('datosPedidoPadre'));
+  let pedidoHijo = pedidoPadre.pedidosHijos[idPedidoHijo];
 
-  let idPedidoPadre = getQueryVariable('id');
+  let datatable = $(`#tablaPedidos`).DataTable();
+  datatable.destroy();
+  $('#tablaPedidos').empty();
+  datatable.clear();
+
   let tipoPedido = $('#tipoPedido').val();
   let pieza;
-  switch(tipoPedido) {
+  switch (tipoPedido) {
     case 'cambioFisico':
       pieza = "Cambio físico";
       break;
@@ -220,95 +266,109 @@ function mostrarUna(idPedidoHijo) {
       break;
   }
 
-  tabla = $(`#tablaPedidos`).DataTable({
-    scrollY: "500px",
-    scrollCollapse: true,
-    // destroy: true,
-    language: {
-      url: "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json",
-      searchPlaceholder: "Buscar"
-    },
+  datatable = $(`#tablaPedidos`).DataTable({
     ordering: false,
     paging: false,
     searching: false,
     dom: 'Bfrtip',
     buttons: ['excel'],
-    "columns": [
-      { "title": "Clave cliente" },
-      { "title": "Clave Xico" },
-      { "title": "Descripción" },
-      { "title": pieza },
-      { "title": "Kg" },
-      { "title": "Precio unit." }, 
-      { "title": "Importe" }
-    ]
+    scrollY: "500px",
+    scrollCollapse: true,
+    columns: [
+      { title: "Clave cliente" },
+      { title: "Clave Xico" },
+      { title: "Descripción" },
+      { title: pieza },
+      { title: "Kg" },
+      { title: "Precio unit." },
+      { title: "Importe" }
+    ],
+    language: {
+      sProcessing: 'Procesando...',
+      sLengthMenu: 'Mostrar _MENU_ registros',
+      sZeroRecords: 'No se encontraron resultados',
+      sEmptyTable: 'Ningún dato disponible en esta tabla',
+      sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+      sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+      sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+      sInfoPostFix: '',
+      sSearch: 'Buscar',
+      sUrl: '',
+      sInfoThousands: ',',
+      sLoadingRecords: 'Cargando...',
+      oPaginate: {
+        sFirst: 'Primero',
+        sLast: 'Último',
+        sNext: 'Siguiente',
+        sPrevious: 'Anterior'
+      },
+      oAria: {
+        sSortAscending: ': Activar para ordenar la columna de manera ascendente',
+        sSortDescending: ': Activar para ordenar la columna de manera descendente'
+      }
+    }
   });
 
-  let pedidoHijoRef = db.ref(`pedidoPadre/${idPedidoPadre}/pedidosHijos/${idPedidoHijo}`);
-  pedidoHijoRef.on('value', function(snapshot) {
-    let pedidoHijo = snapshot.val();
-    let detalles = pedidoHijo.detalle;
-    let encabezado = pedidoHijo.encabezado;
-    let tienda = encabezado.tienda;
-    let filas = "";
-    tabla.clear();
-    let totalPiezas = 0, totalKilos = 0, totalImporte = 0;
+  let detalles = pedidoHijo.detalle,
+    encabezado = pedidoHijo.encabezado,
+    tienda = encabezado.tienda,
+    filas = "",
+    totalPiezas = 0, totalKilos = 0, totalImporte = 0,
+    cantidadPiezas, cantidadKg;
 
-    let cantidadPiezas;
-    let cantidadKg;
-    for(let pedido in detalles) {
-      switch(tipoPedido) {
-        case 'cambioFisico':
-          cantidadPiezas = detalles[pedido].cambioFisicoPz;
-          cantidadKg = detalles[pedido].cambioFisicoKg;
-          break;
-        case 'degusPz':
-          cantidadPiezas = detalles[pedido].degusPz;
-          cantidadKg = detalles[pedido].degusKg;
-          break;
-        case 'pedidoPz':
-          cantidadPiezas = detalles[pedido].pedidoPz;
-          cantidadKg = detalles[pedido].pedidoKg;
-          break;
-      }
-      let importe = 0;
-      if(detalles[pedido].unidad == "PZA") {
-        importe = cantidadPiezas * detalles[pedido].precioUnitario;
-      }
-      if(detalles[pedido].unidad == "KG") {
-        importe = cantidadKg * detalles[pedido].precioUnitario;
-      }
-      totalPiezas += cantidadPiezas;
-      totalKilos += cantidadKg;
-      totalImporte += Number(importe.toFixed(2));
-      filas += `<tr>
-                  <td>${detalles[pedido].claveConsorcio}</td>
-                  <td>${detalles[pedido].clave}</td>
-                  <td>${detalles[pedido].nombre}</td>
-                  <td>${cantidadPiezas}</td>
-                  <td>${cantidadKg.toFixed(2)}</td>
-                  <td>$ ${detalles[pedido].precioUnitario.toFixed(2)}</td>
-                  <td>$ ${importe.toFixed(2)}</td>
-                </tr>`;
+  for (let producto in detalles) {
+    switch (tipoPedido) {
+      case 'cambioFisico':
+        cantidadPiezas = detalles[producto].cambioFisicoPz;
+        cantidadKg = detalles[producto].cambioFisicoKg;
+        break;
+      case 'degusPz':
+        cantidadPiezas = detalles[producto].degusPz;
+        cantidadKg = detalles[producto].degusKg;
+        break;
+      case 'pedidoPz':
+        cantidadPiezas = detalles[producto].pedidoPz;
+        cantidadKg = detalles[producto].pedidoKg;
+        break;
     }
-
-    let fechaImpresion = new moment().format("DD/MM/YYYY");
+    let importe = 0;
+    if (detalles[producto].unidad == "PZA") {
+      importe = cantidadPiezas * detalles[producto].precioUnitario;
+    }
+    if (detalles[producto].unidad == "KG") {
+      importe = cantidadKg * detalles[producto].precioUnitario;
+    }
+    totalPiezas += cantidadPiezas;
+    totalKilos += cantidadKg;
+    totalImporte += Number(importe.toFixed(2));
     filas += `<tr>
-                <td>Hola</td>
-                <td>Hola</td>
-                <td><strong>Total general</strong></td>
-                <td><strong>${totalPiezas}</strong></td>
-                <td><strong>${totalKilos.toFixed(2)}</strong></td>
-                <td></td>
-                <td><strong>$ ${totalImporte.toFixed(2)}</strong></td>
+                <td>${detalles[producto].claveConsorcio}</td>
+                <td>${detalles[producto].clave}</td>
+                <td>${detalles[producto].nombre}</td>
+                <td>${cantidadPiezas}</td>
+                <td>${cantidadKg.toFixed(2)}</td>
+                <td>$ ${detalles[producto].precioUnitario.toFixed(2)}</td>
+                <td>$ ${importe.toFixed(2)}</td>
               </tr>`;
-    // $('#theadTablaPedidos').html(`<tr><th>Clave Cliente</th><th>Clave Xico</th><th>Descripción</th><th>${pieza}</th><th>Kg</th><th>Precio unit.</th><th>Importe</th></tr>`);
-    // $('#tbodyTablaPedidos').html(row);
-    tabla.rows.add($(filas)).columns.adjust().draw();
+  }
 
-    $('#theadTableInfo').html(`<tr><th>O. C.:</th><th>Fecha: ${fechaImpresion}</th></tr>`);
-    $('#tbodyTableInfo').html(
-      `<tr>
+  let fechaImpresion = new moment().format("DD/MM/YYYY");
+  filas += `<tr>
+              <td>&nbsp</td>
+              <td>&nbsp</td>
+              <td><strong>Total general</strong></td>
+              <td><strong>${totalPiezas}</strong></td>
+              <td><strong>${totalKilos.toFixed(2)}</strong></td>
+              <td>&nbsp</td>
+              <td><strong>$ ${totalImporte.toFixed(2)}</strong></td>
+            </tr>`;
+  // $('#theadTablaPedidos').html(`<tr><th>Clave Cliente</th><th>Clave Xico</th><th>Descripción</th><th>${pieza}</th><th>Kg</th><th>Precio unit.</th><th>Importe</th></tr>`);
+  // $('#tbodyTablaPedidos').html(row);
+  datatable.rows.add($(filas)).columns.adjust().draw();
+
+  $('#theadTableInfo').html(`<tr><th>O. C.:</th><th>Fecha: ${fechaImpresion}</th></tr>`);
+  $('#tbodyTableInfo').html(
+    `<tr>
         <td>Núm. de orden:</td>
         <td><strong>${encabezado.numOrden}</strong></td>
       </tr>
@@ -320,68 +380,65 @@ function mostrarUna(idPedidoHijo) {
         <td>SUC:</td>
         <td>${tienda}</td>
       </tr>`);
-    $('#tableinfo').show();
+  $('#tableinfo').show();
 
-    $('.TotalPz').text(Tpz);
-    $('.TotalKg').text(Tkg);
-  });
+  $('.TotalPz').text(Tpz);
+  $('.TotalKg').text(Tkg);
 }
 
 function mostrarUnaChecada(idPedidoHijo) {
-  let idPedidoPadre = getQueryVariable('id');
-  let tipoPedido = $('#tipoPedidoChecado').val();
-  
-  let pedidoHijoRef = db.ref(`pedidoPadre/${idPedidoPadre}/pedidosHijos/${idPedidoHijo}`);
-  pedidoHijoRef.on('value', function(snapshot) {
-    let pedidoHijo = snapshot.val(),
-        detalles = pedidoHijo.detalle,
-        encabezado = pedidoHijo.encabezado,
-        tienda = encabezado.tienda,
-        filas = "",
-        totalPiezas = 0, totalKilos = 0, totalPzEnt = 0, totalKgEnt = 0;
+  let pedidoPadre = JSON.parse(localStorage.getItem('datosPedidoPadre')),
+    pedidoHijo = pedidoPadre.pedidosHijos[idPedidoHijo],
+    detalles = pedidoHijo.detalle,
+    encabezado = pedidoHijo.encabezado,
+    tienda = encabezado.tienda,
+    filas = "",
+    totalPiezas = 0, totalKilos = 0, totalPzEnt = 0, totalKgEnt = 0;
 
-    let cantidadPiezas,
-        cantidadKg,
-        cantidadPzEnt,
-        cantidadKgEnt;
-    for(let producto in detalles) {
-      let prod = detalles[producto];
-      switch(tipoPedido) {
-        case 'cambioFisico':
-          cantidadPiezas = prod.cambioFisicoPz;
-          cantidadKg = prod.cambioFisicoKg;
-          cantidadPzEnt = (prod.pzCambioFisicoEnt != undefined) ? prod.pzCambioFisicoEnt : 0;
-          cantidadKgEnt = (prod.kgCambioFisicoEnt != undefined) ? prod.kgCambioFisicoEnt : 0;
-          break;
-        case 'degusPz':
-          cantidadPiezas = prod.degusPz;
-          cantidadKg = prod.degusKg;
-          cantidadPzEnt = (prod.pzDegusEnt != undefined) ? prod.pzDegusEnt : 0;
-          cantidadKgEnt = (prod.kgDegusEnt != undefined) ? prod.kgDegusEnt : 0;
-          break;
-        case 'pedidoPz':
-          cantidadPiezas = prod.pedidoPz;
-          cantidadKg = prod.pedidoKg;
-          cantidadPzEnt = (prod.pzPedidoEnt != undefined) ? prod.pzPedidoEnt : 0;
-          cantidadKgEnt = (prod.kgPedidoEnt != undefined) ? prod.kgPedidoEnt : 0;
-          break;
-      }
-      totalPiezas += cantidadPiezas;
-      totalKilos += cantidadKg;
-      totalPzEnt += cantidadPzEnt;
-      totalKgEnt += cantidadKgEnt;
+  let tipoPedido = $('#tipoPedidoChecado').val(),
+    cantidadPiezas,
+    cantidadKg,
+    cantidadPzEnt,
+    cantidadKgEnt;
 
-      filas += `<tr>
-                  <td>${prod.clave}</td>
-                  <td>${prod.nombre}</td>
-                  <td>${cantidadPiezas}</td>
-                  <td>${cantidadKg.toFixed(2)}</td>
-                  <td>${cantidadPzEnt}</td>
-                  <td>${cantidadKgEnt.toFixed(2)}</td>
-                </tr>`;
+  for (let producto in detalles) {
+    let prod = detalles[producto];
+    switch (tipoPedido) {
+      case 'cambioFisico':
+        cantidadPiezas = prod.cambioFisicoPz;
+        cantidadKg = prod.cambioFisicoKg;
+        cantidadPzEnt = (prod.pzCambioFisicoEnt != undefined) ? prod.pzCambioFisicoEnt : 0;
+        cantidadKgEnt = (prod.kgCambioFisicoEnt != undefined) ? prod.kgCambioFisicoEnt : 0;
+        break;
+      case 'degusPz':
+        cantidadPiezas = prod.degusPz;
+        cantidadKg = prod.degusKg;
+        cantidadPzEnt = (prod.pzDegusEnt != undefined) ? prod.pzDegusEnt : 0;
+        cantidadKgEnt = (prod.kgDegusEnt != undefined) ? prod.kgDegusEnt : 0;
+        break;
+      case 'pedidoPz':
+        cantidadPiezas = prod.pedidoPz;
+        cantidadKg = prod.pedidoKg;
+        cantidadPzEnt = (prod.pzPedidoEnt != undefined) ? prod.pzPedidoEnt : 0;
+        cantidadKgEnt = (prod.kgPedidoEnt != undefined) ? prod.kgPedidoEnt : 0;
+        break;
     }
+    totalPiezas += cantidadPiezas;
+    totalKilos += cantidadKg;
+    totalPzEnt += cantidadPzEnt;
+    totalKgEnt += cantidadKgEnt;
 
     filas += `<tr>
+                <td>${prod.clave}</td>
+                <td>${prod.nombre}</td>
+                <td>${cantidadPiezas}</td>
+                <td>${cantidadKg.toFixed(2)}</td>
+                <td>${cantidadPzEnt}</td>
+                <td>${cantidadKgEnt.toFixed(2)}</td>
+              </tr>`;
+  }
+
+  filas += `<tr>
               <td></td>
               <td><strong>Total general</strong></td>
               <td><strong>${totalPiezas}</strong></td>
@@ -389,24 +446,13 @@ function mostrarUnaChecada(idPedidoHijo) {
               <td><strong>${totalPzEnt}</strong></td>
               <td><strong>${totalKgEnt}</strong></td> 
             </tr>`;
-    $('#tablaPedidosChecados tbody').html(filas);
-  });
+  $('#tablaPedidosChecados tbody').html(filas);
 }
 
-$(document).ready(function() {
-  mostrarTodas();
-  //$('#Imprimir').attr('disabled', true);
-  mostrarDatos();
-
-  $('.loader').hide();
-  $('#panel').show();
-  $('[data-toggle="tooltip"]').tooltip();
-});
-
-$('#tiendas').change(function() {
+$('#tiendas').change(function () {
   let tienda = $(this).val();
 
-  if(tienda == "Todas") {
+  if (tienda == "Todas") {
     mostrarTodas();
     //$('#Imprimir').attr('disabled', true);
   }
@@ -418,31 +464,31 @@ $('#tiendas').change(function() {
 
 function mostrarNotificaciones() {
   let usuario = auth.currentUser.uid;
-  let notificacionesRef = db.ref('notificaciones/almacen/'+usuario+'/lista');
-  notificacionesRef.on('value', function(snapshot) {
+  let notificacionesRef = db.ref('notificaciones/almacen/' + usuario + '/lista');
+  notificacionesRef.on('value', function (snapshot) {
     let lista = snapshot.val();
     let lis = "";
 
     let arrayNotificaciones = [];
-    for(let notificacion in lista) {
+    for (let notificacion in lista) {
       arrayNotificaciones.push(lista[notificacion]);
     }
 
     arrayNotificaciones.reverse();
 
-    for(let i in arrayNotificaciones) {
+    for (let i in arrayNotificaciones) {
       let date = arrayNotificaciones[i].fecha;
       moment.locale('es');
       let fecha = moment(date, "MMMM DD YYYY, HH:mm:ss").fromNow();
 
       lis += '<li>' +
-               '<a>' +
-                '<div>' +
-                  '<i class="fa fa-comment fa-fw"></i> ' + arrayNotificaciones[i].mensaje +
-                    '<span class="pull-right text-muted small">'+fecha+'</span>' +
-                '</div>' +
-               '</a>' +
-             '</li>';
+        '<a>' +
+        '<div>' +
+        '<i class="fa fa-comment fa-fw"></i> ' + arrayNotificaciones[i].mensaje +
+        '<span class="pull-right text-muted small">' + fecha + '</span>' +
+        '</div>' +
+        '</a>' +
+        '</li>';
     }
 
     $('#contenedorNotificaciones').empty().append('<li class="dropdown-header">Notificaciones</li><li class="divider"></li>');
@@ -452,11 +498,11 @@ function mostrarNotificaciones() {
 
 function mostrarContador() {
   let uid = auth.currentUser.uid;
-  let notificacionesRef = db.ref('notificaciones/almacen/'+uid);
-  notificacionesRef.on('value', function(snapshot) {
+  let notificacionesRef = db.ref('notificaciones/almacen/' + uid);
+  notificacionesRef.on('value', function (snapshot) {
     let cont = snapshot.val().cont;
 
-    if(cont > 0) {
+    if (cont > 0) {
       $('#spanNotificaciones').html(cont).show();
     }
     else {
@@ -467,11 +513,11 @@ function mostrarContador() {
 
 function verNotificaciones() {
   let uid = auth.currentUser.uid;
-  let notificacionesRef = db.ref('notificaciones/almacen/'+uid);
-  notificacionesRef.update({cont: 0});
+  let notificacionesRef = db.ref('notificaciones/almacen/' + uid);
+  notificacionesRef.update({ cont: 0 });
 }
 
-$('#campana').click(function() {
+$('#campana').click(function () {
   verNotificaciones();
 });
 
@@ -545,7 +591,7 @@ function generarPDF() {
     styles: {
       overflow: 'linebreak'
     },
-    margin: {top: 75}
+    margin: { top: 75 }
   });
 
   pdf.autoTable(res.columns, res.data, {
@@ -556,7 +602,7 @@ function generarPDF() {
       overflow: 'linebreak'
     },
     theme: 'grid',
-    margin: {top: 150}
+    margin: { top: 150 }
   });
 
   pdf.autoTable(res3.columns, res3.data, {
@@ -568,7 +614,7 @@ function generarPDF() {
       fillColor: [255, 255, 255],
       textColor: [0, 0, 0],
     },
-    margin: {top: 150},
+    margin: { top: 150 },
     theme: 'grid', // 'striped', 'grid',
     tableLineColor: [255, 255, 255]
   });
