@@ -43,8 +43,10 @@ function getQueryVariable(variable) {
 }
 
 function mostrarDatos() {
-  let datos = JSON.parse(localStorage.getItem('datosPedidoPadre')),
-    fecha = datos.fechaCreacionPadre;
+  let idPedidoPadre = getQueryVariable('id');
+  let pedidosPadre = JSON.parse(localStorage.getItem('pedidosPadre'));
+  let datos = pedidosPadre[idPedidoPadre],
+      fecha = datos.fechaCreacionPadre;
 
   $('#numPedido').html(`Pedido: ${datos.clave}`);
 
@@ -58,10 +60,12 @@ function mostrarDatos() {
 }
 
 function llenarSelectTiendas() {
-  let pedidoPadre = JSON.parse(localStorage.getItem('datosPedidoPadre')),
-    pedidosHijos = pedidoPadre.pedidosHijos,
-    options = `<option value="Todas">Todas las tiendas</option>`,
-    optionsChecado = "";
+  let idPedidoPadre = getQueryVariable('id');
+  let pedidosPadre = JSON.parse(localStorage.getItem('pedidosPadre'));
+  let pedidoPadre = pedidosPadre[idPedidoPadre],
+      pedidosHijos = pedidoPadre.pedidosHijos,
+      options = `<option value="Todas">Todas las tiendas</option>`,
+      optionsChecado = "";
 
   for (pedidoHijo in pedidosHijos) {
     options += `<option value="${pedidoHijo}">${pedidosHijos[pedidoHijo].encabezado.tienda}</option>`;
@@ -94,8 +98,10 @@ $('#aPedidosChecados').on('shown.bs.tab', function (e) {
 });
 
 function mostrarPedidosChecados() {
-  let pedidoPadre = JSON.parse(localStorage.getItem('datosPedidoPadre')),
-    pedidosHijos = pedidoPadre.pedidosHijos;
+  let idPedidoPadre = getQueryVariable('id');
+  let pedidosPadre = JSON.parse(localStorage.getItem('pedidosPadre'));
+  let pedidoPadre = pedidosPadre[idPedidoPadre],
+      pedidosHijos = pedidoPadre.pedidosHijos;
 
   let datatable = $(`#pedidosChecados`).DataTable({
     destroy: true,
@@ -150,7 +156,7 @@ function mostrarPedidosChecados() {
 
 function mostrarTodas() {
   let datos = JSON.parse(localStorage.getItem('datosPedidoPadre')),
-    productos = datos.productos;
+      productos = datos.productos;
 
   let datatable = $(`#tablaPedidos`).DataTable();
   datatable.destroy();
@@ -244,7 +250,9 @@ function mostrarTodas() {
 }
 
 function mostrarUna(idPedidoHijo) {
-  let pedidoPadre = JSON.parse(localStorage.getItem('datosPedidoPadre'));
+  let idPedidoPadre = getQueryVariable('id');
+  let pedidosPadre = JSON.parse(localStorage.getItem('pedidosPadre'));
+  let pedidoPadre = pedidosPadre[idPedidoPadre];
   let pedidoHijo = pedidoPadre.pedidosHijos[idPedidoHijo];
 
   let datatable = $(`#tablaPedidos`).DataTable();
@@ -387,19 +395,21 @@ function mostrarUna(idPedidoHijo) {
 }
 
 function mostrarUnaChecada(idPedidoHijo) {
-  let pedidoPadre = JSON.parse(localStorage.getItem('datosPedidoPadre')),
-    pedidoHijo = pedidoPadre.pedidosHijos[idPedidoHijo],
-    detalles = pedidoHijo.detalle,
-    encabezado = pedidoHijo.encabezado,
-    tienda = encabezado.tienda,
-    filas = "",
-    totalPiezas = 0, totalKilos = 0, totalPzEnt = 0, totalKgEnt = 0;
+  let idPedidoPadre = getQueryVariable('id');
+  let pedidosPadre = JSON.parse(localStorage.getItem('pedidosPadre'));
+  let pedidoPadre = pedidosPadre[idPedidoPadre],
+      pedidoHijo = pedidoPadre.pedidosHijos[idPedidoHijo],
+      detalles = pedidoHijo.detalle,
+      encabezado = pedidoHijo.encabezado,
+      tienda = encabezado.tienda,
+      filas = "",
+      totalPiezas = 0, totalKilos = 0, totalPzEnt = 0, totalKgEnt = 0;
 
   let tipoPedido = $('#tipoPedidoChecado').val(),
-    cantidadPiezas,
-    cantidadKg,
-    cantidadPzEnt,
-    cantidadKgEnt;
+      cantidadPiezas,
+      cantidadKg,
+      cantidadPzEnt,
+      cantidadKgEnt;
 
   for (let producto in detalles) {
     let prod = detalles[producto];
@@ -467,7 +477,7 @@ function mostrarNotificaciones() {
   let notificacionesRef = db.ref('notificaciones/almacen/' + usuario + '/lista');
   notificacionesRef.on('value', function (snapshot) {
     let lista = snapshot.val();
-    let lis = "";
+    let lis = '<li class="dropdown-header">Notificaciones</li><li class="divider"></li>';
 
     let arrayNotificaciones = [];
     for (let notificacion in lista) {
@@ -481,24 +491,23 @@ function mostrarNotificaciones() {
       moment.locale('es');
       let fecha = moment(date, "MMMM DD YYYY, HH:mm:ss").fromNow();
 
-      lis += '<li>' +
-        '<a>' +
-        '<div>' +
-        '<i class="fa fa-comment fa-fw"></i> ' + arrayNotificaciones[i].mensaje +
-        '<span class="pull-right text-muted small">' + fecha + '</span>' +
-        '</div>' +
-        '</a>' +
-        '</li>';
+      lis += `<li>
+                <a>
+                  <div>
+                  <i class="fa fa-comment fa-fw"></i>${arrayNotificaciones[i].mensaje}
+                  <span class="pull-right text-muted small">${fecha}</span>
+                  </div>
+                </a>
+              </li>`;
     }
 
-    $('#contenedorNotificaciones').empty().append('<li class="dropdown-header">Notificaciones</li><li class="divider"></li>');
-    $('#contenedorNotificaciones').append(lis);
+    $('#contenedorNotificaciones').html(lis);
   });
 }
 
 function mostrarContador() {
   let uid = auth.currentUser.uid;
-  let notificacionesRef = db.ref('notificaciones/almacen/' + uid);
+  let notificacionesRef = db.ref(`notificaciones/almacen/${uid}`);
   notificacionesRef.on('value', function (snapshot) {
     let cont = snapshot.val().cont;
 
@@ -513,7 +522,7 @@ function mostrarContador() {
 
 function verNotificaciones() {
   let uid = auth.currentUser.uid;
-  let notificacionesRef = db.ref('notificaciones/almacen/' + uid);
+  let notificacionesRef = db.ref(`notificaciones/almacen/${uid}`);
   notificacionesRef.update({ cont: 0 });
 }
 

@@ -8,15 +8,6 @@ function logout() {
 $(document).ready(function() {
   mostrarDatos();
   $('[data-toggle="tooltip"]').tooltip();
-
-
-  let idPedido = getQueryVariable('id');
-  db.ref(`pedidoEntrada/${idPedido}`).on('value', (pedido) => {
-    let datos = pedido.val();
-    localStorage.setItem('pedido', JSON.stringify(datos));
-
-    mostrarDatos();
-  });
 });
 
 function getQueryVariable(variable) {
@@ -51,7 +42,9 @@ $('#btnPerfil').click( function(e) {
 haySesion();
 
 function mostrarDatos() {
-  let datos = JSON.parse(localStorage.getItem('pedido')),
+  let idPedido = getQueryVariable('id');
+  let historialPedidos = JSON.parse(localStorage.getItem('historialPedidos'));
+  let datos = historialPedidos[idPedido],
       encabezado = datos.encabezado,
       detalle = datos.detalle,
       fecha = encabezado.fechaCaptura;
@@ -153,7 +146,7 @@ function mostrarDatos() {
 
 function mostrarNotificaciones() {
   let usuario = auth.currentUser.uid;
-  let notificacionesRef = db.ref('notificaciones/almacen/'+usuario+'/lista');
+  let notificacionesRef = db.ref(`notificaciones/almacen/${usuario}/lista`);
   notificacionesRef.on('value', function(snapshot) {
     let lista = snapshot.val();
     let lis = '<li class="dropdown-header">Notificaciones</li><li class="divider"></li>';

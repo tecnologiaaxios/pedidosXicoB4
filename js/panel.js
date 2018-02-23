@@ -23,7 +23,8 @@ $(document).ready(function () {
   });
 
   db.ref('pedidoEntrada').on('value', (pedidos) => {
-    let arrayPedidos = [];
+    let datos = pedidos.val();
+    let arrayPedidos = [], arrayHistorialPedidos = [];
 
     pedidos.forEach((pedido) => {
       let agrupado = pedido.val().encabezado.agrupado;
@@ -34,12 +35,22 @@ $(document).ready(function () {
           ...pedido.val()
         });
       }
-    })
+      if(agrupado) {
+        arrayHistorialPedidos.unshift({
+          id: pedido.key,
+          ...pedido.val()
+        });
+      }
+    });
     localStorage.setItem('pedidos', JSON.stringify(arrayPedidos));
+    localStorage.setItem('pedidosEntrada', JSON.stringify(datos));
+    localStorage.setItem('historialPedidos', JSON.stringify(arrayHistorialPedidos));
     mostrarPedidos();
+    mostrarHistorialPedidos();
   });
 
   db.ref('pedidoPadre').on('value', (pedidos) => {
+    let pedidosPadre = pedidos.val();
     let arrayPedidosEnProceso = [], arrayPedidosFinalizados = [];
     pedidos.forEach((pedido) => {
       let estado = pedido.val().estado;
@@ -58,24 +69,9 @@ $(document).ready(function () {
     });
     localStorage.setItem('pedidosEnProceso', JSON.stringify(arrayPedidosEnProceso));
     localStorage.setItem('pedidosFinalizados', JSON.stringify(arrayPedidosFinalizados));
+    localStorage.setItem('pedidosPadre', JSON.stringify(pedidosPadre));
     mostrarPedidosEnProceso();
     mostrarPedidosFinalizados();
-  });
-
-  db.ref('historialPedidosEntrada').on('value', (pedidos) => {
-    let arrayPedidos = [];
-    pedidos.forEach((pedido) => {
-      let agrupado = pedido.val().encabezado.agrupado;
-      if(agrupado) {
-        arrayPedidos.unshift({
-          id: pedido.key,
-          ...pedido.val()
-        });
-      }
-    });
-    
-    localStorage.setItem('historialPedidos', JSON.stringify(arrayPedidos));
-    mostrarHistorialPedidos();
   });
 });
 
@@ -99,13 +95,13 @@ function haySesion() {
 
 haySesion();
 
-function guardarDatosPedido(idPedido) {
+/* function guardarDatosPedido(idPedido) {
   db.ref(`pedidoEntrada/${idPedido}`).on('value', (pedido) => {
     let datos = pedido.val();
     localStorage.setItem('datosPedido', JSON.stringify(datos));
     $(location).attr("href", `pedido.html?id=${idPedido}`);
   });
-}
+} */
 
 function mostrarPedidos() {
   let pedidos = JSON.parse(localStorage.getItem('pedidos'));
@@ -115,7 +111,8 @@ function mostrarPedidos() {
 
   let datatable = $('#tablaPedidos').DataTable({
     data: pedidos,
-    pageLength: 10,
+    pageLength: 25,
+    lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
     columns: [
       { data: 'id' },
       { data: 'encabezado.clave', className: 'text-center' },
@@ -133,7 +130,7 @@ function mostrarPedidos() {
       { data: 'id', 
         className: 'text-center', 
         render: (id) => { 
-          return `<button type="button" onclick="guardarDatosPedido('${id}')" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-eye-open"></span> Ver más</button>`
+          return `<a type="button" href="pedido.html?id=${id}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a>`
         } 
       },
       { data: 'id',
@@ -146,6 +143,7 @@ function mostrarPedidos() {
     destroy: true,
     ordering: false,
     language: {
+      searchPlaceholder: "Buscar pedido",
       sProcessing: 'Procesando...',
       sLengthMenu: 'Mostrar _MENU_ registros',
       sZeroRecords: 'No se encontraron resultados',
@@ -306,14 +304,6 @@ function guardarRuta(idPedidoPadre) {
   });
 }
 
-function guardarDatosPedidoPadre(idPedidoPadre) {
-  db.ref(`pedidoPadre/${idPedidoPadre}`).on('value', (pedidoPadre) => {
-    let datos = pedidoPadre.val();
-    localStorage.setItem('datosPedidoPadre', JSON.stringify(datos));
-    $(location).attr("href", `pedidoPadre.html?id=${idPedidoPadre}`);
-  });
-}
-
 function mostrarPedidosEnProceso() {
   let pedidos = JSON.parse(localStorage.getItem('pedidosEnProceso'));
   
@@ -377,7 +367,7 @@ function mostrarPedidosEnProceso() {
       { data: 'id',
         className: 'text-center', 
         render: (id) => {
-          return `<a class="btn btn-default btn-sm" onclick="guardarDatosPedidoPadre('${id}')"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a>`
+          return `<a class="btn btn-default btn-sm" href="pedidoPadre.html?id=${id}"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a>`
         }
       },
       { data: 'id',
@@ -402,6 +392,7 @@ function mostrarPedidosEnProceso() {
     destroy: true,
     ordering: false,
     language: {
+      searchPlaceholder: "Buscar pedido",
       sProcessing: 'Procesando...',
       sLengthMenu: 'Mostrar _MENU_ registros',
       sZeroRecords: 'No se encontraron resultados',

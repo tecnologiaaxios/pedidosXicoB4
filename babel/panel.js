@@ -25,7 +25,9 @@ $(document).ready(function () {
   });
 
   db.ref('pedidoEntrada').on('value', function (pedidos) {
-    var arrayPedidos = [];
+    var datos = pedidos.val();
+    var arrayPedidos = [],
+        arrayHistorialPedidos = [];
 
     pedidos.forEach(function (pedido) {
       var agrupado = pedido.val().encabezado.agrupado;
@@ -35,12 +37,21 @@ $(document).ready(function () {
           id: pedido.key
         }, pedido.val()));
       }
+      if (agrupado) {
+        arrayHistorialPedidos.unshift(_extends({
+          id: pedido.key
+        }, pedido.val()));
+      }
     });
     localStorage.setItem('pedidos', JSON.stringify(arrayPedidos));
+    localStorage.setItem('pedidosEntrada', JSON.stringify(datos));
+    localStorage.setItem('historialPedidos', JSON.stringify(arrayHistorialPedidos));
     mostrarPedidos();
+    mostrarHistorialPedidos();
   });
 
   db.ref('pedidoPadre').on('value', function (pedidos) {
+    var pedidosPadre = pedidos.val();
     var arrayPedidosEnProceso = [],
         arrayPedidosFinalizados = [];
     pedidos.forEach(function (pedido) {
@@ -58,23 +69,9 @@ $(document).ready(function () {
     });
     localStorage.setItem('pedidosEnProceso', JSON.stringify(arrayPedidosEnProceso));
     localStorage.setItem('pedidosFinalizados', JSON.stringify(arrayPedidosFinalizados));
+    localStorage.setItem('pedidosPadre', JSON.stringify(pedidosPadre));
     mostrarPedidosEnProceso();
     mostrarPedidosFinalizados();
-  });
-
-  db.ref('historialPedidosEntrada').on('value', function (pedidos) {
-    var arrayPedidos = [];
-    pedidos.forEach(function (pedido) {
-      var agrupado = pedido.val().encabezado.agrupado;
-      if (agrupado) {
-        arrayPedidos.unshift(_extends({
-          id: pedido.key
-        }, pedido.val()));
-      }
-    });
-
-    localStorage.setItem('historialPedidos', JSON.stringify(arrayPedidos));
-    mostrarHistorialPedidos();
   });
 });
 
@@ -97,13 +94,13 @@ function haySesion() {
 
 haySesion();
 
-function guardarDatosPedido(idPedido) {
-  db.ref("pedidoEntrada/" + idPedido).on('value', function (pedido) {
-    var datos = pedido.val();
+/* function guardarDatosPedido(idPedido) {
+  db.ref(`pedidoEntrada/${idPedido}`).on('value', (pedido) => {
+    let datos = pedido.val();
     localStorage.setItem('datosPedido', JSON.stringify(datos));
-    $(location).attr("href", "pedido.html?id=" + idPedido);
+    $(location).attr("href", `pedido.html?id=${idPedido}`);
   });
-}
+} */
 
 function mostrarPedidos() {
   var pedidos = JSON.parse(localStorage.getItem('pedidos'));
@@ -113,7 +110,8 @@ function mostrarPedidos() {
 
   var datatable = $('#tablaPedidos').DataTable({
     data: pedidos,
-    pageLength: 10,
+    pageLength: 25,
+    lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
     columns: [{ data: 'id' }, { data: 'encabezado.clave', className: 'text-center' }, { data: 'encabezado.numOrden' }, {
       data: 'encabezado.fechaCaptura',
       render: function render(fechaCaptura) {
@@ -123,7 +121,7 @@ function mostrarPedidos() {
     }, { data: 'encabezado.tienda' }, { data: 'encabezado.ruta', className: 'text-center' }, { className: 'text-center', defaultContent: '<span style="background-color:#d50000; color:#FFFFFF;" class="badge">Pendiente</span>' }, { data: 'id',
       className: 'text-center',
       render: function render(id) {
-        return "<button type=\"button\" onclick=\"guardarDatosPedido('" + id + "')\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</button>";
+        return "<a type=\"button\" href=\"pedido.html?id=" + id + "\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a>";
       }
     }, { data: 'id',
       className: 'text-center',
@@ -132,9 +130,9 @@ function mostrarPedidos() {
       }
     }],
     destroy: true,
-<<<<<<< HEAD
     ordering: false,
     language: {
+      searchPlaceholder: "Buscar pedido",
       sProcessing: 'Procesando...',
       sLengthMenu: 'Mostrar _MENU_ registros',
       sZeroRecords: 'No se encontraron resultados',
@@ -157,62 +155,6 @@ function mostrarPedidos() {
         sSortAscending: ': Activar para ordenar la columna de manera ascendente',
         sSortDescending: ': Activar para ordenar la columna de manera descendente'
       }
-=======
-    "language": {
-      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json",
-      "searchPlaceholder": "Buscar"
-    },
-    "ordering": false
-  });
-
-  var pedidosEntradaRef = db.ref('pedidoEntrada/');
-  pedidosEntradaRef.on('value', function (snapshot) {
-    var pedidos = snapshot.val();
-    tabla.clear();
-    var filas = "";
-    var arreglo = [],
-        arregloID = [];
-    for (var pedido in pedidos) {
-      var agrupado = pedidos[pedido].encabezado.agrupado;
-      console.log(agrupado);
-      if (typeof agrupado != "undefined" && agrupado == true) {
-        console.warn("TIGREEEE!");
-        arreglo.unshift(pedidos[pedido]);
-        arregloID.unshift(pedido);
-      }
-    }
-    // arreglo.reverse();
-    // arregloID.reverse();
-
-    for (var _pedido2 in arreglo) {
-      var estado = "";
-      switch (arreglo[_pedido2].encabezado.estado) {
-        case "Pendiente":
-          //estado = `<td class="no-padding text-center"><i style="color:#d50000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
-          estado = "<td class=\"no-padding text-center\"><span style=\"background-color:#d50000; color:#FFFFFF;\" class=\"badge\">Pendiente</span></td>";
-          break;
-        case "En proceso":
-          estado = "<td class=\"no-padding text-center\"><i style=\"color:#FF8000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;\" class=\"material-icons center\">fiber_manual_record</i></td>";
-          break;
-        case "Lista":
-          estado = "<td class=\"no-padding text-center\"><i style=\"color:#70E707; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;\" class=\"material-icons center\">fiber_manual_record</i></td>";
-          break;
-      }
-
-      var encabezado = arreglo[_pedido2].encabezado;
-
-      var diaCaptura = encabezado.fechaCaptura.substr(0, 2);
-      var mesCaptura = encabezado.fechaCaptura.substr(3, 2);
-      var añoCaptura = encabezado.fechaCaptura.substr(6, 4);
-      var fechaCaptura = mesCaptura + "/" + diaCaptura + "/" + añoCaptura;
-      moment.locale('es');
-      var fechaCapturaMostrar = moment(fechaCaptura).format('LL');
-
-      var numeroOrden = encabezado.numOrden || "";
-      // ${(encabezado.numOrden != undefined) ? encabezado.numOrden : "" }
-
-      filas += "<tr style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td>" + arregloID[_pedido2] + "</td>\n                  <td>" + encabezado.clave + "</td>\n                  <td>" + numeroOrden + "</td>\n                  <td>" + fechaCapturaMostrar + "</td>\n                  <td>" + encabezado.tienda + "</td>\n                  <td>" + encabezado.ruta + "</td>\n                  <td class=\"no-padding text-center\"><a href=\"pedido.html?id=" + arregloID[_pedido2] + "\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a></td>\n                  " + estado + "\n                  <td class=\"text-center\"><button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=\"abrirModalEliminarPedido('" + arregloID[_pedido2] + "')\"><i class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></i></button></td>\n                </tr>";
->>>>>>> 020008782e6346a2d5f087ff0f89f92492a9c764
     }
   });
 
@@ -241,7 +183,6 @@ function eliminarOrden(idOrden) {
 }
 
 function mostrarHistorialPedidos() {
-<<<<<<< HEAD
   var pedidos = JSON.parse(localStorage.getItem('historialPedidos'));
 
   $('#loaderPedidos').remove();
@@ -320,53 +261,6 @@ function mostrarHistorialPedidos() {
       }
     });
   }
-=======
-  var tabla = $("#tablaHistorialPedidos").DataTable({
-    destroy: true,
-    // "scrollY": "300px",
-    // "scrollCollapse": true,
-    "language": {
-      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
-    },
-    "searching": false,
-    "ordering": false
-  });
-
-  var historialPedidosRef = db.ref('historialPedidosEntrada/');
-  historialPedidosRef.on('value', function (snapshot) {
-    var pedidos = snapshot.val();
-    tabla.clear();
-    var filas = "";
-    var arreglo = [],
-        arregloID = [];
-    for (var pedido in pedidos) {
-      if (pedidos[pedido].encabezado.agrupado) {
-        arreglo.push(pedidos[pedido]);
-        arregloID.push(pedido);
-      }
-    }
-    arreglo.reverse();
-    arregloID.reverse();
-
-    for (var _pedido3 in arreglo) {
-
-      var encabezado = arreglo[_pedido3].encabezado;
-
-      var diaCaptura = encabezado.fechaCaptura.substr(0, 2);
-      var mesCaptura = encabezado.fechaCaptura.substr(3, 2);
-      var añoCaptura = encabezado.fechaCaptura.substr(6, 4);
-      var fechaCaptura = mesCaptura + "/" + diaCaptura + "/" + añoCaptura;
-      moment.locale('es');
-      var fechaCapturaMostrar = moment(fechaCaptura).format('LL');
-
-      filas += "<tr style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td>" + arregloID[_pedido3] + "</td>\n                  <td>" + (encabezado.numOrden != undefined ? encabezado.numOrden : "") + "</td>\n                  <td>" + fechaCapturaMostrar + "</td>\n                  <td>" + encabezado.tienda + "</td>\n                  <td>" + encabezado.ruta + "</td>\n                  <td class=\"no-padding text-center\"><a href=\"pedidoHistorial.html?id=" + arregloID[_pedido3] + "\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a></td>\n                </tr>";
-    }
-
-    $('#loaderPedidos').remove();
-    $('#tablaPedidos').removeClass('hidden');
-    tabla.rows.add($(filas)).columns.adjust().draw();
-  });
->>>>>>> 020008782e6346a2d5f087ff0f89f92492a9c764
 }
 
 function guardarFechaRuta(idPedidoPadre) {
@@ -383,14 +277,6 @@ function guardarRuta(idPedidoPadre) {
   console.log(idPedidoPadre);
   pedidoPadreRef.update({
     ruta: nuevaRuta
-  });
-}
-
-function guardarDatosPedidoPadre(idPedidoPadre) {
-  db.ref("pedidoPadre/" + idPedidoPadre).on('value', function (pedidoPadre) {
-    var datos = pedidoPadre.val();
-    localStorage.setItem('datosPedidoPadre', JSON.stringify(datos));
-    $(location).attr("href", "pedidoPadre.html?id=" + idPedidoPadre);
   });
 }
 
@@ -447,7 +333,7 @@ function mostrarPedidosEnProceso() {
     }, { className: 'text-center', defaultContent: '<span style="background-color:#FFCC25; color:#000000;" class="badge">En proceso</span>' }, { data: 'id',
       className: 'text-center',
       render: function render(id) {
-        return "<a class=\"btn btn-default btn-sm\" onclick=\"guardarDatosPedidoPadre('" + id + "')\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a>";
+        return "<a class=\"btn btn-default btn-sm\" href=\"pedidoPadre.html?id=" + id + "\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a>";
       }
     }, { data: 'id',
       className: 'text-center',
@@ -468,6 +354,7 @@ function mostrarPedidosEnProceso() {
     destroy: true,
     ordering: false,
     language: {
+      searchPlaceholder: "Buscar pedido",
       sProcessing: 'Procesando...',
       sLengthMenu: 'Mostrar _MENU_ registros',
       sZeroRecords: 'No se encontraron resultados',
@@ -979,7 +866,6 @@ function generarPedidoPadre() {
               // let regionRef = db.ref(`regiones/${region}/${idTienda}/historialPedidos`);
               // regionRef.push(pedidos[pedido]);
 
-<<<<<<< HEAD
               //pedidoEntradaRef.child(claves[pedido]).remove();
               pedidoEntradaRef.child(claves[pedido]).child("encabezado").update({
                 agrupado: true
@@ -989,10 +875,6 @@ function generarPedidoPadre() {
                 //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
                 var rutaHistorialPedidosEntrada = db.ref("historialPedidosEntrada/" + claves[pedido] + "/");
                 rutaHistorialPedidosEntrada.set();
-=======
-              pedidoEntradaRef.child(claves[pedido]).update({
-                agrupado: true
->>>>>>> 020008782e6346a2d5f087ff0f89f92492a9c764
               });
             });
           });
@@ -1068,7 +950,6 @@ function generarPedidoPadre() {
               // let regionRef = db.ref(`regiones/${region}/${idTienda}/historialPedidos`);
               // regionRef.push(pedidos[pedido]);
 
-<<<<<<< HEAD
               pedidoEntradaRef.child(claves[pedido]).child("encabezado").update({
                 agrupado: true
               }).then(function () {
@@ -1076,10 +957,6 @@ function generarPedidoPadre() {
                 //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
                 var rutaHistorialPedidosEntrada = db.ref("historialPedidosEntrada/" + claves[pedido] + "/");
                 rutaHistorialPedidosEntrada.set(pedidos[pedido]);
-=======
-              pedidoEntradaRef.child(claves[pedido]).update({
-                agrupado: true
->>>>>>> 020008782e6346a2d5f087ff0f89f92492a9c764
               });
             });
           });

@@ -41,7 +41,10 @@ $('#btnPerfil').click( function(e) {
 });
 
 function mostrarDatos() {
-  let datos = JSON.parse(localStorage.getItem('datosPedido')),
+  let idPedido = getQueryVariable('id');
+  let pedidos = JSON.parse(localStorage.getItem('pedidosEntrada'));
+
+  let datos = pedidos[idPedido],
       encabezado = datos.encabezado,
       detalle = datos.detalle,
       fecha = encabezado.fechaCaptura;
@@ -50,8 +53,8 @@ function mostrarDatos() {
     $('#contenedorDatos').prepend(`<p id="numOrden" class="lead"><small>Núm. de orden: <strong>${encabezado.numOrden}</strong></small></p>`);
   }
 
-  let idPedido = getQueryVariable('id');
-  $('#numPedido').html(`Pedido: ${idPedido}`);
+  $('#keyPedido').html(`Id del pedido: ${idPedido}`);
+  $('#clavePedido').html(`Pedido: ${encabezado.clave}`);
   let diaCaptura = fecha.substr(0,2),
       mesCaptura = fecha.substr(3,2),
       añoCaptura = fecha.substr(6,4),
