@@ -118,12 +118,12 @@ function mostrarPedidos() {
         moment.locale('es');
         return moment(fechaCaptura.substr(3, 2) + "/" + fechaCaptura.substr(0, 2) + "/" + fechaCaptura.substr(6, 4)).format('LL');
       }
-    }, { data: 'encabezado.tienda' }, { data: 'encabezado.ruta', className: 'text-center' }, { className: 'text-center', defaultContent: '<span style="background-color:#d50000; color:#FFFFFF;" class="badge">Pendiente</span>' }, { data: 'id',
+    }, { data: 'encabezado.tienda' }, { data: 'encabezado.ruta', className: 'text-center' }, { data: 'id',
       className: 'text-center',
       render: function render(id) {
         return "<a type=\"button\" href=\"pedido.html?id=" + id + "\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a>";
       }
-    }, { data: 'id',
+    }, { className: 'text-center', defaultContent: '<span style="background-color:#d50000; color:#FFFFFF;" class="badge">Pendiente</span>' }, { data: 'id',
       className: 'text-center',
       render: function render(id) {
         return "<button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=\"abrirModalEliminarPedido('" + id + "')\"><i class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></i></button>";
@@ -1072,10 +1072,10 @@ function pedidosFinalizados() {
 
 function mostrarNotificaciones() {
   var usuario = auth.currentUser.uid;
-  var notificacionesRef = db.ref("notificaciones/almacen/" + usuario + "lista");
+  var notificacionesRef = db.ref("notificaciones/almacen/" + usuario + "/lista");
   notificacionesRef.on('value', function (snapshot) {
     var lista = snapshot.val();
-    var lis = "";
+    var lis = '<li class="dropdown-header">Notificaciones</li><li class="divider"></li>';
 
     var arrayNotificaciones = [];
     for (var notificacion in lista) {
@@ -1092,8 +1092,7 @@ function mostrarNotificaciones() {
       lis += "<li>\n                <a>\n                  <div>\n                    <i class=\"fa fa-comment fa-fw\"></i>" + arrayNotificaciones[i].mensaje + "\n                    <span class=\"pull-right text-muted small\">" + fecha + "</span>\n                  </div>\n                </a>\n              </li>";
     }
 
-    $('#contenedorNotificaciones').empty().append('<li class="dropdown-header">Notificaciones</li><li class="divider"></li>');
-    $('#contenedorNotificaciones').append(lis);
+    $('#contenedorNotificaciones').html(lis);
   });
 }
 

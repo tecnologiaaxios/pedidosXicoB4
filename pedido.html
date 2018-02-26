@@ -6,28 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link href='logo.ico' rel='shortcut icon' type='image/x-icon'/>
-
+    <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
     <title>Detalles del pedidos</title>
-
-    <!-- Bootstrap Core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <!-- DataTables CSS -->
     <link href="vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
-
-    <!-- DataTables Responsive CSS -->
     <link href="vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
-    <!-- MetisMenu CSS -->
     <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
     <link href="dist/css/sb-admin-2.css" rel="stylesheet">
-    <!-- Morris Charts CSS -->
     <link href="vendor/morrisjs/morris.css" rel="stylesheet">
-    <!-- Custom Fonts -->
     <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
     <link rel="stylesheet" href="css/dragula.min.css">
     <link rel="stylesheet" href="css/bootstrap-datepicker.min.css">
     <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
@@ -37,114 +26,126 @@
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+      <![endif]-->
   </head>
   <body>
-    <div id="wrapper">
-      <!-- Navigation -->
-      <nav class="navbar navbar-default navbar-static-top fixed" role="navigation" style="margin-bottom: 0">
+    <nav class="navbar">
+      <div class="container-fluid">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <img class="navbar-brand" id="logo" src="logo.png"></img>
-        </div>
-        <!-- /.navbar-header -->
-        <ul class="nav navbar-top-links navbar-right no-padding ">
-          <li id="campana" onclick="mostrarNotificaciones()" class="dropdown no-padding">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-              <!--<i class="fa fa-bell fa-fw"></i>-->
-              <i class="fa fa-bell-o" style="font-size: 25px;" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Notificaciones"></i>
+          <a class="navbar-brand" href="#">
+            <img style="max-width: 50px; margin-top: -7px;" src="logo.png"></img>
+          </a>
+          <a class="navbar-brand" href="#">Sistema de pedidos</a>
+          <a class="navbar-brand" href="panel.html">
+            <span class="material-icons no-padding" data-toggle="tooltip" data-placement="bottom" title="Volver al panel">dvr</span>
+          </a>
+          <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown">
+            <a class="links-panel" class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="textnavbar fa fa-bell-o" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Notificaciones"></i>
               <span id="spanNotificaciones" style="background-color: red; display: none;" class="badge"></span>
               <i class="fa fa-caret-down"></i>
             </a>
             <ul id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts">
-              <!--Notificaciones aquí-->
+
             </ul>
-            <!--<div id="spanNotificaciones" style="display:none; background-color:red; color:white; border-radius:5px; padding:10%;  font-size:10px; font-family: intelo-bold; transform:translate(10px, -22px);"></div>-->
-          </li>
-          <li><img src="http://lorempixel.com/40/40/" alt="..." class="img-circle"> </li>
-          <li class="dropdown no-padding">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+          </div>
+          <a href="" class="navbar-brand" id="btnPerfil">
+            <img src="http://lorempixel.com/25/25/" alt="..." class="img-circle" data-toggle="tooltip" data-placement="bottom" title="Perfil">
+          </a>
+          <div class="navbar-brand dropdown">
+            <a class="links-panel dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="fa fa-sign-out" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Cerrar sesión"></i>
               <i class="fa fa-caret-down"></i>
             </a>
             <ul class="dropdown-menu dropdown-alerts">
               <li class="divider"></li>
               <li>
-                <a onclick="logout()"><span class="glyphicon glyphicon-off"></span> Cerrar sesión</a>
+                <a onclick="logout()">
+                  <span class="glyphicon glyphicon-off"></span> Cerrar sesión</a>
               </li>
             </ul>
-            <!-- /.dropdown-alerts -->
-          </li>
-          <!-- /.dropdown -->
-        </ul>
-        <!-- /.navbar-top-links -->
-      </nav>
-      <div class="barside">
-        <img class="navbar-brand" id="logo" src="logo.png"></img>
-        <ul style="margin-top:50px; list-style:none; font-size:50px; color:white; padding:28px;">
-          <li>
-            <a style="color:white; text-decoration: none;" href="panel.html" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-              <span style="font-size:50px;" class="material-icons no-padding">dvr</span>
-              <p style="white; font-size:11px; width:200px; margin-left:-14px; margin-top:-15px;">Volver al panel</p>
-            </a>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
-      <div id="page-wrapper">
+    </nav>
+    <div id="wrapper">
+      <div class="container-fluid">
         <div class="row">
-          <div class="col-lg-12 col-md-12 col-sm-12"><br>
-            <!--<div class="loader"></div>-->
-            <div id="panel" class="panel panel-primary">
-              <div class="panel-heading">
-                <span id="clavePedido" style="font-size: 30px; font-style: italic;" class="panel-title"></span><span id="fechaPedido" class="pull-right" style="font-size: 20px;"><!--Recibido Martes 13 de abril--></span>
-              </div>
-              <div class="panel-body" id="contenedorDatos">
-                <p><small id="keyPedido">Id del pedido: </small></p>
-                <label id="tienda" for="">Tienda: </label>
-                <p class="lead"><small>Productos de este pedido:</small></p>
-                <div class="form-group">
-                  <label class="lead"><small>Cantidad: </small><span id="cantidad" class="badge"></span></label>
-                  <button type="button" class="btn btn-success pull-right" onclick="abrirModal()">Agregar producto <i class="fa fa-plus" aria-hidden="true"></i></button>
-                </div>
-                <table id="productos" class="table table-condensed table-bordered table-striped table-hover">
-                  <!--<caption>Productos de este pedido:</caption>-->
-                  <thead id="theadProductos">
-                    <tr>
-                      <th class="text-center">Clave</th>
-                      <th class="text-center">Descripción</th>
-                      <th class="text-center">Pedido Pz</th>
-                      <th class="text-center">Degustación</th>
-                      <th class="text-center">Cambio físico</th>
-                      <th class="text-center">Total Pz</th>
-                      <th class="text-center">Total Kg</th>
-                      <th class="text-center">Precio unit.</th>
-                      <th class="text-center">Unidad</th>
-                      <th class="text-center">Editar</th>
-                      <th class="text-center">Eliminar</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tbodyProductos">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <br>
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <!--<div class="loader"></div>-->
+                <div id="panel" class="panel panel-primary">
+                  <div class="panel-heading">
+                    <span id="clavePedido" style="font-size: 30px; font-style: italic;" class="panel-title"></span>
+                    <span id="fechaPedido" class="pull-right" style="font-size: 20px;">
+                      <!--Recibido Martes 13 de abril-->
+                    </span>
+                  </div>
+                  <div class="panel-body" id="contenedorDatos">
+                    <p>
+                      <small id="keyPedido">Id del pedido: </small>
+                    </p>
+                    <label id="tienda" for="">Tienda: </label>
+                    <p class="lead">
+                      <small>Productos de este pedido:</small>
+                    </p>
+                    <div class="form-group">
+                      <label class="lead">
+                        <small>Cantidad: </small>
+                        <span id="cantidad" class="badge"></span>
+                      </label>
+                      <button type="button" class="btn btn-success pull-right" onclick="abrirModal()">Agregar producto
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                    <table id="productos" class="table table-condensed table-bordered table-striped table-hover">
+                      <!--<caption>Productos de este pedido:</caption>-->
+                      <thead id="theadProductos">
+                        <tr>
+                          <th class="text-center">Clave</th>
+                          <th class="text-center">Descripción</th>
+                          <th class="text-center">Pedido Pz</th>
+                          <th class="text-center">Degustación</th>
+                          <th class="text-center">Cambio físico</th>
+                          <th class="text-center">Total Pz</th>
+                          <th class="text-center">Total Kg</th>
+                          <th class="text-center">Precio unit.</th>
+                          <th class="text-center">Unidad</th>
+                          <th class="text-center">Editar</th>
+                          <th class="text-center">Eliminar</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tbodyProductos">
 
-                  </tbody>
-                </table>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <button id="Imprimir" onclick="generarPDF();" class="btn btn-lg btn-danger">
+                  <i class="fa fa-print" aria-hidden="true"></i> Imprimir
+                </button>
               </div>
             </div>
-            <button id="Imprimir" onclick="generarPDF();" class="btn btn-lg btn-danger"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button>
           </div><!-- /.col-lg-12 -->
         </div><!-- /.row -->
-      </div><!-- /#page-wrapper -->
+      </div>
     </div><!-- /#wrapper -->
     <div id="modalAgregarProducto" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalAgregarProducto">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
             <h4 class="modal-title" id="myModalLabel">Agregar producto</h4>
           </div>
           <div class="modal-body">
@@ -190,7 +191,8 @@
                 </div>
                 <div class="col-md-4">
                   <label for="precioUnitario">Precio unitario:</label>
-                  <input type="number" id="precioUnitario" min="0" name="precioUnitario" class="form-control" placeholder="Precio unitario" readonly>
+                  <input type="number" id="precioUnitario" min="0" name="precioUnitario" class="form-control" placeholder="Precio unitario"
+                    readonly>
                 </div>
                 <div class="col-md-4">
                   <label for="unidad">Unidad:</label>
@@ -220,7 +222,9 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
             <h4 class="modal-title" id="myModalLabel">Editar producto</h4>
           </div>
           <div class="modal-body">
@@ -234,7 +238,8 @@
               <div class="form-group row">
                 <div class="col-md-3">
                   <label for="claveConsorcioEditar">Clave consorcio:</label>
-                  <input readonly type="text" id="claveConsorcioEditar" name="claveConsorcioEditar" class="form-control" placeholder="Clave consorcio" readonly>
+                  <input readonly type="text" id="claveConsorcioEditar" name="claveConsorcioEditar" class="form-control" placeholder="Clave consorcio"
+                    readonly>
                 </div>
                 <div class="col-md-3">
                   <label for="pedidoPzEditar">Pedido Pz:</label>
@@ -259,7 +264,8 @@
               <div class="form-group row">
                 <div class="col-md-3">
                   <label for="precioUnitarioEditar">Precio unitario:</label>
-                  <input type="text" id="precioUnitarioEditar" min="0" name="precioUnitarioEditar" class="form-control" placeholder="Precio unitario" readonly>
+                  <input type="text" id="precioUnitarioEditar" min="0" name="precioUnitarioEditar" class="form-control" placeholder="Precio unitario"
+                    readonly>
                 </div>
                 <div class="col-md-3">
                   <label for="unidadEditar">Unidad:</label>
@@ -287,7 +293,9 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
             <h4 class="modal-title">Confirmar eliminación</h4>
           </div>
           <div class="modal-body">
@@ -297,9 +305,12 @@
             <button id="btnCancelar" type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
             <button id="btnConfirmar" type="button" class="btn btn-primary" data-dismiss="modal">Confirmar</button>
           </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
     <!-- jQuery -->
     <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
     <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script>

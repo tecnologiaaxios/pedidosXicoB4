@@ -155,8 +155,10 @@ function mostrarPedidosChecados() {
 }
 
 function mostrarTodas() {
-  let datos = JSON.parse(localStorage.getItem('datosPedidoPadre')),
-      productos = datos.productos;
+  let idPedidoPadre = getQueryVariable('id'),
+      pedidosPadre = JSON.parse(localStorage.getItem('pedidosPadre')),
+      pedidoPadre = pedidosPadre[idPedidoPadre],
+      productos = pedidoPadre.productos;
 
   let datatable = $(`#tablaPedidos`).DataTable();
   datatable.destroy();

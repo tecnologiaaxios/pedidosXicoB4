@@ -50,7 +50,6 @@ $('#contraseña').keypress(function (e) {
 function login() {
   var username = $('#username').val();
   var contraseña = $('#contraseña').val();
-  console.log(username);
 
   if (username.length > 0 && contraseña.length > 0) {
 

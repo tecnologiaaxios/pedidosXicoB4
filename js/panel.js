@@ -126,13 +126,13 @@ function mostrarPedidos() {
       },
       { data: 'encabezado.tienda' },
       { data: 'encabezado.ruta', className: 'text-center' },
-      { className: 'text-center', defaultContent: '<span style="background-color:#d50000; color:#FFFFFF;" class="badge">Pendiente</span>'},
       { data: 'id', 
         className: 'text-center', 
         render: (id) => { 
           return `<a type="button" href="pedido.html?id=${id}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a>`
         } 
       },
+      { className: 'text-center', defaultContent: '<span style="background-color:#d50000; color:#FFFFFF;" class="badge">Pendiente</span>'},
       { data: 'id',
         className: 'text-center', 
         render: (id) => {
@@ -1144,10 +1144,10 @@ function pedidosFinalizados() {
 
 function mostrarNotificaciones() {
   let usuario = auth.currentUser.uid;
-  let notificacionesRef = db.ref(`notificaciones/almacen/${usuario}lista`);
+  let notificacionesRef = db.ref(`notificaciones/almacen/${usuario}/lista`);
   notificacionesRef.on('value', function (snapshot) {
     let lista = snapshot.val();
-    let lis = "";
+    let lis = '<li class="dropdown-header">Notificaciones</li><li class="divider"></li>';
 
     let arrayNotificaciones = [];
     for (let notificacion in lista) {
@@ -1171,8 +1171,7 @@ function mostrarNotificaciones() {
               </li>`;
     }
 
-    $('#contenedorNotificaciones').empty().append('<li class="dropdown-header">Notificaciones</li><li class="divider"></li>');
-    $('#contenedorNotificaciones').append(lis);
+    $('#contenedorNotificaciones').html(lis);
   });
 }
 

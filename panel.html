@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link href='logo.ico' rel='shortcut icon' type='image/x-icon'/>
+    <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
     <title>Recepción de pedidos</title>
+    <!-- <link rel="stylesheet" href="css/combinado.css"> -->
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
-<!--     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" id="bootstrap-css"> -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
     <link href="vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
@@ -24,84 +24,86 @@
     <link rel="stylesheet" href="css/bootstrap-datepicker.min.css">
     <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
     <link rel="stylesheet" href="css/bootstrap-datepicker3.standalone.css">
+    <link rel="stylesheet" href="css/sexyradio.css">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <link rel="stylesheet" href="css/sexyradio.css">
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+      <![endif]-->
   </head>
   <body>
-      
-    <div id="wrapper">
-      <nav class="navbar navbar-default navbar-static-top fixed" role="navigation" style="margin-bottom: 0">
+    <nav class="navbar">
+      <div class="container-fluid">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <img class="navbar-brand" id="logo" src="logo.png"></img>
-        </div>
-        <ul class="nav navbar-top-links navbar-right no-padding ">
-          <li id="campana" onclick="mostrarNotificaciones()" class="dropdown no-padding">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-              <!--<i class="fa fa-bell fa-fw"></i>-->
-              <i class="fa fa-bell-o" style="font-size: 25px;" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Notificaciones"></i>
+          <a class="navbar-brand" href="#">
+            <img style="max-width: 50px; margin-top: -7px;" src="logo.png"></img>
+          </a>
+          <a class="navbar-brand" href="#">Sistema de pedidos</a>
+          <a class="navbar-brand" href="#" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <span class="textnavbar material-icons" data-toggle="tooltip" data-placement="bottom" title="Formar pedido">playlist_add</span>
+          </a>
+          <a class="navbar-brand" href="tickets.html">
+            <span class="textnavbar material-icons" data-toggle="tooltip" data-placement="bottom" title="Tickets">receipt</span>
+          </a>
+          <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown">
+            <a class="links-panel" class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="textnavbar fa fa-bell-o" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Notificaciones"></i>
               <span id="spanNotificaciones" style="background-color: red; display: none;" class="badge"></span>
               <i class="fa fa-caret-down"></i>
             </a>
             <ul id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts">
-              <!--Notificaciones aquí-->
+
             </ul>
-            <!--<div id="spanNotificaciones" style="display:none; background-color:red; color:white; border-radius:5px; padding:10%;  font-size:10px; font-family: intelo-bold; transform:translate(10px, -22px);"></div>-->
-          </li>
-          <li><a href="" id="btnPerfil"><img src="http://lorempixel.com/40/40/" alt="..." class="img-circle"></a></li>
-          <li class="dropdown no-padding">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+          </div>
+          <a href="" class="navbar-brand" id="btnPerfil">
+            <img src="http://lorempixel.com/25/25/" alt="..." class="img-circle" data-toggle="tooltip" data-placement="bottom" title="Perfil">
+          </a>
+          <div class="navbar-brand dropdown">
+            <a class="links-panel dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="fa fa-sign-out" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Cerrar sesión"></i>
               <i class="fa fa-caret-down"></i>
             </a>
             <ul class="dropdown-menu dropdown-alerts">
               <li class="divider"></li>
               <li>
-                <a onclick="logout()"><span class="glyphicon glyphicon-off"></span> Cerrar sesión</a>
+                <a onclick="logout()">
+                  <span class="glyphicon glyphicon-off"></span> Cerrar sesión</a>
               </li>
             </ul>
-          </li>
-        </ul>
-      </nav>
-      <div class="barside">
-        <img class="navbar-brand" id="logo" src="logo.png"></img>
-        <ul style="margin-top:50px; list-style:none; font-size:50px; color:white; padding:28px;">
-          <li>
-            <a style="color:white; text-decoration: none;" href="#" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-              <span style="font-size:50px;" class="material-icons no-padding">playlist_add</span>
-              <p style="white; font-size:11px; width:200px; margin-left:-14px; margin-top:-15px;">Formar Pedido</p>
-            </a>
-          </li>
-          <li>
-            <a style="color:white; text-decoration: none;" href="tickets.html">
-              <span style="font-size:35px;" class="material-icons no-padding">receipt</span>
-              <p style="white; font-size:11px; width:200px; margin-left:-14px; margin-top:-15px;">Revisar tickets</p>
-            </a>
-          </li>
-          <!-- <li>
-            <a style="color:white; text-decoration: none;" href="agentes.html">
-              <span style="font-size:35px;" class="material-icons no-padding">group</span>
-              <p style="white; font-size:11px; width:200px; margin-left:-14px; margin-top:-15px;">Ver agentes</p>
-            </a>
-          </li> -->
-        </ul>
+          </div>
+        </div>
       </div>
-      <div id="page-wrapper">
+    </nav>
+    <div id="wrapper">
+      <div class="container-fluid">
         <div class="row">
           <ul class="nav nav-pills nav-justified" style="padding:30px;">
-            <li role="presentation" class="active"><a onclick="pedidosRecibidos()" class="pills" href="#pedidosRecibidos" aria-controls="pedidosRecibidos" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Pedidos recibidos</a></li>
-            <li role="presentation"><a onclick="pedidosEnProceso()" class="pills" href="#pedidosEnProceso" aria-controls="pedidosEnProceso" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Pedidos en proceso</a></li>
-            <li role="presentation"><a onclick="pedidosFinalizados()" class="pills" href="#pedidosFinalizados" aria-controls="pedidosFinalizados" role="tab" data-toggle="tab"><i class="fa fa-check-square-o" aria-hidden="true"></i> Pedidos finalizados</a></li>
-            <li role="presentation"><a onclick="historialPedidos()" class="pills" href="#historialPedidos" aria-controls="historialPedidos" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-folder-open"></span> Historial de pedidos</a></li>
+            <li role="presentation" class="active">
+              <a onclick="pedidosRecibidos()" class="pills" href="#pedidosRecibidos" aria-controls="pedidosRecibidos" role="tab"
+                data-toggle="tab">
+                <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Pedidos recibidos</a>
+            </li>
+            <li role="presentation">
+              <a onclick="pedidosEnProceso()" class="pills" href="#pedidosEnProceso" aria-controls="pedidosEnProceso" role="tab"
+                data-toggle="tab">
+                <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Pedidos en proceso</a>
+            </li>
+            <li role="presentation">
+              <a onclick="pedidosFinalizados()" class="pills" href="#pedidosFinalizados" aria-controls="pedidosFinalizados" role="tab"
+                data-toggle="tab">
+                <i class="fa fa-check-square-o" aria-hidden="true"></i> Pedidos finalizados</a>
+            </li>
+            <li role="presentation">
+              <a onclick="historialPedidos()" class="pills" href="#historialPedidos" aria-controls="historialPedidos" role="tab"
+                data-toggle="tab">
+                <span class="glyphicon glyphicon-folder-open"></span> Historial de pedidos</a>
+            </li>
           </ul>
           <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="pedidosRecibidos">
@@ -145,9 +147,10 @@
                           <th>Eliminar</th>
                         </tr>
                       </thead>
-                      <tbody id="tbodyTablaPedidoPadre" style="border: 2px solid grey; border-style: dashed; height:200px; width:100%;"  class="tabla-drag">
+                      <tbody id="tbodyTablaPedidoPadre" style="border: 2px solid grey; border-style: dashed; height:200px; width:100%;" class="tabla-drag">
                         <h4>Arrastra los pedidos dentro de las líneas punteadas para agruparlos</h4>
                         <tr id="vacio" style="padding:0px 0px 0px;" class="no-pading">
+                          <td></td>
                           <td></td>
                           <td></td>
                           <td></td>
@@ -208,7 +211,7 @@
                         <tr>
                           <th>Clave</th>
                           <th>Fecha de captura</th>
-                          <th>Fecha ruta</th>       
+                          <th>Fecha ruta</th>
                           <th>Ruta</th>
                           <th>Agente</th>
                           <th class="text-center">Estado</th>
@@ -254,7 +257,9 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
             <h4 class="modal-title">Modificar datos</h4>
           </div>
           <div class="modal-body">
@@ -264,7 +269,9 @@
                   <label for="fechaRuta">Fecha ruta:</label>
                   <div class="input-group date">
                     <input id="fechaRuta" class="form-control input-sm" type="text" placeholder="Fecha de ruta">
-                    <span style="color: white;" class="input-group-addon btn-primary btn-sm"><i class="fa fa-calendar"></i></span>
+                    <span style="color: white;" class="input-group-addon btn-primary btn-sm">
+                      <i class="fa fa-calendar"></i>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -283,36 +290,42 @@
                 </select>
               </div>
               <!-- <div class="col-md-10">
-                <label for="agente">Asignar agente:</label>
-                <div class="input-group">
-                  <select name="agente" id="agente" class="form-control">
-                        
-                  </select>
-                  <span class="input-group-btn">
-                    <button id="btnAsignarAgente" onclick="asignarAgente()" class="btn btn-default">Asignar</button>
-                  </span>
-                </div>
-              </div> -->
-            </div><!-- <br> -->
+                  <label for="agente">Asignar agente:</label>
+                  <div class="input-group">
+                    <select name="agente" id="agente" class="form-control">
+                          
+                    </select>
+                    <span class="input-group-btn">
+                      <button id="btnAsignarAgente" onclick="asignarAgente()" class="btn btn-default">Asignar</button>
+                    </span>
+                  </div>
+                </div> -->
+            </div>
+            <!-- <br> -->
             <!-- <div class="row">
-              <div class="col-md-6">
-                <label for="">Agente asignado:</label>
-                <a id="agenteAsignado" class="hidden btn btn-agente"></a>
-              </div>
-            </div>   -->            
+                <div class="col-md-6">
+                  <label for="">Agente asignado:</label>
+                  <a id="agenteAsignado" class="hidden btn btn-agente"></a>
+                </div>
+              </div>   -->
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
             <button id="btnGuardarRuta" type="button" class="btn btn-success">Guardar</button>
           </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
     <div id="modalConfirmarEliminarPedido" class="modal fade" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
             <h4 class="modal-title">Confirmar eliminación</h4>
           </div>
           <div class="modal-body">
@@ -329,7 +342,9 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
             <h4 class="modal-title">Confirmar eliminación</h4>
           </div>
           <div class="modal-body">
@@ -346,7 +361,9 @@
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
             <h4 class="modal-title">Editar perfil</h4>
           </div>
           <div class="modal-body">
@@ -404,7 +421,9 @@
                   <div class="input-group">
                     <input type="text" class="form-control" id="contraseñaEditar" name="contraseñaEditar" readonly>
                     <span class="input-group-btn">
-                      <button onclick="permitirCambioContraseña()" class="btn btn-default" type="button"><i class="fa fa-pencil"></i></button>
+                      <button onclick="permitirCambioContraseña()" class="btn btn-default" type="button">
+                        <i class="fa fa-pencil"></i>
+                      </button>
                     </span>
                     <span class="input-group-btn">
                       <button id="btnCambiarContraseña" class="btn btn-success" type="button" disabled>Guardar</button>
@@ -426,7 +445,9 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
             <h4 class="modal-title">Finalizar pedido</h4>
           </div>
           <div class="modal-body">
@@ -436,14 +457,19 @@
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
             <button id="btnFinalizarPedidoPadre" type="button" class="btn btn-primary">Sí</button>
           </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
     <div id="modalSeparar" class="modal fade" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
             <h4 class="modal-title">Separar pedido</h4>
           </div>
           <div class="modal-body">
@@ -478,7 +504,7 @@
                         <th>Ruta</th>
                       </tr>
                     </thead>
-                    <tbody id="tbodyTablaPedidoSeparado" style="border: 2px solid grey; border-style: dashed; height:200px; width:100%;"  class="tabla-drag">
+                    <tbody id="tbodyTablaPedidoSeparado" style="border: 2px solid grey; border-style: dashed; height:200px; width:100%;" class="tabla-drag">
                       <h4>Arrastra los pedidos dentro de las líneas punteadas para agruparlos en otro pedido</h4>
                       <tr id="filavacia" style="padding:0px 0px 0px;" class="no-pading">
                         <td></td>
@@ -497,29 +523,33 @@
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
             <button id="btnSeparar" type="button" class="btn btn-primary">Separar</button>
           </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <!-- <script src="./node_modules/jquery/dist/jquery.min.js"></script> -->
     <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
-    <!-- <script>window.$ = window.jQuery = require('jquery');</script> -->
-    <script src="js/panel.min.js"></script><!--Todos los javascript están concatenados y minificados en este archivo --> 
-    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    <script src="js/panel.min.js"></script>
+    <!--Todos los javascript están concatenados y minificados en este archivo -->
+    <!-- <script src="vendor/bootstrap/js/bootstrap.min.js"></script> -->
     <!-- <script src="dist/js/bootstrap-select.js"></script>
-    <script src="vendor/metisMenu/metisMenu.min.js"></script>
-    <script src="dist/js/sb-admin-2.js"></script>
-    <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables-plugins/dataTables.bootstrap.min.js"></script> -->
+      <script src="vendor/metisMenu/metisMenu.min.js"></script>
+      <script src="dist/js/sb-admin-2.js"></script>
+      <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
+      <script src="vendor/datatables-plugins/dataTables.bootstrap.min.js"></script> -->
     <!-- <script src="vendor/datatables-responsive/dataTables.responsive.js"></script> -->
     <!-- <script src="js/bootstrap-datepicker.min.js"></script>
-    <script src="js/bootstrap-datepicker.es.min.js"></script>
-    <script src="js/bootstrap-tooltip.js"></script>
-    <script src="js/jquery.toaster.js"></script>
-    <script src="js/firebase.js"></script>
-    <script src="js/dragula.min.js"></script>
-    <script src="js/moment-with-locales.js"></script>
-    <script src="js/panel.js"></script>
-    <script src="js/perfil.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+      <script src="js/bootstrap-datepicker.es.min.js"></script>
+      <script src="js/bootstrap-tooltip.js"></script>
+      <script src="js/jquery.toaster.js"></script>
+      <script src="js/firebase.js"></script>
+      <script src="js/dragula.min.js"></script>
+      <script src="js/moment-with-locales.js"></script>
+      <script src="js/panel.js"></script>
+      <script src="js/perfil.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
   </body>
 </html>

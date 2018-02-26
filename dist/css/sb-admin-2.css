@@ -71,7 +71,15 @@ body {
 }
 
 
-#logo{ position: absolute; z-index: 999; width: 105; height: 70px; margin-top: -10px; margin-left: 5px;}
+#logo { 
+  position: absolute; 
+  z-index: 999; 
+  width: 105; 
+  height: 70px; 
+  margin-top: -10px; 
+  margin-left: 5px;
+}
+
 .barside{
   width: 100px;
   height: 100% !important;
@@ -632,4 +640,39 @@ display: table-cell;
   color: #3276b1;
   background-color: #fff;
   border-color: #204d74;
+}
+
+.navbar {
+  position: relative;
+  min-height: 50px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  background-color: #ff6e02;
+}
+
+.navbar-brand {
+  float: left;
+  height: 50px;
+  padding: 15px 15px;
+  font-size: 18px;
+  line-height: 20px;
+  color: white;
+  /* font-size: 25px; */
+}
+
+.navbar-brand:hover {
+  color: #ccc;
+}
+
+.links-panel {
+  color: white;
+  /* ont-size: 25px; */
+}
+
+.links-panel:hover {
+  color: #ccc;
+}
+
+.links-panel:active {
+  color: #ccc;
 }

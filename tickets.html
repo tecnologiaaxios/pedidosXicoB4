@@ -7,24 +7,14 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link href='logo.ico' rel='shortcut icon' type='image/x-icon'/>
-
     <title>Recepción de tickets</title>
-
-    <!-- Bootstrap Core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <!-- DataTables CSS -->
     <link href="vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
-
-    <!-- DataTables Responsive CSS -->
     <link href="vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
-    <!-- MetisMenu CSS -->
     <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
     <link href="dist/css/sb-admin-2.css" rel="stylesheet">
-    <!-- Morris Charts CSS -->
     <link href="vendor/morrisjs/morris.css" rel="stylesheet">
-    <!-- Custom Fonts -->
     <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="dist/css/bootstrap-select.css">
@@ -40,61 +30,52 @@
     <![endif]-->
   </head>
   <body>
-    <div id="wrapper">
-      <!-- Navigation -->
-      <nav class="navbar navbar-default navbar-static-top fixed" role="navigation" style="margin-bottom: 0">
+    <nav class="navbar">
+      <div class="container-fluid">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <img class="navbar-brand" id="logo" src="logo.png"></img>
-        </div>
-        <!-- /.navbar-header -->
-        <ul class="nav navbar-top-links navbar-right no-padding ">
-          <li id="campana" onclick="mostrarNotificaciones()" class="dropdown no-padding">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-              <!--<i class="fa fa-bell fa-fw"></i>-->
-              <i class="fa fa-bell-o" style="font-size: 25px;" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Notificaciones"></i>
+          <a class="navbar-brand" href="#">
+            <img style="max-width: 50px; margin-top: -7px;" src="logo.png"></img>
+          </a>
+          <a class="navbar-brand" href="#">Sistema de pedidos</a>
+          <a class="navbar-brand" href="panel.html">
+            <span class="material-icons no-padding" data-toggle="tooltip" data-placement="bottom" title="Volver al panel">dvr</span>
+          </a>
+          <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown">
+            <a class="links-panel" class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="textnavbar fa fa-bell-o" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Notificaciones"></i>
               <span id="spanNotificaciones" style="background-color: red; display: none;" class="badge"></span>
               <i class="fa fa-caret-down"></i>
             </a>
             <ul id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts">
-              <!--Notificaciones aquí-->
+    
             </ul>
-            <!--<div id="spanNotificaciones" style="display:none; background-color:red; color:white; border-radius:5px; padding:10%;  font-size:10px; font-family: intelo-bold; transform:translate(10px, -22px);"></div>-->
-          </li>
-          <li><img src="http://lorempixel.com/40/40/" alt="..." class="img-circle"> </li>
-          <li class="dropdown no-padding">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+          </div>
+          <a href="" class="navbar-brand" id="btnPerfil">
+            <img src="http://lorempixel.com/25/25/" alt="..." class="img-circle" data-toggle="tooltip" data-placement="bottom" title="Perfil">
+          </a>
+          <div class="navbar-brand dropdown">
+            <a class="links-panel dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="fa fa-sign-out" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Cerrar sesión"></i>
               <i class="fa fa-caret-down"></i>
             </a>
             <ul class="dropdown-menu dropdown-alerts">
               <li class="divider"></li>
               <li>
-                <a onclick="logout()"><span class="glyphicon glyphicon-off"></span> Cerrar sesión</a>
+                <a onclick="logout()">
+                  <span class="glyphicon glyphicon-off"></span> Cerrar sesión</a>
               </li>
             </ul>
-            <!-- /.dropdown-alerts -->
-          </li>
-          <!-- /.dropdown -->
-        </ul>
-        <!-- /.navbar-top-links -->
-      </nav>
-      <div class="barside">
-        <img class="navbar-brand" id="logo" src="logo.png"></img>
-        <ul style="margin-top:50px; list-style:none; font-size:50px; color:white; padding:28px;">
-          <li>
-            <a style="color:white; text-decoration: none;" href="panel.html" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-              <span style="font-size:50px;" class="material-icons no-padding">dvr</span>
-              <p style="white; font-size:11px; width:200px; margin-left:-14px; margin-top:-15px;">Volver al panel</p>
-            </a>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
-      <div id="page-wrapper">
+    </nav>
+    <div id="wrapper">
+      <div class="container-fluid">
         <div class="row">
           <ul class="nav nav-pills nav-justified" style="padding:30px;">
             <li class="active"><a onclick="ticketsPendientes()" id="pills" href="#"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Tickets pendientes</a></li>
@@ -121,30 +102,6 @@
                 </ul>
               </div>
               <div class="tab-content">
-                <!--<div role="tabpanel" class="tab-pane active">
-                  <div class="table-responsive">
-                    <table id="tablaTicketsPendientes" class="table table-condensed table-bordered table-striped table-hover">
-                      <thead>
-                        <tr>
-                          <th>Clave</th>
-                          <th>Clave de producto</th>
-                          <th>Cantidad</th>
-                          <th>Lote</th>
-                          <th>Fecha de caducidad</th>
-                          <th>Tienda</th>
-                          <th>Problema</th>
-                          <th>Descripción</th>
-                          <th>Fecha</th>
-                          <th>Estado</th>
-                          <th></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-
-                      </tbody>
-                    </table>
-                  </div>
-                </div>-->
                 <div role="tabpanel" class="tab-pane" id="tabCalidadProductoPendientes">
                   <div class="table-responsive">
                     <table id="tablaCalidadProductoPendientes" class="table table-condensed table-bordered table-striped table-hover" style="margin-top:15px;">
@@ -227,7 +184,7 @@
             </div>
           </div><!-- /.col-lg-12 -->
         </div><!-- /.row -->
-      </div><!-- /#page-wrapper -->
+      </div>
     </div><!-- /#wrapper -->
     <div id="modalResponder" class="modal" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
@@ -243,10 +200,6 @@
                 <textarea id="respuesta" class="form-control" name="respuesta" rows="3" cols="80" placeholder="Escribe aquí la respuesta" required></textarea>
                 <span style="display: none;" id="helpblockRespuesta" class="help-block">Campo obligatorio</span>
               </div>
-              <!--<div class="form-inline">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="submit" onclick="enviarMensaje()" class="btn btn-primary">Guardar</button>
-              </div>-->
             </form>
           </div>
           <div class="modal-footer">
@@ -256,28 +209,21 @@
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-    <!-- jQuery -->
     <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
     <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script>
-
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="dist/js/bootstrap-select.js"></script>
-    <!-- Bootstrap Core JavaScript -->
-    <!--<script src="vendor/bootstrap/js/bootstrap.min.js"></script>-->
-    <!-- Metis Menu Plugin JavaScript -->
     <script src="vendor/metisMenu/metisMenu.min.js"></script>
-    <!-- Morris Charts JavaScript -->
     <script src="vendor/raphael/raphael.min.js"></script>
     <script src="vendor/morrisjs/morris.min.js"></script>
     <script src="data/morris-data.js"></script>
-    <!-- Custom Theme JavaScript -->
     <script src="dist/js/sb-admin-2.js"></script>
+    <script src="js/bootstrap-tooltip.js"></script>
     <script type="text/javascript" src="js/bootstrap-datepicker.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-datepicker.es.min.js"></script>
     <script src="js/bootstrap-tooltip.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
     <script>
-      // Initialize Firebase
       var config = {
         apiKey: "AIzaSyA19j6-VLNcXLJfBkfd_lZfFFbzg6z0Imc",
         authDomain: "xico-netcontrol.firebaseapp.com",
