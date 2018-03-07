@@ -51,14 +51,26 @@ $(document).ready(function () {
 
   db.ref('pedidoPadre').on('value', (pedidos) => {
     let pedidosPadre = pedidos.val();
-    let arrayPedidosEnProceso = [], arrayPedidosFinalizados = [];
+    let arrayPedidosEnProceso = [], arrayPedidosVerificados = [], arrayPedidosCargados = [], arrayPedidosFinalizados = [];
     pedidos.forEach((pedido) => {
       let estado = pedido.val().estado;
       if (estado === "En proceso") {
         arrayPedidosEnProceso.unshift({
           id: pedido.key,
           ...pedido.val()
-        })
+        });
+      }
+      if(estado === "Verificado") {
+        arrayPedidosVerificados.unshift({
+          id: pedido.key,
+          ...pedido.val()
+        });
+      }
+      if(estado === "Cargado") {
+        arrayPedidosCargados.unshift({
+          id: pedido.key,
+          ...pedido.val()
+        });
       }
       if(estado === "Finalizado") {
         arrayPedidosFinalizados.unshift({
@@ -68,9 +80,13 @@ $(document).ready(function () {
       }
     });
     localStorage.setItem('pedidosEnProceso', JSON.stringify(arrayPedidosEnProceso));
+    localStorage.setItem('pedidosVerificados', JSON.stringify(arrayPedidosVerificados));
+    localStorage.setItem('pedidosCargados', JSON.stringify(arrayPedidosCargados));
     localStorage.setItem('pedidosFinalizados', JSON.stringify(arrayPedidosFinalizados));
     localStorage.setItem('pedidosPadre', JSON.stringify(pedidosPadre));
     mostrarPedidosEnProceso();
+    mostrarPedidosVerificados();
+    mostrarPedidosCargados();
     mostrarPedidosFinalizados();
   });
 });
@@ -204,6 +220,7 @@ function mostrarHistorialPedidos() {
       pageLength: 10,
       columns: [
         { data: 'id' },
+        { data: 'encabezado.clave' },
         { data: 'encabezado.numOrden' },
         {
           data: 'encabezado.fechaCaptura',
@@ -363,7 +380,12 @@ function mostrarPedidosEnProceso() {
           return `<button onclick="abrirModalModificarRuta('${id}')" class="btn btn-warning btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>` 
         }
       },
-      { className: 'text-center', defaultContent: '<span style="background-color:#FFCC25; color:#000000;" class="badge">En proceso</span>' },
+      { data: 'estado',
+        className: 'text-center',
+        render: (estado) => {
+          return `<span style="background-color:#FFCC25; color:#000000;" class="badge">${estado}</span>` 
+        }
+      },
       { data: 'id',
         className: 'text-center', 
         render: (id) => {
@@ -382,10 +404,239 @@ function mostrarPedidosEnProceso() {
           return `<button onclick="verificarPedidoPadre('${id}')" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>`
         }
       },
-      { data: 'id',
+      /* { data: 'id',
         className: 'text-center', 
         render: (id) => {
           return `<button class="btn btn-success btn-sm" onclick="abrirModalFinalizarPedidoPadre('${id}')"><i class="fa fa-check" aria-hidden="true"></i></button>` 
+        }
+      } */
+    ],
+    destroy: true,
+    ordering: false,
+    language: {
+      searchPlaceholder: "Buscar pedido",
+      sProcessing: 'Procesando...',
+      sLengthMenu: 'Mostrar _MENU_ registros',
+      sZeroRecords: 'No se encontraron resultados',
+      sEmptyTable: 'Ningún dato disponible en esta tabla',
+      sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+      sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+      sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+      sInfoPostFix: '',   
+      sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
+      sUrl: '',
+      sInfoThousands: ',',
+      sLoadingRecords: 'Cargando...',
+      oPaginate: {
+        sFirst: 'Primero',
+        sLast: 'Último',
+        sNext: 'Siguiente',
+        sPrevious: 'Anterior'
+      },
+      oAria: {
+        sSortAscending:
+          ': Activar para ordenar la columna de manera ascendente',
+        sSortDescending:
+          ': Activar para ordenar la columna de manera descendente'
+      }
+    }
+  });
+
+    /* $('#pPedidosProceso').remove();
+    $('#loaderPedidosEnProceso').remove(); */
+    // $('#tablaPedidosEnProceso').removeClass('hidden');
+    /* tabla.rows.add($(filas)).columns.adjust().draw(); */
+
+    $('.input-group.date').datepicker({
+      autoclose: true,
+      format: "dd/mm/yyyy",
+      startDate: "today",
+      language: "es"
+    });
+}
+
+function mostrarPedidosVerificados() {
+  let pedidos = JSON.parse(localStorage.getItem('pedidosVerificados'));
+  
+  let loader = $('#loaderPedidosVerificados');
+
+  let datatable = $('#tablaPedidosEnProcesoVerificados').DataTable({
+    data: pedidos,
+    pageLength: 10,
+    columns: [
+      { data: 'clave' },
+      {
+        data: 'fechaCreacionPadre',
+        render: (fechaCreacionPadre) => {
+          moment.locale('es');
+          return moment(`${fechaCreacionPadre.substr(3,2)}/${fechaCreacionPadre.substr(0,2)}/${fechaCreacionPadre.substr(6,4)}`).format('LL')
+        }
+      },
+      {
+        data: 'fechaRuta',
+        render: (fechaRuta) => {
+          moment.locale('es');
+          if(fechaRuta.length > 0) {
+            return moment(`${fechaRuta.substr(3,2)}/${fechaRuta.substr(0,2)}/${fechaRuta.substr(6,4)}`).format('LL');
+          }
+          else {
+            return "Fecha pendiente";
+          }
+        }
+      },
+      { data: 'ruta',
+        render: (ruta) => {
+          if(ruta.length > 0) {
+            return ruta;
+          }else {
+            return "Ruta pendiente";
+          }
+        }
+      },
+      { data: 'agente',
+      className: 'text-center',
+        render: (agente) => {
+          if(typeof agente != "undefined") {
+            return `<div class="radioBtn btn-group"><a class="btn btn-sm btn-agente">${agente}</a></div>`;   
+          }
+          else {
+            return "";
+          }
+        }
+      },
+      { data: 'id', 
+        className: 'text-center', 
+        render: (id) => {
+          return `<button onclick="abrirModalModificarRuta('${id}')" class="btn btn-warning btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>` 
+        }
+      },
+      { data: 'estado',
+        className: 'text-center',
+        render: (estado) => {
+          return `<span style="background-color:#FFCC25; color:#000000;" class="badge">${estado}</span>` 
+        }
+      },
+      { data: 'id',
+        className: 'text-center', 
+        render: (id) => {
+          return `<a class="btn btn-default btn-sm" href="pedidoPadre.html?id=${id}"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a>`
+        }
+      },
+    ],
+    destroy: true,
+    ordering: false,
+    language: {
+      searchPlaceholder: "Buscar pedido",
+      sProcessing: 'Procesando...',
+      sLengthMenu: 'Mostrar _MENU_ registros',
+      sZeroRecords: 'No se encontraron resultados',
+      sEmptyTable: 'Ningún dato disponible en esta tabla',
+      sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+      sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+      sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+      sInfoPostFix: '',   
+      sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
+      sUrl: '',
+      sInfoThousands: ',',
+      sLoadingRecords: 'Cargando...',
+      oPaginate: {
+        sFirst: 'Primero',
+        sLast: 'Último',
+        sNext: 'Siguiente',
+        sPrevious: 'Anterior'
+      },
+      oAria: {
+        sSortAscending:
+          ': Activar para ordenar la columna de manera ascendente',
+        sSortDescending:
+          ': Activar para ordenar la columna de manera descendente'
+      }
+    }
+  });
+    /* $('#pPedidosProceso').remove();
+    $('#loaderPedidosEnProceso').remove(); */
+    // $('#tablaPedidosEnProceso').removeClass('hidden');
+    /* tabla.rows.add($(filas)).columns.adjust().draw(); */
+
+    $('.input-group.date').datepicker({
+      autoclose: true,
+      format: "dd/mm/yyyy",
+      startDate: "today",
+      language: "es"
+    });
+}
+
+function mostrarPedidosCargados() {
+  let pedidos = JSON.parse(localStorage.getItem('pedidosCargados'));
+  
+  let loader = $('#loaderPedidosCargados');
+
+  let datatable = $('#tablaPedidosEnProcesoCargados').DataTable({
+    data: pedidos,
+    pageLength: 10,
+    columns: [
+      { data: 'clave' },
+      {
+        data: 'fechaCreacionPadre',
+        render: (fechaCreacionPadre) => {
+          moment.locale('es');
+          return moment(`${fechaCreacionPadre.substr(3,2)}/${fechaCreacionPadre.substr(0,2)}/${fechaCreacionPadre.substr(6,4)}`).format('LL')
+        }
+      },
+      {
+        data: 'fechaRuta',
+        render: (fechaRuta) => {
+          moment.locale('es');
+          if(fechaRuta.length > 0) {
+            return moment(`${fechaRuta.substr(3,2)}/${fechaRuta.substr(0,2)}/${fechaRuta.substr(6,4)}`).format('LL');
+          }
+          else {
+            return "Fecha pendiente";
+          }
+        }
+      },
+      { data: 'ruta',
+        render: (ruta) => {
+          if(ruta.length > 0) {
+            return ruta;
+          }else {
+            return "Ruta pendiente";
+          }
+        }
+      },
+      { data: 'agente',
+      className: 'text-center',
+        render: (agente) => {
+          if(typeof agente != "undefined") {
+            return `<div class="radioBtn btn-group"><a class="btn btn-sm btn-agente">${agente}</a></div>`;   
+          }
+          else {
+            return "";
+          }
+        }
+      },
+      { data: 'id', 
+        className: 'text-center', 
+        render: (id) => {
+          return `<button onclick="abrirModalModificarRuta('${id}')" class="btn btn-warning btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>` 
+        }
+      },
+      { data: 'estado',
+        className: 'text-center',
+        render: (estado) => {
+          return `<span style="background-color:#FFCC25; color:#000000;" class="badge">${estado}</span>` 
+        }
+      },
+      { data: 'id',
+        className: 'text-center', 
+        render: (id) => {
+          return `<a class="btn btn-default btn-sm" href="pedidoPadre.html?id=${id}"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a>`
+        }
+      },
+      { data: 'id',
+        className: 'text-center', 
+        render: (id) => {
+          return `<button class="btn btn-success btn-sm" onclick="finalizarPedidoPadre('${id}')"><i class="fa fa-check" aria-hidden="true"></i></button>` 
         }
       }
     ],
@@ -424,13 +675,25 @@ function mostrarPedidosEnProceso() {
     // $('#tablaPedidosEnProceso').removeClass('hidden');
     /* tabla.rows.add($(filas)).columns.adjust().draw(); */
 
-    /* $('.input-group.date').datepicker({
+    $('.input-group.date').datepicker({
       autoclose: true,
       format: "dd/mm/yyyy",
       startDate: "today",
       language: "es"
-    }); */
+    });
 }
+
+$('#linkEnProceso').on('shown.bs.tab', function (e) {
+  $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+});
+
+$('#linkVerificados').on('shown.bs.tab', function (e) {
+  $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+});
+
+$('#linkCargados').on('shown.bs.tab', function (e) {
+  $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+});
 
 dragula([document.getElementById('tbodyTablaPedidoSeparar'), document.getElementById('tbodyTablaPedidoSeparado')]);
 
@@ -722,10 +985,10 @@ function mostrarPedidosFinalizados() {
     });
 }
 
-function abrirModalFinalizarPedidoPadre(idPedidoPadre) {
+/* function abrirModalFinalizarPedidoPadre(idPedidoPadre) {
   $('#modalFinalizarPedidoPadre').modal('show');
   $('#btnFinalizarPedidoPadre').attr('onclick', `finalizarPedidoPadre('${idPedidoPadre}')`);
-}
+} */
 
 function llenarSelectAgentes() {
   let rutaAgentes = db.ref(`usuarios/administrativo/ventas/agentes`);
@@ -741,19 +1004,56 @@ function llenarSelectAgentes() {
   });
 }
 
-function finalizarPedidoPadre(idPedidoPadre) {
+/* function finalizarPedidoPadre(idPedidoPadre) {
   let rutaPedidoPadre = db.ref(`pedidoPadre/${idPedidoPadre}`);
   rutaPedidoPadre.update({
     estado: "Finalizado"
   });
+} */
+
+function finalizarPedidoPadre(idPedidoPadre) {
+  swal({
+    title: "¿Está seguro que desea finalizar este pedido?",
+    text: "Esta operación no podrá deshacerse.",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+  })
+  .then((willDelete) => {
+    if (willDelete) {
+      db.ref(`pedidoPadre/${idPedidoPadre}`).update({
+        /* verificado: true */
+        estado: "Finalizado"
+      });
+
+      swal("El pedido se ha finalizado con exito", {
+        icon: "success",
+      });
+    }
+  });
 }
 
 function verificarPedidoPadre(idPedidoPadre) {
-  let rutaPedidoPadre = db.ref(`pedidoPadre/${idPedidoPadre}`);
-  rutaPedidoPadre.update({
-    verificado: true
-  });
-  $.toaster({ priority: 'success', title: 'Mensaje de información', message: `Pedido verificado` });
+  swal({
+    title: "¿Está seguro que desea verificar este pedido?",
+    text: "Esta operación no podrá deshacerse.",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+  })
+  .then((willDelete) => {
+    if (willDelete) {
+      db.ref(`pedidoPadre/${idPedidoPadre}`).update({
+        /* verificado: true */
+        estado: "Verificado"
+      });
+
+      swal("El pedido se ha verificado", {
+        icon: "success",
+      });
+    }
+  }); 
+  //$.toaster({ priority: 'success', title: 'Mensaje de información', message: `Pedido verificado` });
 }
 
 function abrirModalModificarRuta(idPedidoPadre) {

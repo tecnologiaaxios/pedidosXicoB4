@@ -26,7 +26,7 @@ gulp.task('pluginsjs', function() {
     'dist/js/sb-admin-2.js',
     'vendor/datatables/js/jquery.dataTables.min.js',
     'vendor/datatables-plugins/dataTables.bootstrap.min.js',
-    // 'vendor/datatables-responsive/dataTables.responsive.js',
+    'vendor/datatables-responsive/dataTables.responsive.js',
     'js/bootstrap-datepicker.min.js',
     'js/bootstrap-datepicker.es.min.js',
     'js/bootstrap-tooltip.js',
@@ -34,6 +34,7 @@ gulp.task('pluginsjs', function() {
     'js/firebase.js',
     'js/dragula.min.js',
     'js/moment-with-locales.js',
+    'js/sweetalert.min.js',
     'babel/panel.js',
     'babel/perfil.js'
   ])

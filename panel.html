@@ -172,30 +172,89 @@
               <div id="loaderPedidosEnProceso" class="loader"></div>
               <h4 class="text-center" id="pPedidosProceso"></h4>
               <div class="container-fluid">
-                <div class="panel panel-default">
-                  <div class="panel-body">
-                    <table id="tablaPedidosEnProceso" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
-                      <thead>
-                        <tr>
-                          <th>Clave</th>
-                          <th>Fecha de captura</th>
-                          <th>Fecha ruta</th>
-                          <!--<th class="text-center">Modificar fecha ruta</th>-->
-                          <th>Ruta</th>
-                          <th>Agente</th>
-                          <!--<th class="text-center">Modificar ruta</th>-->
-                          <th class="text-center">Modificar</th>
-                          <th class="text-center">Estado</th>
-                          <th class="text-center">Detalles</th>
-                          <th class="text-center">Separar</th>
-                          <th class="text-center">Verificar</th>
-                          <th class="text-center">Finalizar</th>
-                        </tr>
-                      </thead>
-                      <tbody id="tbodyTablaPedidos">
-
-                      </tbody>
-                    </table>
+                <ul class="nav nav-tabs" role="tablist">
+                  <li role="presentation" class="active"><a id="linkEnProceso" href="#enProceso" aria-controls="enProceso" role="tab" data-toggle="tab">En proceso</a></li>
+                  <li role="presentation"><a id="linkVerificados" href="#verificados" aria-controls="verificados" role="tab" data-toggle="tab">Verificados</a></li>
+                  <li role="presentation"><a id="linkCargados" href="#cargados" aria-controls="cargados" role="tab" data-toggle="tab">Cargados</a></li>
+                </ul>     
+                <div class="tab-content">
+                  <div role="tabpanel" class="tab-pane active" id="enProceso">
+                    <div class="panel panel-default">
+                      <div class="panel-body">
+                        <table id="tablaPedidosEnProceso" width="100%" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                          <thead>
+                            <tr>
+                              <th>Clave</th>
+                              <th>Fecha de captura</th>
+                              <th>Fecha ruta</th>
+                              <!--<th class="text-center">Modificar fecha ruta</th>-->
+                              <th>Ruta</th>
+                              <th>Agente</th>
+                              <!--<th class="text-center">Modificar ruta</th>-->
+                              <th class="text-center">Modificar</th>
+                              <th class="text-center">Estado</th>
+                              <th class="text-center">Detalles</th>
+                              <th class="text-center">Separar</th>
+                              <th class="text-center">Verificar</th>
+                            </tr>
+                          </thead>
+                          <tbody id="tbodyTablaPedidos">
+      
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <div role="tabpanel" class="tab-pane" id="verificados">
+                    <div class="panel panel-default">
+                      <div class="panel-body">
+                        <table id="tablaPedidosEnProcesoVerificados" width="100%" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                          <thead>
+                            <tr>
+                              <th>Clave</th>
+                              <th>Fecha de captura</th>
+                              <th>Fecha ruta</th>
+                              <!--<th class="text-center">Modificar fecha ruta</th>-->
+                              <th>Ruta</th>
+                              <th>Agente</th>
+                              <!--<th class="text-center">Modificar ruta</th>-->
+                              <th class="text-center">Modificar</th>
+                              <th class="text-center">Estado</th>
+                              <th class="text-center">Detalles</th>
+                            </tr>
+                          </thead>
+                          <tbody id="tbodyTablaPedidos">
+        
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <div role="tabpanel" class="tab-pane" id="cargados">
+                    <div class="panel panel-default">
+                      <div class="panel-body">
+                        <table id="tablaPedidosEnProcesoCargados" width="100%" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                          <thead>
+                            <tr>
+                              <th>Clave</th>
+                              <th>Fecha de captura</th>
+                              <th>Fecha ruta</th>
+                              <!--<th class="text-center">Modificar fecha ruta</th>-->
+                              <th>Ruta</th>
+                              <th>Agente</th>
+                              <!--<th class="text-center">Modificar ruta</th>-->
+                              <th class="text-center">Modificar</th>
+                              <th class="text-center">Estado</th>
+                              <th class="text-center">Detalles</th>
+                              <th class="text-center">Finalizar</th>
+                            </tr>
+                          </thead>
+                          <tbody id="tbodyTablaPedidos">
+        
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -233,6 +292,7 @@
                     <table id="tablaHistorialPedidos" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
                       <thead>
                         <tr>
+                          <th>Id</th>
                           <th>Clave</th>
                           <th>Núm. de orden</th>
                           <th>Fecha de captura</th>
@@ -529,27 +589,27 @@
       <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
-    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
-    <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
+    <!-- <script src="./node_modules/jquery/dist/jquery.min.js"></script> -->
+    <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script>
     <script src="js/localforage.min.js"></script>
     <script src="js/panel.min.js"></script>
     <!--Todos los javascript están concatenados y minificados en este archivo -->
-    <!-- <script src="vendor/bootstrap/js/bootstrap.min.js"></script> -->
-    <!-- <script src="dist/js/bootstrap-select.js"></script>
-      <script src="vendor/metisMenu/metisMenu.min.js"></script>
-      <script src="dist/js/sb-admin-2.js"></script>
-      <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
-      <script src="vendor/datatables-plugins/dataTables.bootstrap.min.js"></script> -->
+    <!-- <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="dist/js/bootstrap-select.js"></script>
+    <script src="vendor/metisMenu/metisMenu.min.js"></script>
+    <script src="dist/js/sb-admin-2.js"></script>
+    <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables-plugins/dataTables.bootstrap.min.js"></script> -->
     <!-- <script src="vendor/datatables-responsive/dataTables.responsive.js"></script> -->
     <!-- <script src="js/bootstrap-datepicker.min.js"></script>
-      <script src="js/bootstrap-datepicker.es.min.js"></script>
-      <script src="js/bootstrap-tooltip.js"></script>
-      <script src="js/jquery.toaster.js"></script>
-      <script src="js/firebase.js"></script>
-      <script src="js/dragula.min.js"></script>
-      <script src="js/moment-with-locales.js"></script>
-      <script src="js/panel.js"></script>
-      <script src="js/perfil.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+    <script src="js/bootstrap-datepicker.es.min.js"></script>
+    <script src="js/bootstrap-tooltip.js"></script>
+    <script src="js/jquery.toaster.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/dragula.min.js"></script>
+    <script src="js/moment-with-locales.js"></script>
+    <script src="js/panel.js"></script>
+    <script src="js/perfil.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
   </body>
 </html>
