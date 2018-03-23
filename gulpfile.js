@@ -10,7 +10,9 @@ gulp.task('es6', function() {
   gulp.src([
     'js/panel.js',
     'js/perfil.js',
-    'js/login.js'
+    'js/login.js',
+    'js/pedido.js',
+    'js/estadisticas.js'
   ])
 		.pipe( babel({presets : ['es2015'], plugins: ["transform-object-rest-spread"]}))
 		.pipe(gulp.dest(`babel/`));

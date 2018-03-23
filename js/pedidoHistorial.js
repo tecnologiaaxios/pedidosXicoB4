@@ -43,7 +43,7 @@ haySesion();
 
 function mostrarDatos() {
   let idPedido = getQueryVariable('id');
-  let historialPedidos = JSON.parse(localStorage.getItem('historialPedidos'));
+  let historialPedidos = JSON.parse(localStorage.getItem('pedidosEntrada'));
   let datos = historialPedidos[idPedido],
       encabezado = datos.encabezado,
       detalle = datos.detalle,
@@ -53,7 +53,6 @@ function mostrarDatos() {
     $('#contenedorDatos').prepend(`<p id="numOrden" class="lead"><small>Núm. de orden: <strong>${encabezado.numOrden}</strong></small></p>`);
   }
 
-  let idPedido = getQueryVariable('id');
   $('#numPedido').html(`Pedido: ${idPedido}`);
   let diaCaptura = fecha.substr(0,2),
       mesCaptura = fecha.substr(3,2),
@@ -66,7 +65,14 @@ function mostrarDatos() {
   $('#fechaPedido').html(`Recibido el ${fechaCaptura}`);
   $('#tienda').html(`Tienda: ${datos.encabezado.tienda}`);
 
-  let cantidadProductos = encabezado.cantidadProductos;
+  let uid = datos.encabezado.promotora;
+  db.ref(`usuarios/tiendas/supervisoras/${uid}`).once('value', (promotora) => {
+    let nombrePromotora = promotora.val().nombre;
+
+    $('#coordinador').html(`Coordinador(a): ${nombrePromotora}`);
+  });
+
+  let cantidadProductos = Object.keys(detalle).length;
   $('#cantidad').html(`<small class="lead">${cantidadProductos}</small>`);
   let filas = "", kgTotal = 0, degusTotal = 0, pedidoPzTotal = 0, piezaTotal = 0, precioUnitarioTotal = 0, cambioFisicoTotal = 0;
     

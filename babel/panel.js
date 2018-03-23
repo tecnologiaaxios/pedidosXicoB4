@@ -24,13 +24,33 @@ $(document).ready(function () {
     }
   });
 
+  /*  db.ref('pedidoEntrada').orderByKey('agrupado').equalTo('true').on('value', (pedidos) => {
+     let datos = pedidos.val();
+     let arrayPedidos = [];
+     pedidos.forEach((pedido) => {
+       arrayPedidos.unshift({
+         id: pedido.key,
+         ...pedido.val()
+       })
+     })
+   }) */
+
+  db.ref('regiones').once('value', function (regiones) {
+    var zonas = regiones.val();
+    localStorage.setItem('zonas', JSON.stringify(zonas));
+  });
+
   db.ref('pedidoEntrada').on('value', function (pedidos) {
     var datos = pedidos.val();
     var arrayPedidos = [],
-        arrayHistorialPedidos = [];
+        arrayHistorialPedidos = [],
+        arrayPedidosFiltrar = [];
 
     pedidos.forEach(function (pedido) {
       var agrupado = pedido.val().encabezado.agrupado;
+      arrayPedidosFiltrar.unshift(_extends({
+        id: pedido.key
+      }, pedido.val()));
 
       if (typeof agrupado != "undefined" && agrupado == false) {
         arrayPedidos.unshift(_extends({
@@ -43,9 +63,12 @@ $(document).ready(function () {
         }, pedido.val()));
       }
     });
+
     localStorage.setItem('pedidos', JSON.stringify(arrayPedidos));
+    localStorage.setItem('filtrarPedidos', JSON.stringify(arrayPedidosFiltrar));
     localStorage.setItem('pedidosEntrada', JSON.stringify(datos));
     localStorage.setItem('historialPedidos', JSON.stringify(arrayHistorialPedidos));
+
     mostrarPedidos();
     mostrarHistorialPedidos();
   });
@@ -1008,6 +1031,24 @@ function guardarDatos(idPedidoPadre) {
 
 dragula([document.getElementById('tbodyTablaPedidos'), document.getElementById('tbodyTablaPedidoPadre')]);
 dragula([document.getElementById('tbodyTablaOrdenes'), document.getElementById('tbodyTablaPedidoPadre')]);
+
+function tirarAlertaGenerarPedidoPadre() {
+  swal({
+    title: "¿Está seguro que desea agrupar estos pedidos?",
+    text: "Esta operación no podrá deshacerse.",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true
+  }).then(function (willDelete) {
+    if (willDelete) {
+      generarPedidoPadre();
+
+      swal("Los pedidos se han agrupado con exito", {
+        icon: "success"
+      });
+    }
+  });
+}
 
 function generarPedidoPadre() {
   var pedidos = [],

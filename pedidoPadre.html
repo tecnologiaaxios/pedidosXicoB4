@@ -209,7 +209,11 @@
     </div><!-- /#wrapper -->
     <!-- jQuery -->
     <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
-    <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script>
+    <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script>if (window.module) module = window.module;</script>
+
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <!--<script src="vendor/bootstrap/js/bootstrap.min.js"></script>-->
     <script src="vendor/metisMenu/metisMenu.min.js"></script>

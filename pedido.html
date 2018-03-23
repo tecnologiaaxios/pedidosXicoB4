@@ -95,6 +95,7 @@
                       <small id="keyPedido">Id del pedido: </small>
                     </p>
                     <label id="tienda" for="">Tienda: </label>
+                    <p id="coordinador">Coordinador(a):</p>
                     <p class="lead">
                       <small>Productos de este pedido:</small>
                     </p>
@@ -313,7 +314,11 @@
     <!-- /.modal -->
     <!-- jQuery -->
     <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
-    <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script>
+    <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script>if (window.module) module = window.module;</script>
+
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="dist/js/bootstrap-select.js"></script>
     <script src="vendor/metisMenu/metisMenu.min.js"></script>
@@ -354,6 +359,6 @@
     <script src="js/buttons.bootstrap.js"></script>
     <script src="js/buttons.html5.min.js"></script>
     <script src="js/localforage.min.js"></script>
-    <script src="js/pedido.js"></script>
+    <script src="babel/pedido.js"></script>
   </body>
 </html>

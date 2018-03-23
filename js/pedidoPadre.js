@@ -56,7 +56,7 @@ function mostrarDatos() {
     fechaCreacion = `${mes}/${dia}/${año}`;
   moment.locale('es');
   let fechaCreacionMostrar = moment(fechaCreacion).format('LL');
-  $('#fechaPedido').html(`Recibido el ${fechaCreacionMostrar}`);
+  $('#fechaPedido').html(`Ruta: ${datos.ruta}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Recibido el ${fechaCreacionMostrar}`);
 }
 
 function llenarSelectTiendas() {

@@ -51,6 +51,9 @@
           <a class="navbar-brand" href="tickets.html">
             <span class="textnavbar material-icons" data-toggle="tooltip" data-placement="bottom" title="Tickets">receipt</span>
           </a>
+          <a class="navbar-brand" href="estadisticas.html">
+            <span class="fa fa-line-chart" data-toggle="tooltip" data-placement="bottom" title="Estadísticas"></span>
+          </a>
           <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown">
             <a class="links-panel" class="dropdown-toggle" data-toggle="dropdown" href="#">
               <i class="textnavbar fa fa-bell-o" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Notificaciones"></i>
@@ -111,7 +114,7 @@
                 <div id="loaderPedidos" class="loader"></div>
                 <div class="panel panel-default">
                   <div class="panel-body">
-                    <table id="tablaPedidos" class="table-hover table table-condensed table-bordered table-striped" style="margin-top:15px;">
+                    <table width="100%" id="tablaPedidos" class="table-hover table table-condensed table-bordered table-striped" style="margin-top:15px;">
                       <thead>
                         <tr>
                           <th>Id</th>
@@ -133,7 +136,7 @@
               <div class="collapse" id="collapseExample">
                 <div class="well">
                   <div class="table-responsive">
-                    <table id="tablaPedidoPadre" class="table table-condensed table-bordered" style="padding:0px 0px 0px; ">
+                    <table width="100%" id="tablaPedidoPadre" class="table table-condensed table-bordered" style="padding:0px 0px 0px; ">
                       <thead>
                         <tr>
                           <th>Id</th>
@@ -162,7 +165,7 @@
                         </tr>
                       </tbody>
                     </table>
-                    <button class="btn btn-success" type="button" onclick="generarPedidoPadre()">Generar pedido</button>
+                    <button class="btn btn-success" type="button" onclick="tirarAlertaGenerarPedidoPadre()">Generar pedido</button>
                     <button class="btn btn-danger" type="button" onclick="cancelarPedidoPadre()">Cancelar</button>
                   </div>
                 </div>
@@ -265,7 +268,7 @@
               <div class="container-fluid">
                 <div class="panel panel-default">
                   <div class="panel-body">
-                    <table id="tablaPedidosFinalizados" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                    <table width="100%" id="tablaPedidosFinalizados" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
                       <thead>
                         <tr>
                           <th>Clave</th>
@@ -289,7 +292,7 @@
               <div class="container-fluid">
                 <div class="panel panel-default">
                   <div class="panel-body">
-                    <table id="tablaHistorialPedidos" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                    <table width="100%" id="tablaHistorialPedidos" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
                       <thead>
                         <tr>
                           <th>Id</th>
@@ -590,7 +593,12 @@
     </div>
     <!-- /.modal -->
     <!-- <script src="./node_modules/jquery/dist/jquery.min.js"></script> -->
-    <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script>
+    <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
+
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script>if (window.module) module = window.module;</script>
+    
     <script src="js/localforage.min.js"></script>
     <script src="js/panel.min.js"></script>
     <!--Todos los javascript están concatenados y minificados en este archivo -->

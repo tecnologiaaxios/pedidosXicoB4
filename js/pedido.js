@@ -8,7 +8,16 @@ function logout() {
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
 
-  mostrarDatos();
+  /* let idPedido = getQueryVariable('id');
+  let pedidos = JSON.parse(localStorage.getItem('pedidosEntrada'));
+  mostrarDatos(pedidos[idPedido]); */
+
+  let idPedido = getQueryVariable('id');
+  db.ref(`pedidoEntrada/${idPedido}`).on('value', (datos) => {
+    let pedido = datos.val();
+    
+    mostrarDatos(pedido)
+  });
 });
 
 function getQueryVariable(variable) {
@@ -40,74 +49,8 @@ $('#btnPerfil').click( function(e) {
   $('#modalPerfil').modal('show');
 });
 
-function mostrarDatos() {
+function mostrarDatos(pedido) {
   let idPedido = getQueryVariable('id');
-  let pedidos = JSON.parse(localStorage.getItem('pedidosEntrada'));
-
-  let datos = pedidos[idPedido],
-      encabezado = datos.encabezado,
-      detalle = datos.detalle,
-      fecha = encabezado.fechaCaptura;
-
-  if((encabezado.numOrden != "") && (typeof encabezado.numOrden != "undefined")) {
-    $('#contenedorDatos').prepend(`<p id="numOrden" class="lead"><small>Núm. de orden: <strong>${encabezado.numOrden}</strong></small></p>`);
-  }
-
-  $('#keyPedido').html(`Id del pedido: ${idPedido}`);
-  $('#clavePedido').html(`Pedido: ${encabezado.clave}`);
-  let diaCaptura = fecha.substr(0,2),
-      mesCaptura = fecha.substr(3,2),
-      añoCaptura = fecha.substr(6,4),
-      fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
-  
-  moment.locale('es');
-  let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
-    
-  $('#fechaPedido').html(`Recibido el ${fechaCapturaMostrar}`);
-  $('#tienda').html(`Tienda: ${encabezado.tienda}`);
-
-  let cantidadProductos = encabezado.cantidadProductos;
-  $('#cantidad').html(`<small class="lead">${cantidadProductos}</small>`);
-  let filas = "", kgTotal = 0, degusTotal = 0, pedidoPzTotal = 0, piezaTotal = 0, precioUnitarioTotal = 0, cambioFisicoTotal = 0;
-
-  for(let producto in detalle) {
-    let datosProducto = detalle[producto];
-    kgTotal += datosProducto.totalKg;
-    degusTotal += datosProducto.degusPz;
-    pedidoPzTotal += datosProducto.pedidoPz;
-    piezaTotal += datosProducto.totalPz;
-    precioUnitarioTotal += datosProducto.precioUnitario;
-    cambioFisicoTotal += datosProducto.cambioFisicoPz;
-    filas += `<tr>
-                <td class="text-center">${datosProducto.clave}</td>
-                <td>${datosProducto.nombre}</td>
-                <td class="text-right">${datosProducto.pedidoPz}</td>
-                <td class="text-right">${datosProducto.degusPz}</td>
-                <td class="text-right">${datosProducto.cambioFisicoPz}</td>
-                <td class="text-right">${datosProducto.totalPz}</td>
-                <td class="text-right">${datosProducto.totalKg}</td>
-                <td class="text-right">$ ${datosProducto.precioUnitario}</td>
-                <td class="text-center">${datosProducto.unidad}</td>
-                <td class="text-center"><button class="btn btn-warning btn-xs" onclick="abrirModalEditarProducto('${producto}', '${datosProducto.clave}')"><i class="glyphicon glyphicon-pencil" aria-hidden="true"></i></button></td>
-                <td class="text-center"><button class="btn btn-danger btn-xs" onclick="abrirModalEliminarProducto('${producto}', '${datosProducto.clave}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
-              </tr>`;
-  }
-  filas += `<tr>
-              <td></td>
-              <td class="text-right"><strong>Totales</strong></td>
-              <td class="text-right"><strong>${pedidoPzTotal}</strong></td>
-              <td class="text-right"><strong>${degusTotal}</strong></td>
-              <td class="text-right"><strong>${cambioFisicoTotal}</strong></td>
-              <td class="text-right"><strong>${piezaTotal}</strong></td>
-              <td class="text-right"><strong>${kgTotal.toFixed(4)}</strong></td>
-              <td class="text-right"><strong>$ ${precioUnitarioTotal.toFixed(4)}</strong></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>`;
-
-  $('#productos tbody').html(filas);
-
   let datatable = $('#productos').DataTable({
     destroy: true,
     autoWidth: true,
@@ -146,7 +89,91 @@ function mostrarDatos() {
     }
   });
 
-  //datatable.rows.add($(filas)).columns.adjust().draw();
+  /*let datos = pedidos[idPedido],
+      encabezado = datos.encabezado,
+      detalle = datos.detalle,
+      fecha = encabezado.fechaCaptura; */
+  let encabezado = pedido.encabezado,
+      detalle = pedido.detalle,
+      fecha = encabezado.fechaCaptura;
+
+  if((encabezado.numOrden != "") && (typeof encabezado.numOrden != "undefined")) {
+    $('#contenedorDatos').prepend(`<p id="numOrden" class="lead"><small>Núm. de orden: <strong>${encabezado.numOrden}</strong></small></p>`);
+  }
+
+  $('#keyPedido').html(`Id del pedido: ${idPedido}`);
+  $('#clavePedido').html(`Pedido: ${encabezado.clave}`);
+  let diaCaptura = fecha.substr(0,2),
+      mesCaptura = fecha.substr(3,2),
+      añoCaptura = fecha.substr(6,4),
+      fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
+  
+  moment.locale('es');
+  let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
+    
+  $('#fechaPedido').html(`Enviado de: ${encabezado.ruta}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Recibido el ${fechaCapturaMostrar}`);
+  $('#tienda').html(`Tienda: ${encabezado.tienda}`);
+
+  let uid = encabezado.promotora;
+  db.ref(`usuarios/tiendas/supervisoras/${uid}`).once('value', (promotora) => {
+    let nombrePromotora = promotora.val().nombre;
+
+    $('#coordinador').html(`Coordinador(a): ${nombrePromotora}`);
+  });
+
+  let cantidadProductos = Object.keys(detalle).length;
+  
+  $('#cantidad').html(`<small class="lead">${cantidadProductos}</small>`);
+  let filas = "", kgTotal = 0, degusTotal = 0, pedidoPzTotal = 0, piezaTotal = 0, precioUnitarioTotal = 0, cambioFisicoTotal = 0;
+  datatable.clear();
+  for(let producto in detalle) {
+    let datosProducto = detalle[producto];
+    kgTotal += datosProducto.totalKg;
+    degusTotal += datosProducto.degusPz;
+    pedidoPzTotal += datosProducto.pedidoPz;
+    piezaTotal += datosProducto.totalPz;
+    precioUnitarioTotal += datosProducto.precioUnitario;
+    cambioFisicoTotal += datosProducto.cambioFisicoPz;
+    filas += `<tr>
+                <td class="text-center">${datosProducto.clave}</td>
+                <td>${datosProducto.nombre}</td>
+                <td class="text-right">${datosProducto.pedidoPz}</td>
+                <td class="text-right">${datosProducto.degusPz}</td>
+                <td class="text-right">${datosProducto.cambioFisicoPz}</td>
+                <td class="text-right">${datosProducto.totalPz}</td>
+                <td class="text-right">${datosProducto.totalKg}</td>
+                <td class="text-right">$ ${datosProducto.precioUnitario}</td>
+                <td class="text-center">${datosProducto.unidad}</td>
+                <td class="text-center"><button class="btn btn-warning btn-xs" onclick="abrirModalEditarProducto('${producto}', '${datosProducto.clave}')"><i class="glyphicon glyphicon-pencil" aria-hidden="true"></i></button></td>
+                <td class="text-center"><button class="btn btn-danger btn-xs" onclick="abrirModalEliminarProducto('${producto}', '${datosProducto.clave}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
+              </tr>`;
+  }
+  filas += `<tr>
+              <td></td>
+              <td class="text-right"><strong>Totales</strong></td>
+              <td class="text-right"><strong>${pedidoPzTotal}</strong></td>
+              <td class="text-right"><strong>${degusTotal}</strong></td>
+              <td class="text-right"><strong>${cambioFisicoTotal}</strong></td>
+              <td class="text-right"><strong>${piezaTotal}</strong></td>
+              <td class="text-right"><strong>${kgTotal.toFixed(4)}</strong></td>
+              <td class="text-right"><strong>$ ${precioUnitarioTotal.toFixed(4)}</strong></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>`;
+
+  //$('#productos tbody').html(filas);
+  actualizarTotales(kgTotal, piezaTotal);
+
+  datatable.rows.add($(filas)).columns.adjust().draw();
+}
+
+function actualizarTotales(kilos, piezas) {
+  let idPedido = getQueryVariable('id');
+  db.ref(`pedidoEntrada/${idPedido}/encabezado`).update({
+    totalKilos: kilos.toFixed(4),
+    totalPiezas: piezas
+  });
 }
 
 function abrirModal() {
@@ -187,7 +214,7 @@ function llenarSelectProductos() {
   pedidoEntradaRef.on('value', function(snapshot) {
     let consorcio = snapshot.val().encabezado.consorcio;
 
-    let productosRef = db.ref('productos/'+consorcio);
+    let productosRef = db.ref(`productos/${consorcio}`);
     productosRef.on('value', function(snapshot) {
       let productos = snapshot.val();
       let options = '<option value="Seleccionar" id="SeleccionarProducto">Seleccionar</option>';
@@ -208,7 +235,7 @@ $('#listaProductos').change(function() {
     pedidoEntradaRef.on('value', function(snapshot) {
       let consorcio = snapshot.val().encabezado.consorcio;
 
-      let productoActualRef = db.ref('productos/'+consorcio+'/'+idProducto);
+      let productoActualRef = db.ref(`productos/${consorcio}/${idProducto}`);
       productoActualRef.on('value', function(snapshot) {
         let producto = snapshot.val();
         $('#nombre').val(producto.nombre);
@@ -216,6 +243,12 @@ $('#listaProductos').change(function() {
         $('#precioUnitario').val(producto.precioUnitario);
         $('#unidad').val(producto.unidad);
         $('#claveConsorcio').val(producto.claveConsorcio);
+
+        $('#pedidoPz').val('');
+        $('#degusPz').val('');
+        $('#cambioFisicoPz').val('');
+        $('#totalKg').val('');
+        $('#totalPz').val('');
       });
     });
 
@@ -387,19 +420,10 @@ function agregarProducto() {
     else {
       let pedidoEntradaRef = db.ref(`pedidoEntrada/${idPedido}/detalle`);
       pedidoEntradaRef.push(datosProducto);
+
       $.toaster({priority: 'success', title: 'Mensaje de información', message: `Se agregó el producto ${claveProducto} al pedido`});
 
-      $('#listaProductos').val('');
-      $('#nombre').val('');
-      $('#pedidoPz').val('');
-      $('#degusPz').val('');
-      $('#cambioFisicoPz').val('');
-      $('#unidad').val('');
-      $('#empaque').val('');
-      $('#totalKg').val('');
-      $('#totalPz').val('');
-      $('#precioUnitario').val('');
-      $('#claveConsorcio').val('');
+      limpiarCampos();
 
       $('#modalAgregarProducto').modal('hide');
     }
@@ -422,6 +446,20 @@ function agregarProducto() {
       $('#helpblockPedidoPz').hide();
     }
   }
+}
+
+function limpiarCampos() {
+  $('#listaProductos').val('');
+  $('#nombre').val('');
+  $('#pedidoPz').val('');
+  $('#degusPz').val('');
+  $('#cambioFisicoPz').val('');
+  $('#unidad').val('');
+  $('#empaque').val('');
+  $('#totalKg').val('');
+  $('#totalPz').val('');
+  $('#precioUnitario').val('');
+  $('#claveConsorcio').val('');
 }
 
 function abrirModalEditarProducto(idProducto, claveProducto) {
@@ -459,7 +497,7 @@ function abrirModalEditarProducto(idProducto, claveProducto) {
 $('#pedidoPzEditar').keyup(function(){
   let pedidoPz = Number($(this).val());
   let degusPz = Number($('#degusPzEditar').val());
-  let cambioFisicoPz = Number($('#cambioFisicoEditarPz').val());
+  let cambioFisicoPz = Number($('#cambioFisicoPzEditar').val());
   let empaque = Number($('#empaqueEditar').val());
 
   let totalPz = pedidoPz+degusPz+cambioFisicoPz;
@@ -482,7 +520,7 @@ $("#pedidoPzEditar").bind('keyup change click', function (e) {
   if(! $(this).data("previousValue") || $(this).data("previousValue") != $(this).val()) {
     let pedidoPz = Number($(this).val());
     let degusPz = Number($('#degusPzEditar').val());
-    let cambioFisicoPz = Number($('#cambioFisicoEditarPz').val());
+    let cambioFisicoPz = Number($('#cambioFisicoPzEditar').val());
     let empaque = Number($('#empaqueEditar').val());
 
     let totalPz = pedidoPz+degusPz+cambioFisicoPz;
@@ -597,48 +635,43 @@ function abrirModalEliminarProducto(idProducto, claveProducto) {
 
 function eliminarProducto(idProducto, claveProducto) {
   let idPedido = getQueryVariable('id');
-
   db.ref(`pedidoEntrada/${idPedido}/detalle`).child(idProducto).remove();
   $.toaster({priority: 'success', title: 'Mensaje de información', message: `El producto ${claveProducto} fue eliminado con exito de este pedido`});
 }
 
 function mostrarNotificaciones() {
   let usuario = auth.currentUser.uid;
-  let notificacionesRef = db.ref('notificaciones/almacen/'+usuario+'/lista');
+  let notificacionesRef = db.ref(`notificaciones/almacen/${usuario}/lista`);
   notificacionesRef.on('value', function(snapshot) {
     let lista = snapshot.val();
-    let lis = "";
+    let lis = '<li class="dropdown-header">Notificaciones</li><li class="divider"></li>';
 
     let arrayNotificaciones = [];
     for(let notificacion in lista) {
-      arrayNotificaciones.push(lista[notificacion]);
+      arrayNotificaciones.unshift(lista[notificacion]);
     }
-
-    arrayNotificaciones.reverse();
 
     for(let i in arrayNotificaciones) {
       let date = arrayNotificaciones[i].fecha;
       moment.locale('es');
       let fecha = moment(date, "MMMM DD YYYY, HH:mm:ss").fromNow();
 
-      lis += '<li>' +
-               '<a>' +
-                '<div>' +
-                  '<i class="fa fa-comment fa-fw"></i> ' + arrayNotificaciones[i].mensaje +
-                    '<span class="pull-right text-muted small">'+fecha+'</span>' +
-                '</div>' +
-               '</a>' +
-             '</li>';
+      lis += `<li>
+                <a>
+                  <div>
+                    <i class="fa fa-comment fa-fw"></i>${arrayNotificaciones[i].mensaje}
+                    <span class="pull-right text-muted small">${fecha}</span>
+                  </div>
+                </a>
+              </li>`;
     }
-
-    $('#contenedorNotificaciones').empty().append('<li class="dropdown-header">Notificaciones</li><li class="divider"></li>');
-    $('#contenedorNotificaciones').append(lis);
+    $('#contenedorNotificaciones').html(lis);
   });
 }
 
 function mostrarContador() {
   let uid = auth.currentUser.uid;
-  let notificacionesRef = db.ref('notificaciones/almacen/'+uid);
+  let notificacionesRef = db.ref(`notificaciones/almacen/${uid}`);
   notificacionesRef.on('value', function(snapshot) {
     let cont = snapshot.val().cont;
 
@@ -653,7 +686,7 @@ function mostrarContador() {
 
 function verNotificaciones() {
   let uid = auth.currentUser.uid;
-  let notificacionesRef = db.ref('notificaciones/almacen/'+uid);
+  let notificacionesRef = db.ref(`notificaciones/almacen/${uid}`);
   notificacionesRef.update({cont: 0});
 }
 
