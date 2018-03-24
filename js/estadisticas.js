@@ -34,8 +34,18 @@ function logout() {
 $(document).ready(function () {
   $('[data-toggle="tooltip"]').tooltip();
   llenarSelectZonas();
-  mostrarTodos();
+  mostrarTodosPedidos();
 });
+
+function getQueryVariable(variable) {
+  let query = window.location.search.substring(1);
+  let vars = query.split("&");
+  for (let i = 0; i < vars.length; i++) {
+    let pair = vars[i].split("=");
+    if (pair[0] == variable) { return pair[1]; }
+  }
+  return (false);
+}
 
 $('#filtro').change(function() {
   let filtro = $(this).val();
@@ -47,7 +57,7 @@ $('#filtro').change(function() {
     $('#btnBuscar').attr('disabled', true);
     limpiarCampos();
 
-    mostrarTodos();
+    mostrarTodosPedidos();
   }
   else {
     $('#zona').attr('readonly', false);
@@ -57,7 +67,7 @@ $('#filtro').change(function() {
   }
 });
 
-let filtrar = () => {
+let filtrarPedidos = () => {
   let zona = $('#zona').val();
   let fechaInicio = $('#fechaInicio').val();
   let fechaFin = $('#fechaFin').val();
@@ -200,7 +210,7 @@ let filtrar = () => {
   }
 }
 
-let mostrarTodos = () => {
+let mostrarTodosPedidos = () => {
   let pedidos = JSON.parse(localStorage.getItem('filtrarPedidos'));
   let kgTotales = 0;
   let pzTotales = 0;
@@ -262,17 +272,124 @@ function llenarSelectZonas() {
   }
 
   $('#zona').html(options);
+  $('#zonaProducto').html(options);
 }
 
-function getQueryVariable(variable) {
-  let query = window.location.search.substring(1);
-  let vars = query.split("&");
-  for (let i = 0; i < vars.length; i++) {
-    let pair = vars[i].split("=");
-    if (pair[0] == variable) { return pair[1]; }
+function llenarSelectClaves() {
+  let claves = JSON.parse(localStorage.getItem('claves'));
+  let options = '<option selected disabled value="Seleccionar">Seleccionar</option>';
+  for(let clave in claves) {
+    options += `<option value="${clave}">${clave}</option>`;
   }
-  return (false);
 }
+
+let filtrarProductos = () => {
+  let estadisticasProductos = JSON.parse(localStorage.getItem('estadisticasProductos'));
+  let clave = $('#clave').val();
+  let zona = $('#zona').val();
+  let fecha = $('#fecha').val();
+  let datatable = $('#productos').DataTable({
+    data: pedidos,
+    pageLength: 25,
+    lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],     
+    destroy: true,
+    ordering: false,
+    language: LANGUAGE
+  });
+
+  datatable.clear();
+
+  let filas = "";
+  for(let estadistica in estadisticasProductos) {
+    let producto = estadisticasProductos[estadistica];
+    if(clave && zona && fecha) {
+      if(producto.clave === clave && producto.zona === zona && producto.fecha === fecha) {
+        filas += `<tr>
+                    <td>${producto.clave}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.zona}</td>
+                    <td>${producto.fecha}</td>
+                    <td>${producto.totalKilos}</td>
+                    <td>${producto.totalPiezas}</td>
+                  </tr>`;
+      }
+    }
+    if(clave && zona && fecha.length === 0) {
+      if(producto.clave === clave && producto.zona === zona) {
+        filas += `<tr>
+                    <td>${producto.clave}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.zona}</td>
+                    <td>${producto.fecha}</td>
+                    <td>${producto.totalKilos}</td>
+                    <td>${producto.totalPiezas}</td>
+                  </tr>`;
+      }
+    }
+    if(clave && zona === null && fecha) {
+      if(producto.clave === clave && producto.fecha === fecha) {
+        filas += `<tr>
+                    <td>${producto.clave}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.zona}</td>
+                    <td>${producto.fecha}</td>
+                    <td>${producto.totalKilos}</td>
+                    <td>${producto.totalPiezas}</td>
+                  </tr>`;
+      }
+    }
+    if(clave === null & zona && fecha) {
+      if(producto.zona = zona && producto.fecha == fecha) {
+        filas += `<tr>
+                    <td>${producto.clave}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.zona}</td>
+                    <td>${producto.fecha}</td>
+                    <td>${producto.totalKilos}</td>
+                    <td>${producto.totalPiezas}</td>
+                  </tr>`;
+      }
+    }
+    if(clave && zona === null && fecha.length === 0) {
+      if(producto.clave === clave) {
+        filas += `<tr>
+                    <td>${producto.clave}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.zona}</td>
+                    <td>${producto.fecha}</td>
+                    <td>${producto.totalKilos}</td>
+                    <td>${producto.totalPiezas}</td>
+                  </tr>`;
+      }
+    }
+    if(clave === null && zona && fecha.length === 0) {
+      if(producto.zona === zona) {
+        filas += `<tr>
+                    <td>${producto.clave}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.zona}</td>
+                    <td>${producto.fecha}</td>
+                    <td>${producto.totalKilos}</td>
+                    <td>${producto.totalPiezas}</td>
+                  </tr>`;
+      }
+    }
+    if(clave === null && zona === null && fecha) {
+      if(producto.fecha === fecha) {
+        filas += `<tr>
+                    <td>${producto.clave}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.zona}</td>
+                    <td>${producto.fecha}</td>
+                    <td>${producto.totalKilos}</td>
+                    <td>${producto.totalPiezas}</td>
+                  </tr>`;
+      }
+    }
+  }
+  datatable.rows.add($(filas)).columns.adjust().draw();
+}
+
 
 function mostrarNotificaciones() {
   let usuario = auth.currentUser.uid;
@@ -366,7 +483,7 @@ function mostrarContador() {
   }
 })*/
 
-const mv = new Vue({
+/*const mv = new Vue({
   el: '#app',
   data: {
     filtro: '',
@@ -379,7 +496,7 @@ const mv = new Vue({
     fechaHasta: null
   },
   methods: {
-    /* habilitar() {
+     habilitar() {
       if(this.filtro === "PorZona") {
         $('#zona').attr('readonly', false);
         $('#fechaInicio').attr('readonly', false);
@@ -445,9 +562,9 @@ const mv = new Vue({
         //$('#pedidos tbody').html(filas);
         datatable.rows.add($(filas)).columns.adjust().draw();
       }
-    } */
+    } 
   }
-})
+})*/
 
 function verNotificaciones() {
   let uid = auth.currentUser.uid;

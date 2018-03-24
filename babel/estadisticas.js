@@ -36,8 +36,20 @@ function logout() {
 $(document).ready(function () {
   $('[data-toggle="tooltip"]').tooltip();
   llenarSelectZonas();
-  mostrarTodos();
+  mostrarTodosPedidos();
 });
+
+function getQueryVariable(variable) {
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  for (var i = 0; i < vars.length; i++) {
+    var pair = vars[i].split("=");
+    if (pair[0] == variable) {
+      return pair[1];
+    }
+  }
+  return false;
+}
 
 $('#filtro').change(function () {
   var filtro = $(this).val();
@@ -49,7 +61,7 @@ $('#filtro').change(function () {
     $('#btnBuscar').attr('disabled', true);
     limpiarCampos();
 
-    mostrarTodos();
+    mostrarTodosPedidos();
   } else {
     $('#zona').attr('readonly', false);
     $('#fechaInicio').attr('readonly', false);
@@ -58,7 +70,7 @@ $('#filtro').change(function () {
   }
 });
 
-var filtrar = function filtrar() {
+var filtrarPedidos = function filtrarPedidos() {
   var zona = $('#zona').val();
   var fechaInicio = $('#fechaInicio').val();
   var fechaFin = $('#fechaFin').val();
@@ -72,10 +84,10 @@ var filtrar = function filtrar() {
   var fechaHasta = new Date(hasta[1] + '/' + hasta[2] + '/' + hasta[0]);
 
   if (zona && fechaInicio && fechaFin) {
-    var pedidos = JSON.parse(localStorage.getItem('pedidosEntrada'));
+    var _pedidos = JSON.parse(localStorage.getItem('pedidosEntrada'));
     var filas = "";
     var datatable = $('#pedidos').DataTable({
-      data: pedidos,
+      data: _pedidos,
       pageLength: 25,
       lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
       destroy: true,
@@ -85,8 +97,8 @@ var filtrar = function filtrar() {
 
     datatable.clear();
 
-    for (var pedido in pedidos) {
-      var encabezado = pedidos[pedido].encabezado;
+    for (var pedido in _pedidos) {
+      var encabezado = _pedidos[pedido].encabezado;
       var fechaPedido = encabezado.fechaCaptura;
       var date = fechaPedido.split('/');
       var fechaCaptura = new Date(date[1] + '/' + date[0] + '/' + date[2]);
@@ -108,10 +120,10 @@ var filtrar = function filtrar() {
     datatable.rows.add($(filas)).columns.adjust().draw();
   }
   if (zona && fechaInicio.length == 0 && fechaFin.length == 0) {
-    var _pedidos = JSON.parse(localStorage.getItem('pedidosEntrada'));
+    var _pedidos2 = JSON.parse(localStorage.getItem('pedidosEntrada'));
     var _filas = "";
     var _datatable = $('#pedidos').DataTable({
-      data: _pedidos,
+      data: _pedidos2,
       pageLength: 25,
       lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
       destroy: true,
@@ -121,8 +133,8 @@ var filtrar = function filtrar() {
 
     _datatable.clear();
 
-    for (var _pedido in _pedidos) {
-      var _encabezado = _pedidos[_pedido].encabezado;
+    for (var _pedido in _pedidos2) {
+      var _encabezado = _pedidos2[_pedido].encabezado;
       var _fechaPedido = _encabezado.fechaCaptura;
       var _date = _fechaPedido.split('/');
       var _fechaCaptura = new Date(_date[1] + '/' + _date[0] + '/' + _date[2]);
@@ -142,10 +154,10 @@ var filtrar = function filtrar() {
     _datatable.rows.add($(_filas)).columns.adjust().draw();
   }
   if (zona === null && fechaInicio && fechaFin) {
-    var _pedidos2 = JSON.parse(localStorage.getItem('pedidosEntrada'));
+    var _pedidos3 = JSON.parse(localStorage.getItem('pedidosEntrada'));
     var _filas2 = "";
     var _datatable2 = $('#pedidos').DataTable({
-      data: _pedidos2,
+      data: _pedidos3,
       pageLength: 25,
       lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
       destroy: true,
@@ -155,8 +167,8 @@ var filtrar = function filtrar() {
 
     _datatable2.clear();
 
-    for (var _pedido2 in _pedidos2) {
-      var _encabezado2 = _pedidos2[_pedido2].encabezado;
+    for (var _pedido2 in _pedidos3) {
+      var _encabezado2 = _pedidos3[_pedido2].encabezado;
       var _fechaPedido2 = _encabezado2.fechaCaptura;
       var _date2 = _fechaPedido2.split('/');
       var _fechaCaptura2 = new Date(_date2[1] + '/' + _date2[0] + '/' + _date2[2]);
@@ -177,7 +189,7 @@ var filtrar = function filtrar() {
   }
 };
 
-var mostrarTodos = function mostrarTodos() {
+var mostrarTodosPedidos = function mostrarTodosPedidos() {
   var pedidos = JSON.parse(localStorage.getItem('filtrarPedidos'));
   var kgTotales = 0;
   var pzTotales = 0;
@@ -230,19 +242,66 @@ function llenarSelectZonas() {
   }
 
   $('#zona').html(options);
+  $('#zonaProducto').html(options);
 }
 
-function getQueryVariable(variable) {
-  var query = window.location.search.substring(1);
-  var vars = query.split("&");
-  for (var i = 0; i < vars.length; i++) {
-    var pair = vars[i].split("=");
-    if (pair[0] == variable) {
-      return pair[1];
+var filtrarProductos = function filtrarProductos() {
+  var estadisticasProductos = JSON.parse(localStorage.getItem('estadisticasProductos'));
+  var clave = $('#clave').val();
+  var zona = $('#zona').val();
+  var fecha = $('#fecha').val();
+  var datatable = $('#productos').DataTable({
+    data: pedidos,
+    pageLength: 25,
+    lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
+    destroy: true,
+    ordering: false,
+    language: LANGUAGE
+  });
+
+  datatable.clear();
+
+  var filas = "";
+  for (var estadistica in estadisticasProductos) {
+    var producto = estadisticasProductos[estadistica];
+    if (clave && zona && fecha) {
+      if (producto.clave === clave && producto.zona === zona && producto.fecha === fecha) {
+        filas += '<tr>\n                    <td>' + producto.clave + '</td>\n                    <td>' + producto.nombre + '</td>\n                    <td>' + producto.zona + '</td>\n                    <td>' + producto.fecha + '</td>\n                    <td>' + producto.totalKilos + '</td>\n                    <td>' + producto.totalPiezas + '</td>\n                  </tr>';
+      }
+    }
+    if (clave && zona && fecha.length === 0) {
+      if (producto.clave === clave && producto.zona === zona) {
+        filas += '<tr>\n                    <td>' + producto.clave + '</td>\n                    <td>' + producto.nombre + '</td>\n                    <td>' + producto.zona + '</td>\n                    <td>' + producto.fecha + '</td>\n                    <td>' + producto.totalKilos + '</td>\n                    <td>' + producto.totalPiezas + '</td>\n                  </tr>';
+      }
+    }
+    if (clave && zona === null && fecha) {
+      if (producto.clave === clave && producto.fecha === fecha) {
+        filas += '<tr>\n                    <td>' + producto.clave + '</td>\n                    <td>' + producto.nombre + '</td>\n                    <td>' + producto.zona + '</td>\n                    <td>' + producto.fecha + '</td>\n                    <td>' + producto.totalKilos + '</td>\n                    <td>' + producto.totalPiezas + '</td>\n                  </tr>';
+      }
+    }
+    if (clave === null & zona && fecha) {
+      if (producto.zona = zona && producto.fecha == fecha) {
+        filas += '<tr>\n                    <td>' + producto.clave + '</td>\n                    <td>' + producto.nombre + '</td>\n                    <td>' + producto.zona + '</td>\n                    <td>' + producto.fecha + '</td>\n                    <td>' + producto.totalKilos + '</td>\n                    <td>' + producto.totalPiezas + '</td>\n                  </tr>';
+      }
+    }
+    if (clave && zona === null && fecha.length === 0) {
+      if (producto.clave === clave) {
+        filas += '<tr>\n                    <td>' + producto.clave + '</td>\n                    <td>' + producto.nombre + '</td>\n                    <td>' + producto.zona + '</td>\n                    <td>' + producto.fecha + '</td>\n                    <td>' + producto.totalKilos + '</td>\n                    <td>' + producto.totalPiezas + '</td>\n                  </tr>';
+      }
+    }
+    if (clave === null && zona && fecha.length === 0) {
+      if (producto.zona === zona) {
+        filas += '<tr>\n                    <td>' + producto.clave + '</td>\n                    <td>' + producto.nombre + '</td>\n                    <td>' + producto.zona + '</td>\n                    <td>' + producto.fecha + '</td>\n                    <td>' + producto.totalKilos + '</td>\n                    <td>' + producto.totalPiezas + '</td>\n                  </tr>';
+      }
+    }
+    if (clave === null && zona === null && fecha) {
+      if (producto.fecha === fecha) {
+        filas += '<tr>\n                    <td>' + producto.clave + '</td>\n                    <td>' + producto.nombre + '</td>\n                    <td>' + producto.zona + '</td>\n                    <td>' + producto.fecha + '</td>\n                    <td>' + producto.totalKilos + '</td>\n                    <td>' + producto.totalPiezas + '</td>\n                  </tr>';
+      }
     }
   }
-  return false;
-}
+  datatable.rows.add($(filas)).columns.adjust().draw();
+};
 
 function mostrarNotificaciones() {
   var usuario = auth.currentUser.uid;
@@ -328,7 +387,7 @@ function mostrarContador() {
   }
 })*/
 
-var mv = new Vue({
+/*const mv = new Vue({
   el: '#app',
   data: {
     filtro: '',
@@ -341,7 +400,7 @@ var mv = new Vue({
     fechaHasta: null
   },
   methods: {
-    /* habilitar() {
+     habilitar() {
       if(this.filtro === "PorZona") {
         $('#zona').attr('readonly', false);
         $('#fechaInicio').attr('readonly', false);
@@ -353,58 +412,58 @@ var mv = new Vue({
       }
       
     }, */
-    /* mostrarTodos() {
-      console.log("metodo todos")
-    }, */
-    /* filtrar() {
-      this.desde = fechaInicio.split('-');
-      this.hasta = fechaFin.split('-');
-       this.fechaDesde = new Date(`${desde[1]}/${desde[2]}/${desde[0]}`);
-      this.fechaHasta = new Date(`${hasta[1]}/${hasta[2]}/${hasta[0]}`);
-       if(zona && fechaInicio && fechaFin) {
-        let pedidos = JSON.parse(localStorage.getItem('pedidosEntrada'));
-        let filas = "";
-        let datatable = $('#pedidos').DataTable({
-          data: pedidos,
-          pageLength: 25,
-          lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],     
-          destroy: true,
-          ordering: false,
-          language: LANGUAGE
-        });
-         datatable.clear();
-         for(let pedido in pedidos) {
-          let encabezado = pedidos[pedido].encabezado;
-          let fechaPedido = encabezado.fechaCaptura;
-          let date = fechaPedido.split('/');
-          let fechaCaptura = new Date(`${date[1]}/${date[0]}/${date[2]}`);
-          if(encabezado.ruta === zona && (fechaCaptura >= fechaDesde && fechaCaptura <= fechaHasta)) {
-            let numOrden = encabezado.numOrden || "";
-            let totalKilos = encabezado.totalKilos || "";
-            let totalPiezas = encabezado.totalPiezas || "";
-            moment.locale('es');
-            let fechaMostrar = moment(`${date[1]}/${date[0]}/${date[2]}`).format('LL')
-            kgTotales += Number(totalKilos);
-            pzTotales += Number(totalPiezas);
-             filas += `<tr>
-                        <td class="text-center">${encabezado.clave}</td>
-                        <td class="text-center">${numOrden}</td>
-                        <td class="text-center">${fechaMostrar}</td>
-                        <td>${encabezado.tienda}</td>
-                        <td>${encabezado.ruta}</td>
-                        <td>${totalKilos}</td>
-                        <td>${totalPiezas}</td>
-                      </tr>`;
-          }
-        }
-        $('#kgTotales').html(`Kg: ${kgTotales.toFixed(4)}`);
-        $('#pzTotales').html(`Pz: ${pzTotales.toFixed(4)}`);
-        //$('#pedidos tbody').html(filas);
-        datatable.rows.add($(filas)).columns.adjust().draw();
+/* mostrarTodos() {
+  console.log("metodo todos")
+}, */
+/* filtrar() {
+  this.desde = fechaInicio.split('-');
+  this.hasta = fechaFin.split('-');
+   this.fechaDesde = new Date(`${desde[1]}/${desde[2]}/${desde[0]}`);
+  this.fechaHasta = new Date(`${hasta[1]}/${hasta[2]}/${hasta[0]}`);
+   if(zona && fechaInicio && fechaFin) {
+    let pedidos = JSON.parse(localStorage.getItem('pedidosEntrada'));
+    let filas = "";
+    let datatable = $('#pedidos').DataTable({
+      data: pedidos,
+      pageLength: 25,
+      lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],     
+      destroy: true,
+      ordering: false,
+      language: LANGUAGE
+    });
+     datatable.clear();
+     for(let pedido in pedidos) {
+      let encabezado = pedidos[pedido].encabezado;
+      let fechaPedido = encabezado.fechaCaptura;
+      let date = fechaPedido.split('/');
+      let fechaCaptura = new Date(`${date[1]}/${date[0]}/${date[2]}`);
+      if(encabezado.ruta === zona && (fechaCaptura >= fechaDesde && fechaCaptura <= fechaHasta)) {
+        let numOrden = encabezado.numOrden || "";
+        let totalKilos = encabezado.totalKilos || "";
+        let totalPiezas = encabezado.totalPiezas || "";
+        moment.locale('es');
+        let fechaMostrar = moment(`${date[1]}/${date[0]}/${date[2]}`).format('LL')
+        kgTotales += Number(totalKilos);
+        pzTotales += Number(totalPiezas);
+         filas += `<tr>
+                    <td class="text-center">${encabezado.clave}</td>
+                    <td class="text-center">${numOrden}</td>
+                    <td class="text-center">${fechaMostrar}</td>
+                    <td>${encabezado.tienda}</td>
+                    <td>${encabezado.ruta}</td>
+                    <td>${totalKilos}</td>
+                    <td>${totalPiezas}</td>
+                  </tr>`;
       }
-    } */
+    }
+    $('#kgTotales').html(`Kg: ${kgTotales.toFixed(4)}`);
+    $('#pzTotales').html(`Pz: ${pzTotales.toFixed(4)}`);
+    //$('#pedidos tbody').html(filas);
+    datatable.rows.add($(filas)).columns.adjust().draw();
   }
-});
+} 
+}
+})*/
 
 function verNotificaciones() {
   var uid = auth.currentUser.uid;

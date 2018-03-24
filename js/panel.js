@@ -33,6 +33,11 @@ $(document).ready(function () {
     })
   }) */
 
+  db.ref('estadisticasProductos').on('value', function(snapshot) {
+    let productos = snapshot.val();
+    localStorage.setItem('estadisticasProductos', JSON.stringify(productos));
+  });
+
   db.ref('regiones').once('value', (regiones) => {
     let zonas = regiones.val();
     localStorage.setItem('zonas', JSON.stringify(zonas));
