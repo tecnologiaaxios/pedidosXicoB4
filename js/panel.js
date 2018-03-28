@@ -34,8 +34,13 @@ $(document).ready(function () {
   }) */
 
   db.ref('estadisticasProductos').on('value', function(snapshot) {
-    let productos = snapshot.val();
-    localStorage.setItem('estadisticasProductos', JSON.stringify(productos));
+    let arrayProductos = [];
+    //let productos = snapshot.val();
+    snapshot.forEach((producto) => {
+      arrayProductos.push(producto.val())
+    });
+
+    localStorage.setItem('estadisticasProductos', JSON.stringify(arrayProductos));
   });
 
   db.ref('regiones').once('value', (regiones) => {

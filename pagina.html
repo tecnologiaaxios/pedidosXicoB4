@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="description" content="">
-  <meta name="author" content="">
+  <title>Document</title>
   <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
   <title>Detalles del pedidos</title>
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -24,13 +24,8 @@
   <link rel="stylesheet" href="css/bootstrap-select.min.css">
   <link rel="stylesheet" href="css/buttons.dataTables.min.css">
   <link href="https://unpkg.com/vue2-datatable-component/dist/min.css" rel="stylesheet">
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 </head>
+
 <body>
   <nav class="navbar">
     <div class="container-fluid">
@@ -84,8 +79,12 @@
         </div>
       </div>
       <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#panePedidos" aria-controls="panePedidos" role="tab" data-toggle="tab">Pedidos</a></li>
-        <li role="presentation"><a href="#paneProductos" aria-controls="paneProductos" role="tab" data-toggle="tab">Productos</a></li>
+        <li role="presentation" class="active">
+          <a href="#panePedidos" aria-controls="panePedidos" role="tab" data-toggle="tab">Pedidos</a>
+        </li>
+        <li role="presentation">
+          <a href="#paneProductos" aria-controls="paneProductos" role="tab" data-toggle="tab">Productos</a>
+        </li>
       </ul>
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="panePedidos">
@@ -94,14 +93,15 @@
               <div class="row">
                 <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">
                   <form class="form-inline"></form>
-                    <div class="form-group">
-                      <label for="tipoAcumulado"><i class="fa fa-filter" aria-controls="true"></i> Filtrar pedidos:</label>
-                      <select class="form-control" name="filtro" id="filtro">
-                        <option selected disabled value="">Seleccionar</option>
-                        <option value="Todos">Todos</option>
-                        <option value="PorZona">Por zona</option>
-                      </select>
-                    </div>
+                  <div class="form-group">
+                    <label for="tipoAcumulado">
+                      <i class="fa fa-filter" aria-controls="true"></i> Filtrar pedidos:</label>
+                    <select class="form-control" name="filtro" id="filtro">
+                      <option selected disabled value="">Seleccionar</option>
+                      <option value="Todos">Todos</option>
+                      <option value="PorZona">Por zona</option>
+                    </select>
+                  </div>
                   </form>
                 </div>
               </div>
@@ -111,7 +111,7 @@
                     <div class="form-group">
                       <label for="zona">Zona:</label>
                       <select readonly type="text" id="zona" class="form-control">
-      
+
                       </select>
                     </div>
                     <div class="form-group">
@@ -122,7 +122,8 @@
                       <label for="fechaFin">Hasta:</label>
                       <input id="fechaFin" name="fechaFin" type="date" class="form-control" readonly>
                     </div>
-                    <button id="btnBuscar" onclick="filtrarPedidos()" disabled type="button" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> Buscar</button>
+                    <button id="btnBuscar" onclick="filtrarPedidos()" disabled type="button" class="btn btn-primary">
+                      <i class="fa fa-search" aria-hidden="true"></i> Buscar</button>
                   </form>
                 </div>
               </div>
@@ -130,39 +131,41 @@
                 <div class="col-lg-12 col-md-12 col-sm-12">
                   <br>
                   <!-- <div class="panel panel-default">
-                    <div class="panel-body"> -->
-                      <table width="100%" id="pedidos" class="table table-condensed table-bordered table-striped table-hover">
-                        <thead>
-                          <tr>
-                            <th class="text-center">Clave</th>
-                            <th class="text-center">Núm. orden</th>
-                            <th>Fecha captura</th>
-                            <th>Tienda</th>
-                            <th>Zona</th>
-                            <th class="text-center">Total Kg</th>
-                            <th class="text-center">Total Pz</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-      
-                        </tbody>
-                      </table>
-                      <!-- <todos v-show="filtro"></todos> -->
-                    <!-- </div>
-                  </div> -->
-                </div><!-- /.col-lg-12 -->
-              </div><!-- /.row -->
+                                <div class="panel-body"> -->
+                  <table width="100%" id="pedidos" class="table table-condensed table-bordered table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th class="text-center">Clave</th>
+                        <th class="text-center">Núm. orden</th>
+                        <th>Fecha captura</th>
+                        <th>Tienda</th>
+                        <th>Zona</th>
+                        <th class="text-center">Total Kg</th>
+                        <th class="text-center">Total Pz</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                  </table>
+                  <!-- <todos v-show="filtro"></todos> -->
+                  <!-- </div>
+                              </div> -->
+                </div>
+                <!-- /.col-lg-12 -->
+              </div>
+              <!-- /.row -->
               <div class="row">
                 <div class="col-lg-4 col-md-8 col-sm-8 col-lg-offset-8 col-md-offset-4 col-sm-offset-4">
                   <!-- <div class="jumbotron">
-                    <h2 id="kgTotales">Kg totales: 500</h2>
-                    <h2 id="pzTotales">Pz totales: 300</h2>
-                  </div> -->
+                                <h2 id="kgTotales">Kg totales: 500</h2>
+                                <h2 id="pzTotales">Pz totales: 300</h2>
+                              </div> -->
                   <!-- <div class="well">
-                    <h2 id="kgTotales">Kg totales:</h2>
-                    <h2 id="pzTotales">Pz totales:</h2>
-                  </div> -->
-      
+                                <h2 id="kgTotales">Kg totales:</h2>
+                                <h2 id="pzTotales">Pz totales:</h2>
+                              </div> -->
+
                   <div class="panel panel-default">
                     <div class="panel-heading">
                       <h3 class="panel-title">Totales</h3>
@@ -189,7 +192,6 @@
                       <select v-model="clave" :value="clave" class="form-control" name="clave" id="clave">
                         <option selected disabled value="">Seleccionar</option>
                         <option value="PT-01-01">PT-01-01</option>
-                        <option value="PT-01-02">PT-01-02</option>
                         <option value="PT-02-01">PT-02-01</option>
                         <option value="PT-04-01">PT-04-01</option>
                         <option value="PT-07-01">PT-07-01</option>
@@ -205,13 +207,14 @@
                       <input v-model="fecha" @change="cambiarFecha" id="fecha" name="fecha" type="date" class="form-control">
                     </div>
                     <!-- <div class="form-group">
-                      <label for="fecha">Fecha:</label>
-                      <div class="input-group date">
-                        <input v-model="fecha" id="fecha" class="form-control" type="text" placeholder="Fecha">
-                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                      </div>
-                    </div> -->
-                    <button id="btnFiltrarProductos" @click="filtrar" type="button" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> Buscar</button>
+                                  <label for="fecha">Fecha:</label>
+                                  <div class="input-group date">
+                                    <input v-model="fecha" id="fecha" class="form-control" type="text" placeholder="Fecha">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                  </div>
+                                </div> -->
+                    <button id="btnFiltrarProductos" @click="filtrar" type="button" class="btn btn-primary">
+                      <i class="fa fa-search" aria-hidden="true"></i> Buscar</button>
                   </form>
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-4">
@@ -228,40 +231,41 @@
                 <div class="col-lg-12 col-md-12 col-sm-12">
                   <tabla-productos :productos="productosFiltrados"></tabla-productos>
                 </div>
-                <!-- <template id="productos2">
-                  <table width="100%" id="tablaProductos" class="table table-condensed table-bordered table-striped table-hover">
-                    <thead>
-                      <tr>
-                        <th class="text-center">Clave</th>
-                        <th>Nombre</th>
-                        <th>Zona</th>
-                        <th>Fecha</th>
-                        <th class="text-center">Total Kg</th>
-                        <th class="text-center">Total Pz</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="producto in productos">
-                        <td class="text-center">{{ producto.clave }}</td>
-                        <td>{{ producto.nombre }}</td>
-                        <td>{{ producto.zona }}</td>
-                        <td>{{ producto.fecha }}</td>
-                        <td class="text-center">{{ producto.totalKilos }}</td>
-                        <td class="text-center">{{ producto.totalPiezas }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </template> -->
+                <template id="productos2">
+                              <table width="100%" id="tablaProductos" class="table table-condensed table-bordered table-striped table-hover">
+                                <thead>
+                                  <tr>
+                                    <th class="text-center">Clave</th>
+                                    <th>Nombre</th>
+                                    <th>Zona</th>
+                                    <th>Fecha</th>
+                                    <th class="text-center">Total Kg</th>
+                                    <th class="text-center">Total Pz</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr v-for="producto in productos">
+                                    <td class="text-center">{{ producto.clave }}</td>
+                                    <td>{{ producto.nombre }}</td>
+                                    <td>{{ producto.zona }}</td>
+                                    <td>{{ producto.fecha }}</td>
+                                    <td class="text-center">{{ producto.totalKilos }}</td>
+                                    <td class="text-center">{{ producto.totalPiezas }}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </template>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div><!-- /#wrapper -->
+  </div>
+  <!-- /#wrapper -->
   <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
   <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
-  <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+  <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
   <script src="js/jquery-3.2.1.min.js"></script>
   <script>if (window.module) module = window.module;</script>
 
@@ -309,4 +313,5 @@
   <script src="https://unpkg.com/vue2-datatable-component/dist/min.js"></script>
   <script src="babel/estadisticas.js"></script>
 </body>
+
 </html>
