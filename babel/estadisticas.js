@@ -42,6 +42,14 @@ $(document).ready(function () {
     language: "es"
   });
 
+  $('#tablaProductos').DataTable({
+    pageLength: 25,
+    lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
+    destroy: true,
+    ordering: false,
+    language: LANGUAGE
+  });
+
   llenarSelectZonas();
   mostrarTodosPedidos();
 });
@@ -366,6 +374,15 @@ function mostrarContador() {
   });
 }
 
+function limpiar() {
+  $('#clave').val('');
+  $('#zonaProducto').val('');
+  $('#fecha').val('');
+
+  $('#tablaProductos').DataTable().destroy();
+  console.log("Hola");
+}
+
 /* Vue.component('tabla-pedidos', {
   template: ``,
   props: {
@@ -386,180 +403,6 @@ function mostrarContador() {
     });
   }
 }); */
-
-Vue.component('tabla-productos', {
-  //template: '#productos2',
-  template: '<table width="100%" id="tablaProductos" class="table table-condensed table-bordered table-striped table-hover">\n              <thead>\n                <tr>\n                  <th class="text-center">Clave</th>\n                  <th>Nombre</th>\n                  <th>Zona</th>\n                  <th>Fecha</th>\n                  <th class="text-center">Total Kg</th>\n                  <th class="text-center">Total Pz</th>\n                </tr>\n              </thead>\n              <tbody>\n                <tr v-for="producto in productos">\n                  <td class="text-center">{{ producto.clave }}</td>\n                  <td>{{ producto.nombre }}</td>\n                  <td>{{ producto.zona }}</td>\n                  <td>{{ producto.fecha }}</td>\n                  <td class="text-center">{{ producto.totalKilos }}</td>\n                  <td class="text-center">{{ producto.totalPiezas }}</td>\n                </tr>\n              </tbody>\n            </table>\n  ',
-  props: {
-    productos: {
-      type: Array
-    }
-  },
-  data: function data() {
-    return {};
-  },
-  mounted: function mounted() {
-    /* $('#tablaProductos').DataTable({
-      pageLength: 25,
-      lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],  
-      destroy: true,
-      ordering: false,
-      language: LANGUAGE
-    }); */
-  },
-  updated: function updated() {
-    /* $('#tablaProductos').DataTable({
-      pageLength: 25,
-      lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],  
-      destroy: true,
-      ordering: false,
-      language: LANGUAGE
-    }); */
-
-  }
-});
-
-new Vue({
-  el: '#appProductos',
-  data: {
-    /* filtro: '',
-    zonaPedidos: '',
-    fechaInicio: '',
-    fechaFin: '',
-    pedidos: [],
-    peidosFiltrados: [], */
-
-    productos: [],
-    productosFiltrados: [],
-    clave: '',
-    zona: '',
-    fecha: '',
-    fechaFiltro: '',
-    totalKg: 0,
-    totalPz: 0
-  },
-  computed: {
-    strTotalKg: function strTotalKg() {
-      return 'Total Kg: ' + this.totalKg;
-    },
-    strTotalPz: function strTotalPz() {
-      return 'Total Pz: ' + this.totalPz;
-    }
-  },
-  created: function created() {
-    this.pedidos = JSON.parse(localStorage.getItem('filtrarPedidos'));
-    this.productos = JSON.parse(localStorage.getItem('estadisticasProductos'));
-    // this.productosFiltrados = this.productos;
-  },
-
-  methods: {
-    cambiarFecha: function cambiarFecha() {
-      var date = this.fecha.split('-');
-      this.fechaFiltro = date[2] + '/' + date[1] + '/' + date[0];
-    },
-    filtrar: function filtrar() {
-      var _this = this;
-
-      var filtro = [];
-      this.totalKg = 0;
-      this.totalPz = 0;
-
-      if (this.clave != '' && this.zona != '' && this.fecha != '') {
-        this.productos.map(function (producto) {
-          if (producto.clave === _this.clave && producto.zona === _this.zona && producto.fecha === _this.fechaFiltro) {
-            filtro.push(producto);
-            _this.totalKg += Number(producto.totalKilos);
-            _this.totalPz += Number(producto.totalPiezas);
-          }
-        });
-        this.productosFiltrados = filtro;
-      } else if (this.clave != '' && this.zona != '' && this.fecha == '') {
-        this.productos.map(function (producto) {
-          if (producto.clave === _this.clave && producto.zona === _this.zona) {
-            filtro.push(producto);
-            _this.totalKg += Number(producto.totalKilos);
-            _this.totalPz += Number(producto.totalPiezas);
-          }
-        });
-        this.productosFiltrados = filtro;
-      } else if (this.clave != '' && this.zona == '' && this.fecha != '') {
-        this.productos.map(function (producto) {
-          if (producto.clave === _this.clave && producto.fecha === _this.fechaFiltro) {
-            filtro.push(producto);
-            _this.totalKg += Number(producto.totalKilos);
-            _this.totalPz += Number(producto.totalPiezas);
-          }
-        });
-        this.productosFiltrados = filtro;
-      } else if (this.clave == '' && this.zona != '' && this.fecha != '') {
-        this.productos.map(function (producto) {
-          if (producto.zona === _this.zona && producto.fecha === _this.fechaFiltro) {
-            filtro.push(producto);
-            _this.totalKg += Number(producto.totalKilos);
-            _this.totalPz += Number(producto.totalPiezas);
-          }
-        });
-        this.productosFiltrados = filtro;
-      } else if (this.clave != '' && this.zona == '' && this.fecha == '') {
-        this.productos.map(function (producto) {
-          if (producto.clave === _this.clave) {
-            filtro.push(producto);
-            _this.totalKg += Number(producto.totalKilos);
-            _this.totalPz += Number(producto.totalPiezas);
-          }
-        });
-        this.productosFiltrados = filtro;
-      } else if (this.clave == '' && this.zona != '' && this.fecha == '') {
-        this.productos.map(function (producto) {
-          if (producto.zona === _this.zona) {
-            filtro.push(producto);
-            _this.totalKg += Number(producto.totalKilos);
-            _this.totalPz += Number(producto.totalPiezas);
-          }
-        });
-        this.productosFiltrados = filtro;
-      } else if (this.clave == '' && this.zona == '' && this.fecha != '') {
-        this.productos.map(function (producto) {
-          if (producto.fecha === _this.fechaFiltro) {
-            filtro.push(producto);
-            _this.totalKg += Number(producto.totalKilos);
-            _this.totalPz += Number(producto.totalPiezas);
-          }
-        });
-        this.productosFiltrados = filtro;
-      } else {
-        this.totalKg = 0;
-        this.totalPz = 0;
-      }
-      //this.data = this.productosFiltrados;
-      this.totalKg = Number(this.totalKg.toFixed(4));
-      //this.total = this.productosFiltrados.length;
-
-      /* let datatable = $('#productos').DataTable({
-        data: this.productosFiltrados,
-        pageLength: 25,
-        lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
-        columns: [
-          { data: 'clave', className: 'text-center' },
-          { data: 'nombre', defaultContent: "" },
-          { data: 'zona', className: 'text-center' },
-          {
-            data: 'fecha',
-            render: (fecha) => {
-              moment.locale('es');
-              return moment(`${fecha.substr(3,2)}/${fecha.substr(0,2)}/${fecha.substr(6,4)}`).format('LL')
-            }
-          },
-          { data: 'totalKilos', className: 'text-center', defaultContent: "" },
-          { data: 'totalPiezas', className: 'text-center', defaultContent: "" }
-        ],     
-        destroy: true,
-        ordering: false,
-        language: LANGUAGE
-      }); */
-    }
-  }
-});
 
 /*Vue.component('todos', {
   template: `

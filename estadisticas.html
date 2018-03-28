@@ -212,6 +212,7 @@
                       </div>
                     </div> -->
                     <button id="btnFiltrarProductos" @click="filtrar" type="button" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> Buscar</button>
+                    <button type="button" @click="limpiarBusqueda" class="btn btn-info">Limpiar</button>
                   </form>
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-4">
@@ -226,7 +227,22 @@
               <br>
               <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12">
-                  <tabla-productos :productos="productosFiltrados"></tabla-productos>
+                  <!-- <tabla-productos :productos="productosFiltrados"></tabla-productos> -->
+                  <table width="100%" id="tablaProductos" class="table table-condensed table-bordered table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th class="text-center">Clave</th>
+                        <th>Nombre</th>
+                        <th>Zona</th>
+                        <th>Fecha</th>
+                        <th class="text-center">Total Kg</th>
+                        <th class="text-center">Total Pz</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                    </tbody>
+                  </table>
                 </div>
                 <!-- <template id="productos2">
                   <table width="100%" id="tablaProductos" class="table table-condensed table-bordered table-striped table-hover">
@@ -308,5 +324,6 @@
   <script src="js/vue.js"></script>
   <script src="https://unpkg.com/vue2-datatable-component/dist/min.js"></script>
   <script src="babel/estadisticas.js"></script>
+  <script src="js/estadisticasvue.js"></script>
 </body>
 </html>
