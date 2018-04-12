@@ -151,6 +151,151 @@ haySesion();
     $(location).attr("href", `pedido.html?id=${idPedido}`);
   });
 } */
+/* 
+function mostrarPedidos() {
+  let datatable = $(`#tablaPedidos`).DataTable({
+    pageLength: 25,
+    lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
+    destroy: true,
+    ordering: false,
+    language: {
+      searchPlaceholder: "Buscar pedido",
+      sProcessing: 'Procesando...',
+      sLengthMenu: 'Mostrar _MENU_ registros',
+      sZeroRecords: 'No se encontraron resultados',
+      sEmptyTable: 'Ningún dato disponible en esta tabla',
+      sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+      sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+      sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+      sInfoPostFix: '',   
+      sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
+      sUrl: '',
+      sInfoThousands: ',',
+      sLoadingRecords: 'Cargando...',
+      oPaginate: {
+        sFirst: 'Primero',
+        sLast: 'Último',
+        sNext: 'Siguiente',
+        sPrevious: 'Anterior'
+      },
+      oAria: {
+        sSortAscending: ': Activar para ordenar la columna de manera ascendente',
+        sSortDescending: ': Activar para ordenar la columna de manera descendente'
+      }
+    }
+  });
+
+  db.ref('pedidoEntrada').orderByChild('agrupado').equalTo(false).on('value', (snapshot) => {
+    
+    let filas = '';
+    datatable.clear();
+    moment.locale('es');
+    let pedidos = [];
+    snapshot.forEach((pedido) => {
+      pedidos.unshift({
+        id: pedido.key,
+        ...pedido
+      });
+    })
+
+    for(let pedido in pedidos) {
+      let encabezado = pedidos[pedido];
+      console.log(fechaCaptura.split('/'));
+      let fechaMostrar = moment(`${fechaCaptura.substr(3,2)}/${fechaCaptura.substr(0,2)}/${fechaCaptura.substr(6,4)}`).format('LL')
+
+      filas += `<tr>
+                  <td>${pedido}</td>
+                  <td class="text-center">${encabezado.clave}</td>
+                  <td>${encabezado.numOrden}</td>
+                  <td>${fechaMostrar}</td>
+                  <td>${encabezado.tienda}</td>
+                  <td class="text-center">${encabezado.ruta}</td>
+                  <td class="text-center"><a type="button" href="pedido.html?id=${pedido}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
+                  <td class="text-center"><span style="background-color:#d50000; color:#FFFFFF;" class="badge">Pendiente</span></td>
+                  <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="abrirModalEliminarPedido('${pedido}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
+                </tr>`;
+    }
+
+    $('')
+  });
+} */
+
+/* Vue.component('tablaPedidos', {
+  template: `
+  <table>
+                        <thead>
+                            <tr>
+                              <th>Id</th>
+                              <th>Clave</th>
+                              <th>Núm. de orden</th>
+                              <th>Fecha de captura</th>
+                              <th>Tienda</th>
+                              <th>Ruta</th>
+                              <th class="text-center">Detalles</th>
+                              <th class="text-center">Estado</th>
+                              <th class="text-center">Eliminar</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="pedido in pedidos">
+                              <td>{{  }}</td>
+                              <td>{{ pedido.clave }}</td>
+                              <td>{{ pedido.numOrden }}</td>
+                              <td>{{ pedido.fechaCaptura }}</td>
+                              <td>{{ pedido.tienda }}</td>
+                              <td>{{ pedido.ruta }}</td>
+                              <td><button class="btn btn-sm btn-default">Ver más</button></td>
+                              <td><button class="btn btn-sm btn-warning">Editar</button></td>
+                              <td><button class="btn btn-sm btn-danger">Eliminar</button></td>
+                            </tr>
+                          </tbody>
+                    </table>
+  `,
+  beforeCreate() {
+    db.ref('pedidosEntrada').on('value', (snapshot) => {
+      this.pedidos = snapshot.val();
+    });
+  }
+}) */
+
+/* const vm = new Vue({
+  el: ".app"
+}); */
+
+/*Vue.use(VueFire)
+
+new Vue({
+  el: '#app',
+  data: {
+    region: ''
+   uid: auth.currentUser.uid,
+    region: "",
+  },
+  firebase: {
+    regiones: db.ref('regiones'),
+    usuario: db.ref(`usuarios/tiendas/supervisoras/${auth.currentUser.uid}`)  
+  },
+  computed: {
+    regionesSelect() {
+      
+    }
+  },
+  beforeCreate() {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        db.ref(`usuarios/tiendas/supervisoras/${user.uid}`).once('value', (snapshot) => {
+          this.region = snapshot.val().regiones[0];
+        });
+      } 
+    });
+  },
+  created() {
+    
+  },
+  methods: {
+    
+  }
+}) */
 
 function mostrarPedidos() {
   let pedidos = JSON.parse(localStorage.getItem('pedidos'));

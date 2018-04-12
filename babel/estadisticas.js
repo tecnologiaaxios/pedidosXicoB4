@@ -374,14 +374,13 @@ function mostrarContador() {
   });
 }
 
-function limpiar() {
+/* function limpiar() {
   $('#clave').val('');
   $('#zonaProducto').val('');
   $('#fecha').val('');
 
   $('#tablaProductos').DataTable().destroy();
-  console.log("Hola");
-}
+} */
 
 /* Vue.component('tabla-pedidos', {
   template: ``,

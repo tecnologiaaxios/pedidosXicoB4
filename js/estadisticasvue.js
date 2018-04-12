@@ -58,6 +58,7 @@
     
   }
 }) */
+Vue.use(VueFire)
 
 new Vue({
   el: '#appProductos',
@@ -71,6 +72,8 @@ new Vue({
 
     productos: [],
     productosFiltrados: [],
+    listaKilos: [],
+    listaPiezas: [],
     clave: '',
     zona: '',
     fecha: '',
@@ -78,7 +81,18 @@ new Vue({
     totalKg: 0,
     totalPz: 0,
   },
+  /* firebase: {
+    vueProductos: db.ref('estadisticasProductos')  
+  }, */
   computed: {
+    kilosProducto() {
+      /* this.productos.map((producto) => {
+        if(producto.fecha )
+      }); */
+    },
+    piezasProducto() {
+
+    },
     strTotalKg() {
       return `Total Kg: ${this.totalKg}`
     },
@@ -92,6 +106,17 @@ new Vue({
     // this.productosFiltrados = this.productos;
   },
   methods: {
+    filtrarPedidosPorZona() {
+
+    },
+    filtrarPedidosPorZonaYFechas() {
+
+    },
+    generarGraficaPorProducto() {
+      /* this.productos.map((producto) => {
+        if()
+      }); */
+    },
     cambiarFecha() {
       let date = this.fecha.split('-');
       this.fechaFiltro = `${date[2]}/${date[1]}/${date[0]}`;
@@ -103,6 +128,8 @@ new Vue({
       this.totalKg = 0;
       this.totalPz = 0;
       this.productosFiltrados = [];
+      this.listaKilos = [];
+      this.listaPiezas = [];
 
       let datatable = $('#tablaProductos').DataTable({
         data: this.productosFiltrados,
@@ -131,6 +158,7 @@ new Vue({
       let filtro = [];
       this.totalKg = 0;
       this.totalPz = 0;
+      let ctx = document.getElementById("graficaProductos");
 
       if(this.clave != '' && this.zona != '' && this.fecha != '') {
         this.productos.map((producto) => {
@@ -151,6 +179,43 @@ new Vue({
           }
         });
         this.productosFiltrados = filtro;
+
+        var myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+              labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+              datasets: [{
+                  label: '# of Votes',
+                  data: [12, 19, 3, 5, 2, 3],
+                  backgroundColor: [
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(255, 206, 86, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(153, 102, 255, 0.2)',
+                      'rgba(255, 159, 64, 0.2)'
+                  ],
+                  borderColor: [
+                      'rgba(255,99,132,1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(255, 206, 86, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(153, 102, 255, 1)',
+                      'rgba(255, 159, 64, 1)'
+                  ],
+                  borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero:true
+                      }
+                  }]
+              }
+          }
+      });
       }
       else if(this.clave != '' && this.zona == '' && this.fecha != '') {
         this.productos.map((producto) => {
@@ -176,11 +241,47 @@ new Vue({
         this.productos.map((producto) => {
           if(producto.clave === this.clave) {
             filtro.push(producto);
+            this.listaKilos.push(producto.totalKilos);
+            this.listaPiezas.push(producto.totalPiezas);
             this.totalKg += Number(producto.totalKilos);
             this.totalPz += Number(producto.totalPiezas);
           }
         });
         this.productosFiltrados = filtro;
+
+        var myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+              labels: ['Enero', 'Febrero'],
+              datasets: [{
+                  label: '# Kilos',
+                  data: this.listaKilos,
+                  backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                  borderColor: 'rgba(255,99,132,1)',
+                  borderWidth: 1
+                },
+                {
+                  label: '# Piezas',
+                  data: this.listaPiezas,
+                  backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                  borderColor: 'rgba(54, 162, 235, 1)',
+                  borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero:true
+                      }
+                  }]
+              },
+              title: {
+                display: true,
+                text: this.clave
+              }
+          }
+      });
       }
       else if(this.clave == '' && this.zona != '' && this.fecha == '') {
         this.productos.map((producto) => {

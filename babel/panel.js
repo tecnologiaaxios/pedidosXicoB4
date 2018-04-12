@@ -151,6 +151,126 @@ haySesion();
   });
 } */
 
+/* function mostrarPedidos() {
+  let datatable = $('#tablaPedidos').DataTable({
+    data: pedidos,
+    pageLength: 25,
+    lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
+    columns: [
+      { data: 'id' },
+      { data: 'encabezado.clave', className: 'text-center' },
+      { data: 'encabezado.numOrden' },
+      {
+        data: 'encabezado.fechaCaptura',
+        render: (fechaCaptura) => {
+          moment.locale('es');
+          return moment(`${fechaCaptura.substr(3,2)}/${fechaCaptura.substr(0,2)}/${fechaCaptura.substr(6,4)}`).format('LL')
+        }
+      },
+      { data: 'encabezado.tienda' },
+      { data: 'encabezado.ruta', className: 'text-center' },
+      { data: 'id', 
+        className: 'text-center', 
+        render: (id) => { 
+          return `<a type="button" href="pedido.html?id=${id}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a>`
+        } 
+      },
+      { className: 'text-center', defaultContent: '<span style="background-color:#d50000; color:#FFFFFF;" class="badge">Pendiente</span>'},
+      { data: 'id',
+        className: 'text-center', 
+        render: (id) => {
+          return `<button type="button" class="btn btn-danger btn-sm" onclick="abrirModalEliminarPedido('${id}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button>`
+        }
+      }
+    ],
+    destroy: true,
+    ordering: false,
+    language: {
+      searchPlaceholder: "Buscar pedido",
+      sProcessing: 'Procesando...',
+      sLengthMenu: 'Mostrar _MENU_ registros',
+      sZeroRecords: 'No se encontraron resultados',
+      sEmptyTable: 'Ningún dato disponible en esta tabla',
+      sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+      sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+      sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
+      sInfoPostFix: '',   
+      sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
+      sUrl: '',
+      sInfoThousands: ',',
+      sLoadingRecords: 'Cargando...',
+      oPaginate: {
+        sFirst: 'Primero',
+        sLast: 'Último',
+        sNext: 'Siguiente',
+        sPrevious: 'Anterior'
+      },
+      oAria: {
+        sSortAscending: ': Activar para ordenar la columna de manera ascendente',
+        sSortDescending: ': Activar para ordenar la columna de manera descendente'
+      }
+    }
+  });
+
+  db.ref('pedidos').on('value', (snapshot) => {
+    let pedidos = snapshot.val();
+    let filas = '';  
+    for(let pedido in pedidos) {
+      filas += ``;
+    }
+  });
+} */
+
+Vue.component('tablaPedidos', {
+  template: "\n  <table>\n                        <thead>\n                            <tr>\n                              <th>Id</th>\n                              <th>Clave</th>\n                              <th>N\xFAm. de orden</th>\n                              <th>Fecha de captura</th>\n                              <th>Tienda</th>\n                              <th>Ruta</th>\n                              <th class=\"text-center\">Detalles</th>\n                              <th class=\"text-center\">Estado</th>\n                              <th class=\"text-center\">Eliminar</th>\n                            </tr>\n                          </thead>\n                          <tbody>\n                            <tr v-for=\"pedido in pedidos\">\n                              <td>{{  }}</td>\n                              <td>{{ pedido.clave }}</td>\n                              <td>{{ pedido.numOrden }}</td>\n                              <td>{{ pedido.fechaCaptura }}</td>\n                              <td>{{ pedido.tienda }}</td>\n                              <td>{{ pedido.ruta }}</td>\n                              <td><button class=\"btn btn-sm btn-default\">Ver m\xE1s</button></td>\n                              <td><button class=\"btn btn-sm btn-warning\">Editar</button></td>\n                              <td><button class=\"btn btn-sm btn-danger\">Eliminar</button></td>\n                            </tr>\n                          </tbody>\n                    </table>\n  ",
+  beforeCreate: function beforeCreate() {
+    var _this = this;
+
+    db.ref('pedidosEntrada').on('value', function (snapshot) {
+      _this.pedidos = snapshot.val();
+    });
+  }
+});
+
+var vm = new Vue({
+  el: ".app"
+});
+
+/*Vue.use(VueFire)
+
+new Vue({
+  el: '#app',
+  data: {
+    region: ''
+   uid: auth.currentUser.uid,
+    region: "",
+  },
+  firebase: {
+    regiones: db.ref('regiones'),
+    usuario: db.ref(`usuarios/tiendas/supervisoras/${auth.currentUser.uid}`)  
+  },
+  computed: {
+    regionesSelect() {
+      
+    }
+  },
+  beforeCreate() {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        db.ref(`usuarios/tiendas/supervisoras/${user.uid}`).once('value', (snapshot) => {
+          this.region = snapshot.val().regiones[0];
+        });
+      } 
+    });
+  },
+  created() {
+    
+  },
+  methods: {
+    
+  }
+}) */
+
 function mostrarPedidos() {
   var pedidos = JSON.parse(localStorage.getItem('pedidos'));
 

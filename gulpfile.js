@@ -37,6 +37,8 @@ gulp.task('pluginsjs', function() {
     'js/dragula.min.js',
     'js/moment-with-locales.js',
     'js/sweetalert.min.js',
+    'js/vuefire.js',
+    'js/vue.js',
     'babel/panel.js',
     'babel/perfil.js'
   ])
