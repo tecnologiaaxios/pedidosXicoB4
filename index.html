@@ -1,41 +1,81 @@
-<!DOCTYPE html>
-<html lang="es">
+<!doctype html>
+<html lang="en">
   <head>
+    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Sistema Xico</title>
-    <link href='logo.ico' rel='shortcut icon' type='image/x-icon'/>
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
+    <title>Sistema de pedidos Xico</title>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/bootstrap4.min.css">
+    <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
+    <link href="css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
     <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
-    <link href="dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="css/panel.css" rel="stylesheet">
     <link href="vendor/morrisjs/morris.css" rel="stylesheet">
-    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="dist/css/bootstrap-select.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <script defer src="js/fontawesome-all.min.js"></script>
   </head>
-  <body style="background-color: #0E439B;">
-    <div class="login-container">
+  <body style="background: url(img/FONDO.jpg) no-repeat; background-size: cover;">
+  <!-- <body style="background-color: #0E439B;"></body> -->
+  <!-- <body style="background-color: rgb(236, 107, 22);"></body> -->
+    <div class="container h-100">
+      <div class="row justify-content-center align-items-center" style="height: 100vh;">
+        <div class="card-group w-100 h-75">
+          <div class="card" style="background: url(img/imagenXico.png) no-repeat top; background-size: cover;">
+            <div class="card-body">
+              <div class="row d-flex justify-content-center">
+                <div>
+                  <img src="assets/logo.svg" width="300px"  class="img-responsive" alt="Responsive image">
+                  <h1 class="text-center" style="color:white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">¡Bienvenido!</h1>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <div class="row justify-content-center align-items-center" style="height: 70vh;">
+                <div class="card w-75">
+                  <!-- <div class="card-header">
+                  </div> -->
+                  <div class="card-body">
+                    <h5 class="card-title text-center">Por favor inicia sesión</h5>
+                    <hr style="border-color: rgb(236, 107, 22)">
+                    <div class="form-group">
+                      <label for="username">Nombre de usuario:</label>
+                      <input id="username" class="form-control input-lg input-login" placeholder="Nombre de usuario" type="text" required>
+                      <span style="display: none;" id="helpblockUserName" class="help-block">Campo obligatorio</span>
+                    </div>
+                    <div class="form-group">
+                      <label for="contraseña">Contraseña:</label>
+                      <input id="contraseña" class="form-control input-lg input-login" placeholder="Contraseña" type="password" required>
+                      <span style="display: none;" id="helpblockContraseña" class="help-block">Campo obligatorio</span>
+                    </div>
+                    <div class="form-group">
+                      <button class="btn btn-primary btn-block btn-lg float-md-right" id="entrar" onclick="login()" type="button">Entrar</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="login-container">
       <div id="left-login">
         <img src="assets/logo.svg" width="300px" style="margin:0 auto; margin-top:60px;" class="img-responsive" alt="Responsive image">
         <h1 style="color:white;">Bienvenido</h1>
       </div>
       <div id="right-login">
-        <div class="login-panel panel panel-default" style="margin-top:200px;">
+        <div class="login-panel card" style="margin-top:200px;">
           <div class="panel-heading">
-            <!--<h3 class="panel-title" style="color: #0E439B;">Por favor inicia sesón</h3>-->
             <h1 class="panel-title" style="color: #0E439B; font-size: 30px;">Por favor inicia sesión</h1>
           </div>
-          <div class="panel-body">
+          <div class="card-body">
             <div class="form-group">
               <input id="username" class="form-control input-lg input-login" placeholder="Nombre de usuario" type="text" required>
               <span style="display: none;" id="helpblockUserName" class="help-block">Campo obligatorio</span>
@@ -50,7 +90,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <!-- <script src="./node_modules/jquery/dist/jquery.min.js"></script> -->
     <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
     <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->

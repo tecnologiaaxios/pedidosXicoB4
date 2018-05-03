@@ -79,11 +79,11 @@ function mostrarPerfil() {
     let datos = snap.val();
 
     let $nombre = $('#nombreEditar'),
-        $puesto = $('#puestoEditar');
+        $puesto = $('#puestoEditar'),
         $descripcion = $('#descripcionEditar'),
         $region = $('#regionEditar'),
         $email = $('#emailEditar'),
-        $username = $('#usernameEditar');
+        $username = $('#usernameEditar')
 
     $nombre.val(datos.nombre);
     $puesto.val(datos.puesto);

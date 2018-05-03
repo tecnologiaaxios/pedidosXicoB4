@@ -9,10 +9,12 @@ var autoprefixer = require('gulp-autoprefixer');
 gulp.task('es6', function() {
   gulp.src([
     'js/panel.js',
+    'js/panel2.js',
     'js/perfil.js',
     'js/login.js',
     'js/pedido.js',
-    'js/estadisticas.js'
+    'js/estadisticas.js',
+    'js/ofertas.js'
   ])
 		.pipe( babel({presets : ['es2015'], plugins: ["transform-object-rest-spread"]}))
 		.pipe(gulp.dest(`babel/`));
@@ -22,16 +24,16 @@ gulp.task('pluginsjs', function() {
   gulp.src([
     // 'js/jquery-3.2.1.min.js',
     'js/jquery-ui.js',
-    'vendor/bootstrap/js/bootstrap.min.js',
+    'js/popper.min.js',
+    'js/bootstrap4.min.js',
     'dist/js/bootstrap-select.js',
     'vendor/metisMenu/metisMenu.min.js',
     'dist/js/sb-admin-2.js',
-    'vendor/datatables/js/jquery.dataTables.min.js',
-    'vendor/datatables-plugins/dataTables.bootstrap.min.js',
+    'js/jquery.dataTables.min.js',
+    'js/dataTables.bootstrap4.min.js',
     'vendor/datatables-responsive/dataTables.responsive.js',
     'js/bootstrap-datepicker.min.js',
     'js/bootstrap-datepicker.es.min.js',
-    'js/bootstrap-tooltip.js',
     'js/jquery.toaster.js',
     'js/firebase.js',
     'js/dragula.min.js',
@@ -39,6 +41,7 @@ gulp.task('pluginsjs', function() {
     'js/sweetalert.min.js',
     'js/vuefire.js',
     'js/vue.js',
+    'js/localforage.js',
     'babel/panel.js',
     'babel/perfil.js'
   ])

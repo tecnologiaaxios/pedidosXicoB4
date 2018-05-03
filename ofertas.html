@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
+    <title>Ofertas</title>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/bootstrap4.min.css">
+    <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
+    <link href="css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="css/responsive.bootstrap.min.css"> -->
+    <!-- <link href="dist/css/sb-admin-2.css" rel="stylesheet"> -->
+    <link href="css/panel.css" rel="stylesheet">
+    <!-- <link href="vendor/morrisjs/morris.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="css/icon.css">
+    <link rel="stylesheet" href="dist/css/bootstrap-select.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.standalone.css">
+    <script defer src="js/fontawesome-all.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
+    <link href="https://unpkg.com/vue2-datatable-component/dist/min.css" rel="stylesheet">
+
+    <style>
+      .fade-enter-active,
+      .fade-leave-active {
+        transition: opacity .5s
+      }
+  
+      .fade-enter,
+      .fade-leave-to {
+        opacity: 0
+      }
+    </style>
+  </head>
+<body>
+  <!-- <nav class="navbar navbar-expand-lg navbar" style="background-color: rgb(255, 110, 2)"> -->
+  <nav class="navbar navbar-expand-lg navbar" style="background: url(img/FONDO.jpg) no-repeat; background-size: cover;">
+    <a class="navbar-brand" href="#">
+      <img src="logo.png" width="50" height="33" class="d-inline-block align-top" alt=""> Sistema de pedidos
+    </a>
+    <a class="navbar-brand" href="panel.html">
+      <span class="navbar-text material-icons" data-toggle="tooltip" data-placement="bottom" title="Volver al panel">dvr</span>
+    </a>
+    <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom"
+      title="Notificaciones">
+      <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="far fa-bell"></span>
+        <span id="spanNotificaciones" style="display: none;" class="badge badge-pill badge-danger"></span>
+      </a>
+      <div id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+  
+      </div>
+    </div>
+    <a href="" class="navbar-brand" id="btnPerfil">
+      <img src="http://lorempixel.com/25/25/" alt="..." class="rounded-circle" data-toggle="tooltip" data-placement="bottom" title="Perfil">
+    </a>
+    <div class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom" title="Cerrar sesión">
+      <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-sign-out-alt"></i>
+      </a>
+      <div class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" onclick="logout()">
+          <span class="fas fa-power-off"></span> Cerrar sesión
+        </a>
+      </div>
+    </div>
+  </nav>
+  <div id="app" class="container-fluid">
+    <div class="row mt-4">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <h1 class="display-5">Ofertas</h1>
+      </div>
+    </div>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Agregar oferta</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Panel de ofertas</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title text-center">Alta de ofertas</h5>
+                  <form>
+                    <div class="row">
+                      <!-- <div class="col-md-2">
+                        <div class="form-group">
+                          <label for="exampleInputEmail1">Zona:</label>
+                          <select v-model="zona" :value="zona" class="form-control" id="zona"></select>
+                        </div>
+                      </div> -->
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label for="exampleInputPassword1">Consorcio:</label>
+                          <select v-model="consorcio" :value="consorcio" class="form-control" id="consorcio">
+                            <option selected disabled value="Seleccionar">Seleccionar</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label for="tienda">Tienda:</label>
+                          <select v-model="tienda" :value="tienda" class="form-control" id="tienda">
+                            <option selected disabled value="Seleccionar">Seleccionar</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <div class="card border-dark">
+                          <div class="card-body">
+                            <div class="row form-row align-items-center">
+                              <div class="col-md-2">
+                                <div class="form-group">
+                                  <label for="producto">Producto:</label>
+                                  <select v-model="producto" :value="producto" name="producto" id="producto" class="form-control">
+                                    <option selected disabled value="Seleccionar">Seleccionar</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <!-- <div class="col-md-2">
+                                <div class="form-group">
+                                  <label class="sr-only" for="precioLista">Precio de lista:</label>
+                                  <input v-model="precioLista" type="number" min="0" name="precioLista" id="precioLista" class="form-control">
+                                </div>
+                              </div> -->
+                              <div class="col-md-2">
+                                <div class="form-group">
+                                  <label for="precioOferta">Precio oferta:</label>
+                                  <input v-model="precioOferta" type="number" min="0" name="precioOferta" id="precioOferta" class="form-control">
+                                </div>
+                              </div>
+                              <div class="col-md-2">
+                                <div class="form-group">
+                                  <label for="fechaInicio">Fecha inicio:</label>
+                                  <input v-model="fechaInicio" id="fechaInicio" class="form-control" type="date" format="" placeholder="Fecha de inicio">
+                                </div>
+                                <!-- <div class="input-group date">
+                                  <input v-model="fechaInicio" id="fechaInicio" class="form-control" type="text" placeholder="Fecha de inicio">
+                                  <span class="input-group-addon btn-primary btn-sm">
+                                    <i class="far fa-calendar-alt"></i>
+                                  </span>
+                                </div> -->
+                              </div>
+                              <div class="col-md-2">
+                                <div class="form-group">
+                                  <label for="fechaFin">Fecha fin:</label>
+                                  <input v-model="fechaFin" id="fechaFin" class="form-control" type="date">
+                                </div>
+                                <!-- <div class="input-group date">
+                                  <input v-model="fechaFin" id="fechaFin" class="form-control" type="text" placeholder="Fecha de fin">
+                                  <span class="input-group-addon btn-primary btn-sm">
+                                    <i class="far fa-calendar-alt"></i>
+                                  </span>
+                                </div> -->
+                              </div>
+                              <div class="col-md-2">
+                                <button type="button" @click="agregarProducto" class="btn btn-success mt-3">Agregar <i class="fas fa-plus"></i></button>
+                              </div>
+                            </div>
+                            <!-- <div class="row">
+                              <div class="col-md-4">
+                                <button type="button" @click="agregarProducto" class="btn btn-success">Agregar <i class="fas fa-plus"></i></button>
+                              </div>
+                            </div> -->
+                            <div class="row mt-3">
+                              <div class="col-md-12">
+                                <label for="">Productos de la oferta:</label>
+                                <table id="productos" cellspacing="0" width="100%" class="table table-hover table-striped table-bordered table-sm">
+                                  <thead>
+                                    <tr>
+                                      <th>Clave</th>
+                                      <th>Nombre</th>
+                                      <th>Precio de lista</th>
+                                      <th>Precio de oferta</th>
+                                      <th>Fecha inicio</th>
+                                      <th>Fecha fin</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr v-for="producto in productos">
+                                      <td>{{ producto.clave }}</td>
+                                      <td>{{ producto.nombre }}</td>
+                                      <td>{{ producto.precioLista }}</td>
+                                      <td>{{ producto.precioOferta }}</td>
+                                      <td>{{ producto.fechaInicio }}</td>
+                                      <td>{{ producto.fechaFin }}</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-md-2">
+                        <button @click="guardarOferta" type="button" class="btn btn-outline-primary btn-block">Guardar oferta</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row">
+                    <div v-for="oferta in ofertas" class="col-md-3 mt-3">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="card-body">
+                            <h5 class="card-title">Oferta: <span id="claveOferta"></span></h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Consorcio: <span id="consorcioOferta"></span></h6>
+                            <p class="card-text">Cantidad de productos: <span id="cantidadOferta" class="badge badge-danger"></span></p>
+                            <a href="oferta.html?id=" role="button" class="card-link btn btn-outline-info"><span class="fas fa-eye"></span> Ver oferta</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+      </div>
+
+
+
+
+    <!-- <div class="col-md-8">
+        <div class="card">
+          <div class="card-body">
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th>Zona</th>
+                  <th>Consorcio</th>
+                  <th>Tienda</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div> -->
+  </div>
+  <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
+  <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
+  <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <script>if (window.module) module = window.module;</script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap4.min.js"></script>
+  <script src="dist/js/bootstrap-select.js"></script>
+  <script src="vendor/metisMenu/metisMenu.min.js"></script>
+  <script src="js/jquery.dataTables.min.js"></script>
+  <script src="js/dataTables.bootstrap4.min.js"></script>
+  <script src="js/dataTables.responsive.min.js"></script>
+  <script src="dist/js/sb-admin-2.js"></script>
+  <script src="js/bootstrap-datepicker.min.js"></script>
+  <script src="js/bootstrap-datepicker.es.min.js"></script>
+  <script src="js/jquery.toaster.js"></script>
+  <script src="js/bootstrap-select.min.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/jspdf.debug.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyA19j6-VLNcXLJfBkfd_lZfFFbzg6z0Imc",
+      authDomain: "xico-netcontrol.firebaseapp.com",
+      databaseURL: "https://xico-netcontrol.firebaseio.com",
+      projectId: "xico-netcontrol",
+      storageBucket: "xico-netcontrol.appspot.com",
+      messagingSenderId: "248615705793"
+    };
+    firebase.initializeApp(config);
+  </script>
+  <script src="js/moment-with-locales.js"></script>
+  <script src="js/jspdf.min.js"></script>
+  <script src="js/jspdf.plugin.autotable.js"></script>
+  <script src="js/dataTables.buttons.min.js"></script>
+  <script src="js/jszip.min.js"></script>
+  <script src="js/pdfmake.min.js"></script>
+  <script src="js/vfs_fonts.js"></script>
+  <script src="js/buttons.print.min.js"></script>
+  <script src="js/buttons.bootstrap4.min.js"></script>
+  <script src="js/buttons.html5.min.js"></script>
+  <script src="js/vue.js"></script>
+  <script src="https://unpkg.com/vuefire/dist/vuefire.js"></script>
+  <script src="https://unpkg.com/vue2-datatable-component/dist/min.js"></script>
+  <script src="js/localforage.min.js"></script>
+  <script src="js/Chart.min.js"></script>
+  <script src='js/decimal.min.js'></script>
+  <script src="babel/ofertas.js"></script>
+  <!-- <script src="js/estadisticasvue.js"></script> -->
+</body>
+</html>

@@ -17,7 +17,6 @@ $(document).ready(function () {
   var idPedido = getQueryVariable('id');
   db.ref('pedidoEntrada/' + idPedido).on('value', function (datos) {
     var pedido = datos.val();
-
     mostrarDatos(pedido);
   });
 });
@@ -57,12 +56,16 @@ function mostrarDatos(pedido) {
   var idPedido = getQueryVariable('id');
   var datatable = $('#productos').DataTable({
     destroy: true,
-    autoWidth: true,
     ordering: false,
     paging: false,
     searching: false,
     dom: 'Bfrtip',
-    buttons: ['excel'],
+    /* buttons: ['excel'], */
+    buttons: [{
+      extend: 'excel',
+      className: 'btn btn-info',
+      text: '<i class="far fa-file-excel"></i> Excel'
+    }],
     scrollY: "500px",
     scrollCollapse: true,
     language: {
@@ -103,7 +106,7 @@ function mostrarDatos(pedido) {
     $('#contenedorDatos').prepend('<p id="numOrden" class="lead"><small>N\xFAm. de orden: <strong>' + encabezado.numOrden + '</strong></small></p>');
   }
 
-  $('#keyPedido').html('Id del pedido: ' + idPedido);
+  $('#keyPedido').html('' + idPedido);
   $('#clavePedido').html('Pedido: ' + encabezado.clave);
   var diaCaptura = fecha.substr(0, 2),
       mesCaptura = fecha.substr(3, 2),
@@ -114,13 +117,13 @@ function mostrarDatos(pedido) {
   var fechaCapturaMostrar = moment(fechaCaptura).format('LL');
 
   $('#fechaPedido').html('Enviado de: ' + encabezado.ruta + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Recibido el ' + fechaCapturaMostrar);
-  $('#tienda').html('Tienda: ' + encabezado.tienda);
+  $('#tienda').html('' + encabezado.tienda);
 
   var uid = encabezado.promotora;
   db.ref('usuarios/tiendas/supervisoras/' + uid).once('value', function (promotora) {
     var nombrePromotora = promotora.val().nombre;
 
-    $('#coordinador').html('Coordinador(a): ' + nombrePromotora);
+    $('#coordinador').html('' + nombrePromotora);
   });
 
   var cantidadProductos = Object.keys(detalle).length;
@@ -142,14 +145,16 @@ function mostrarDatos(pedido) {
     piezaTotal += datosProducto.totalPz;
     precioUnitarioTotal += datosProducto.precioUnitario;
     cambioFisicoTotal += datosProducto.cambioFisicoPz;
-    filas += '<tr>\n                <td class="text-center">' + datosProducto.clave + '</td>\n                <td>' + datosProducto.nombre + '</td>\n                <td class="text-right">' + datosProducto.pedidoPz + '</td>\n                <td class="text-right">' + datosProducto.degusPz + '</td>\n                <td class="text-right">' + datosProducto.cambioFisicoPz + '</td>\n                <td class="text-right">' + datosProducto.totalPz + '</td>\n                <td class="text-right">' + datosProducto.totalKg + '</td>\n                <td class="text-right">$ ' + datosProducto.precioUnitario + '</td>\n                <td class="text-center">' + datosProducto.unidad + '</td>\n                <td class="text-center"><button class="btn btn-warning btn-xs" onclick="abrirModalEditarProducto(\'' + producto + '\', \'' + datosProducto.clave + '\')"><i class="glyphicon glyphicon-pencil" aria-hidden="true"></i></button></td>\n                <td class="text-center"><button class="btn btn-danger btn-xs" onclick="abrirModalEliminarProducto(\'' + producto + '\', \'' + datosProducto.clave + '\')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>\n              </tr>';
+    filas += '<tr>\n                <td class="text-center">' + datosProducto.clave + '</td>\n                <td>' + datosProducto.nombre + '</td>\n                <td class="text-right">' + datosProducto.pedidoPz + '</td>\n                <td class="text-right">' + datosProducto.degusPz + '</td>\n                <td class="text-right">' + datosProducto.cambioFisicoPz + '</td>\n                <td class="text-right">' + datosProducto.totalPz + '</td>\n                <td class="text-right">' + datosProducto.totalKg + '</td>\n                <td class="text-right">$ ' + datosProducto.precioUnitario + '</td>\n                <td class="text-center">' + datosProducto.unidad + '</td>\n                <td class="text-center"><button class="btn btn-warning btn-xs" onclick="abrirModalEditarProducto(\'' + producto + '\', \'' + datosProducto.clave + '\')"><i class="fas fa-pencil-alt" aria-hidden="true"></i></button></td>\n                <td class="text-center"><button class="btn btn-danger btn-xs" onclick="abrirModalEliminarProducto(\'' + producto + '\', \'' + datosProducto.clave + '\')"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td>\n              </tr>';
   }
   filas += '<tr>\n              <td></td>\n              <td class="text-right"><strong>Totales</strong></td>\n              <td class="text-right"><strong>' + pedidoPzTotal + '</strong></td>\n              <td class="text-right"><strong>' + degusTotal + '</strong></td>\n              <td class="text-right"><strong>' + cambioFisicoTotal + '</strong></td>\n              <td class="text-right"><strong>' + piezaTotal + '</strong></td>\n              <td class="text-right"><strong>' + kgTotal.toFixed(4) + '</strong></td>\n              <td class="text-right"><strong>$ ' + precioUnitarioTotal.toFixed(4) + '</strong></td>\n              <td></td>\n              <td></td>\n              <td></td>\n            </tr>';
 
   //$('#productos tbody').html(filas);
   actualizarTotales(kgTotal, piezaTotal);
-
   datatable.rows.add($(filas)).columns.adjust().draw();
+  datatable.buttons().container().appendTo('#example_wrapper .col-md-6:eq(0)');
+
+  $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
 }
 
 function actualizarTotales(kilos, piezas) {

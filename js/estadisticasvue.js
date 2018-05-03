@@ -74,10 +74,12 @@ new Vue({
     productosFiltrados: [],
     listaKilos: [],
     listaPiezas: [],
-    clave: '',
-    zona: '',
-    fecha: '',
+    clave: 'Seleccionar',
+    zona: 'Seleccionar',
+    fechaInicioProductos: '',
+    fechaFinProductos: '',
     fechaFiltro: '',
+    fechaFiltro2: '',
     totalKg: 0,
     totalPz: 0,
   },
@@ -118,13 +120,22 @@ new Vue({
       }); */
     },
     cambiarFecha() {
-      let date = this.fecha.split('-');
-      this.fechaFiltro = `${date[2]}/${date[1]}/${date[0]}`;
+      let date = this.fechaInicioProductos.split('-');
+      /* this.fechaFiltro = `${date[2]}/${date[1]}/${date[0]}`; */
+      this.fechaFiltro = new Date(`${date[1]}/${date[2]}/${date[0]}`);
+    },
+    cambiarFechaFin() {
+      let date = this.fechaFinProductos.split('-');
+      /* this.fechaFiltro = `${date[2]}/${date[1]}/${date[0]}`; */
+      this.fechaFiltro2 = new Date(`${date[1]}/${date[2]}/${date[0]}`);
     },
     limpiarBusqueda() {
-      this.clave = "";
-      this.zona = "";
-      this.fecha = "";
+      this.clave = "Seleccionar";
+      this.zona = "Seleccionar";
+      this.fechaInicioProductos = "";
+      this.fechaFinProductos = "";
+      this.fechaFiltro = '',
+      this.fechaFiltro2 = '',
       this.totalKg = 0;
       this.totalPz = 0;
       this.productosFiltrados = [];
@@ -133,6 +144,7 @@ new Vue({
 
       let datatable = $('#tablaProductos').DataTable({
         data: this.productosFiltrados,
+        scrollY: "400px",
         pageLength: 25,
         lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
         columns: [
@@ -160,17 +172,22 @@ new Vue({
       this.totalPz = 0;
       let ctx = document.getElementById("graficaProductos");
 
-      if(this.clave != '' && this.zona != '' && this.fecha != '') {
+      //Esto es cuando el usuario ingresó todos los campos (clave, zona y entre qué fechas)
+      if((this.clave != '' && this.clave != "Seleccionar") && (this.zona != '' && this.zona != "Seleccionar" ) && this.fechaInicioProductos != '' && this.fechaFinProductos != '') {
         this.productos.map((producto) => {
-          if(producto.clave === this.clave && producto.zona === this.zona && producto.fecha === this.fechaFiltro) {
+          let fecha = producto.fecha;
+          let date = fecha.split('/');
+          let fechaCaptura = new Date(`${date[1]}/${date[0]}/${date[2]}`);
+
+          if(producto.clave === this.clave && producto.zona === this.zona && (fechaCaptura >= this.fechaFiltro && fechaCaptura <= this.fechaFiltro2)) {
             filtro.push(producto);
             this.totalKg += Number(producto.totalKilos);
             this.totalPz += Number(producto.totalPiezas);
           }
         });
         this.productosFiltrados = filtro;
-      }
-      else if(this.clave != '' && this.zona != '' && this.fecha == '') {
+      }//Esto es cuando el usuario ingresó solo la clave y la zona
+      else if((this.clave != '' && this.clave != "Seleccionar") && (this.zona != '' && this.zona != "Seleccionar" ) && ((this.fechaInicioProductos == '' && this.fechaFinProductos == '') || (this.fechaInicioProductos == '' && this.fechaFinProductos != '') || (this.fechaInicioProductos != '' && this.fechaFinProductos == ''))) {
         this.productos.map((producto) => {
           if(producto.clave === this.clave && producto.zona === this.zona) {
             filtro.push(producto);
@@ -216,28 +233,34 @@ new Vue({
               }
           }
       });
-      }
-      else if(this.clave != '' && this.zona == '' && this.fecha != '') {
+      }//Esto es cuando el usuario solo ingresó la clave y entre qué fechas
+      else if((this.clave != '' && this.clave != "Seleccionar") && (this.zona == '' || this.zona == "Seleccionar" ) && this.fechaInicioProductos != '' && this.fechaFinProductos != '') {
         this.productos.map((producto) => {
-          if(producto.clave === this.clave && producto.fecha === this.fechaFiltro) {
+          let fecha = producto.fecha;
+          let date = fecha.split('/');
+          let fechaCaptura = new Date(`${date[1]}/${date[0]}/${date[2]}`);
+          if(producto.clave === this.clave && (fechaCaptura >= this.fechaFiltro && fechaCaptura <= this.fechaFiltro2)) {
             filtro.push(producto);
             this.totalKg += Number(producto.totalKilos);
             this.totalPz += Number(producto.totalPiezas);
           }
         });
         this.productosFiltrados = filtro;
-      }
-      else if(this.clave == '' && this.zona != '' && this.fecha != '') {
+      }//Esto es cuando el usuario solo ingresó la zona y entré que fechas
+      else if((this.clave == '' || this.clave == "Seleccionar") && (this.zona != '' && this.zona != "Seleccionar" ) && this.fechaInicioProductos != '' && this.fechaFinProductos != '') {
         this.productos.map((producto) => {
-          if(producto.zona === this.zona && producto.fecha === this.fechaFiltro) {
+          let fecha = producto.fecha;
+          let date = fecha.split('/');
+          let fechaCaptura = new Date(`${date[1]}/${date[0]}/${date[2]}`);
+          if(producto.zona === this.zona && (fechaCaptura >= this.fechaFiltro && fechaCaptura <= this.fechaFiltro2)) {
             filtro.push(producto);
             this.totalKg += Number(producto.totalKilos);
             this.totalPz += Number(producto.totalPiezas);
           }
         });
         this.productosFiltrados = filtro;
-      }
-      else if(this.clave != '' && this.zona == '' && this.fecha == '') {
+      }//Es cuando el usuario sólo ingresó la clave
+      else if((this.clave != '' && this.clave != "Seleccionar") && (this.zona == '' || this.zona == "Seleccionar" ) && ((this.fechaInicioProductos == '' && this.fechaFinProductos == '') || (this.fechaInicioProductos == '' && this.fechaFinProductos != '') || (this.fechaInicioProductos != '' && this.fechaFinProductos == ''))) {
         this.productos.map((producto) => {
           if(producto.clave === this.clave) {
             filtro.push(producto);
@@ -282,8 +305,9 @@ new Vue({
               }
           }
       });
-      }
-      else if(this.clave == '' && this.zona != '' && this.fecha == '') {
+      }//Esto es cuando el usuario sólo ingresó la zona
+      else if((this.clave == '' || this.clave == "Seleccionar") && (this.zona != '' && this.zona != "Seleccionar" ) && ((this.fechaInicioProductos == '' && this.fechaFinProductos == '') || (this.fechaInicioProductos == '' && this.fechaFinProductos != '') || (this.fechaInicioProductos != '' && this.fechaFinProductos == ''))) {
+        console.log("Solo zona")
         this.productos.map((producto) => {
           if(producto.zona === this.zona) {
             filtro.push(producto);
@@ -292,10 +316,13 @@ new Vue({
           }
         });
         this.productosFiltrados = filtro;
-      }
-      else if(this.clave == '' && this.zona == '' && this.fecha != '') {
+      }//Esto es cuando el usuario sólo ingresó entre qué fechas
+      else if((this.clave == '' || this.clave == "Seleccionar") && (this.zona == '' || this.zona == "Seleccionar" ) && this.fechaInicioProductos != '' && this.fechaFinProductos != '') {
         this.productos.map((producto) => {
-          if(producto.fecha === this.fechaFiltro) {
+          let fecha = producto.fecha;
+          let date = fecha.split('/');
+          let fechaCaptura = new Date(`${date[1]}/${date[0]}/${date[2]}`);
+          if(fechaCaptura >= this.fechaFiltro && fechaCaptura <= this.fechaFiltro2) {
             filtro.push(producto);
             this.totalKg += Number(producto.totalKilos);
             this.totalPz += Number(producto.totalPiezas);
@@ -313,6 +340,7 @@ new Vue({
 
       let datatable = $('#tablaProductos').DataTable({
         data: this.productosFiltrados,
+        scrollY: "400px",
         pageLength: 25,
         lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
         columns: [
@@ -335,4 +363,6 @@ new Vue({
       });
     }
   }
-})
+});
+
+

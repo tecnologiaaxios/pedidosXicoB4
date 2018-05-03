@@ -49,6 +49,7 @@ $(document).ready(function () {
   });
 
   llenarSelectZonas();
+  llenarSelectClaves();
   mostrarTodosPedidos();
 });
 
@@ -107,183 +108,222 @@ let filtrarPedidos = () => {
   let fechaDesde = new Date(`${desde[1]}/${desde[2]}/${desde[0]}`);
   let fechaHasta = new Date(`${hasta[1]}/${hasta[2]}/${hasta[0]}`);
 
-  if(zona && fechaInicio && fechaFin) {
-    let pedidos = JSON.parse(localStorage.getItem('pedidosEntrada'));
-    let filas = "";
-    let datatable = $('#pedidos').DataTable({
-      data: pedidos,
-      pageLength: 25,
-      lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],     
-      destroy: true,
-      ordering: false,
-      language: LANGUAGE
-    });
-
-    datatable.clear();
-
-    for(let pedido in pedidos) {
-      let encabezado = pedidos[pedido].encabezado;
-      let fechaPedido = encabezado.fechaCaptura;
-      let date = fechaPedido.split('/');
-      let fechaCaptura = new Date(`${date[1]}/${date[0]}/${date[2]}`);
-      if(encabezado.ruta === zona && (fechaCaptura >= fechaDesde && fechaCaptura <= fechaHasta)) {
-        let numOrden = encabezado.numOrden || "";
-        let totalKilos = encabezado.totalKilos || "";
-        let totalPiezas = encabezado.totalPiezas || "";
-        moment.locale('es');
-        let fechaMostrar = moment(`${date[1]}/${date[0]}/${date[2]}`).format('LL')
-        kgTotales += Number(totalKilos);
-        pzTotales += Number(totalPiezas);
-
-        filas += `<tr>
-                    <td class="text-center">${encabezado.clave}</td>
-                    <td class="text-center">${numOrden}</td>
-                    <td class="text-center">${fechaMostrar}</td>
-                    <td>${encabezado.tienda}</td>
-                    <td>${encabezado.ruta}</td>
-                    <td>${totalKilos}</td>
-                    <td>${totalPiezas}</td>
-                  </tr>`;
-      }
-    }
-    $('#kgTotales').html(`Kg: ${kgTotales.toFixed(4)}`);
-    $('#pzTotales').html(`Pz: ${pzTotales.toFixed(4)}`);
-    //$('#pedidos tbody').html(filas);
-    datatable.rows.add($(filas)).columns.adjust().draw();
-  }
-  if(zona && (fechaInicio.length == 0) && (fechaFin.length == 0)) {
-    let pedidos = JSON.parse(localStorage.getItem('pedidosEntrada'));
-    let filas = "";
-    let datatable = $('#pedidos').DataTable({
-      data: pedidos,
-      pageLength: 25,
-      lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],     
-      destroy: true,
-      ordering: false,
-      language: LANGUAGE
-    });
-
-    datatable.clear();
-
-    for(let pedido in pedidos) {
-      let encabezado = pedidos[pedido].encabezado;
-      let fechaPedido = encabezado.fechaCaptura;
-      let date = fechaPedido.split('/');
-      let fechaCaptura = new Date(`${date[1]}/${date[0]}/${date[2]}`);
-      if(zona === encabezado.ruta) {
-        let numOrden = encabezado.numOrden || "";
-        let totalKilos = encabezado.totalKilos || "";
-        let totalPiezas = encabezado.totalPiezas || "";
-        kgTotales += Number(totalKilos);
-        pzTotales += Number(totalPiezas);
-
-        filas += `<tr>
-                    <td class="text-center">${encabezado.clave}</td>
-                    <td class="text-center">${numOrden}</td>
-                    <td class="text-center">${encabezado.fechaCaptura}</td>
-                    <td>${encabezado.tienda}</td>
-                    <td>${encabezado.ruta}</td>
-                    <td>${totalKilos}</td>
-                    <td>${totalPiezas}</td>
-                  </tr>`;
-      }
-    }
-    $('#kgTotales').html(`Kg: ${kgTotales.toFixed(4)}`);
-    $('#pzTotales').html(`Pz: ${pzTotales.toFixed(4)}`);
-    //$('#pedidos tbody').html(filas);
-    datatable.rows.add($(filas)).columns.adjust().draw();
-  }
-  if((zona === null) && fechaInicio && fechaFin) {
-    let pedidos = JSON.parse(localStorage.getItem('pedidosEntrada'));
-    let filas = "";
-    let datatable = $('#pedidos').DataTable({
-      data: pedidos,
-      pageLength: 25,
-      lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],     
-      destroy: true,
-      ordering: false,
-      language: LANGUAGE
-    });
-
-    datatable.clear();
-
-    for(let pedido in pedidos) {
-      let encabezado = pedidos[pedido].encabezado;
-      let fechaPedido = encabezado.fechaCaptura;
-      let date = fechaPedido.split('/');
-      let fechaCaptura = new Date(`${date[1]}/${date[0]}/${date[2]}`);
-      if((fechaCaptura >= fechaDesde) && (fechaCaptura <= fechaHasta)) {
-        let numOrden = encabezado.numOrden || "";
-        let totalKilos = encabezado.totalKilos || "";
-        let totalPiezas = encabezado.totalPiezas || "";
-        kgTotales += Number(totalKilos);
-        pzTotales += Number(totalPiezas);
-
-        filas += `<tr>
-                    <td class="text-center">${encabezado.clave}</td>
-                    <td class="text-center">${numOrden}</td>
-                    <td class="text-center">${encabezado.fechaCaptura}</td>
-                    <td>${encabezado.tienda}</td>
-                    <td>${encabezado.ruta}</td>
-                    <td>${totalKilos}</td>
-                    <td>${totalPiezas}</td>
-                  </tr>`;
-      }
-    }
-    $('#kgTotales').html(`Kg: ${kgTotales.toFixed(4)}`);
-    $('#pzTotales').html(`Pz: ${pzTotales.toFixed(4)}`);
-    //$('#pedidos tbody').html(filas);
-    datatable.rows.add($(filas)).columns.adjust().draw();
-  }
-}
-
-let mostrarTodosPedidos = () => {
-  let pedidos = JSON.parse(localStorage.getItem('filtrarPedidos'));
-  let kgTotales = 0;
-  let pzTotales = 0;
-
+  //$('#pedidos').DataTable().destroy();
   let datatable = $('#pedidos').DataTable({
-    data: pedidos,
+    scrollY: "400px",
     pageLength: 25,
-    lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
-    columns: [
-      { data: 'encabezado.clave', className: 'text-center' },
-      { data: 'encabezado.numOrden', defaultContent: "" },
-      {
-        data: 'encabezado.fechaCaptura',
-        render: (fechaCaptura) => {
-          moment.locale('es');
-          return moment(`${fechaCaptura.substr(3,2)}/${fechaCaptura.substr(0,2)}/${fechaCaptura.substr(6,4)}`).format('LL')
-        }
-      },
-      { data: 'encabezado.tienda' },
-      { data: 'encabezado.ruta', className: 'text-center' },
-      { 
-        data: 'encabezado.totalKilos',
-        render: (totalKilos) => {
-          kgTotales += Number(totalKilos);
-          return totalKilos;
-        },
-        className: 'text-center', 
-        defaultContent: ""},
-      { 
-        data: 'encabezado.totalPiezas',
-        render: (totalPiezas) => {
-          pzTotales += Number(totalPiezas);
-          return totalPiezas;
-        },
-        className: 'text-center',
-        defaultContent: ""
-      }
-    ],
+    lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],     
     destroy: true,
     ordering: false,
     language: LANGUAGE
   });
+  datatable.clear().draw();
+  $('#kgTotales').html(`${kgTotales}`);
+  $('#pzTotales').html(`${pzTotales}`);
 
-  $('#kgTotales').html(`Kg: ${kgTotales.toFixed(4)}`);
-  $('#pzTotales').html(`Pz: ${pzTotales.toFixed(4)}`);
+  $('#loaderPedidos').removeClass('d-none');
+  if(zona && fechaInicio && fechaFin) {
+    db.ref('pedidoEntrada').once('value', snapshot => {
+      let pedidos = snapshot.val();
+      let filas = "";
 
+      /* let datatable = $('#pedidos').DataTable({
+        scrollY: "400px",
+        pageLength: 25,
+        lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],     
+        destroy: true,
+        ordering: false,
+        language: LANGUAGE
+      });
+      datatable.clear(); */
+
+      for(let pedido in pedidos) {
+        let encabezado = pedidos[pedido].encabezado;
+        if(encabezado.agrupado) {
+          let fechaPedido = encabezado.fechaCaptura;
+          let date = fechaPedido.split('/');
+          let fechaCaptura = new Date(`${date[1]}/${date[0]}/${date[2]}`);
+          if(encabezado.ruta === zona && (fechaCaptura >= fechaDesde && fechaCaptura <= fechaHasta)) {
+            let numOrden = encabezado.numOrden || "";
+            let totalKilos = encabezado.totalKilos || "";
+            let totalPiezas = encabezado.totalPiezas || "";
+            moment.locale('es');
+            let fechaMostrar = moment(`${date[1]}/${date[0]}/${date[2]}`).format('LL')
+            kgTotales += Number(totalKilos);
+            pzTotales += Number(totalPiezas);
+
+            filas += `<tr>
+                        <td class="text-center">${encabezado.clave}</td>
+                        <td class="text-center">${numOrden}</td>
+                        <td class="text-center">${fechaMostrar}</td>
+                        <td>${encabezado.tienda}</td>
+                        <td>${encabezado.ruta}</td>
+                        <td>${totalKilos}</td>
+                        <td>${totalPiezas}</td>
+                      </tr>`;
+          }
+        }
+      }
+      $('#kgTotales').html(`${kgTotales.toFixed(4)}`);
+      $('#pzTotales').html(`${pzTotales.toFixed(4)}`);
+      //$('#pedidos tbody').html(filas);
+      datatable.rows.add($(filas)).columns.adjust().draw();
+      $('#loaderPedidos').addClass('d-none');
+    });
+  }
+  if(zona && (fechaInicio.length == 0) && (fechaFin.length == 0)) {
+    db.ref('pedidoEntrada').once('value', snapshot => {
+      let pedidos = snapshot.val();
+      let filas = "";
+
+      /* let datatable = $('#pedidos').DataTable({
+        scrollY: "400px",
+        pageLength: 25,
+        lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],     
+        destroy: true,
+        ordering: false,
+        language: LANGUAGE
+      });
+       datatable.clear(); */
+
+      for(let pedido in pedidos) {
+        let encabezado = pedidos[pedido].encabezado;
+        if(encabezado.agrupado && zona === encabezado.ruta) {
+          let fechaPedido = encabezado.fechaCaptura;
+          let date = fechaPedido.split('/');
+          let fechaCaptura = new Date(`${date[1]}/${date[0]}/${date[2]}`);
+          let numOrden = encabezado.numOrden || "";
+          let totalKilos = encabezado.totalKilos || "";
+          let totalPiezas = encabezado.totalPiezas || "";
+          kgTotales += Number(totalKilos);
+          pzTotales += Number(totalPiezas);
+
+          filas += `<tr>
+                      <td class="text-center">${encabezado.clave}</td>
+                      <td class="text-center">${numOrden}</td>
+                      <td class="text-center">${encabezado.fechaCaptura}</td>
+                      <td>${encabezado.tienda}</td>
+                      <td>${encabezado.ruta}</td>
+                      <td>${totalKilos}</td>
+                      <td>${totalPiezas}</td>
+                    </tr>`;
+        }  
+      }
+      $('#kgTotales').html(`${kgTotales.toFixed(4)}`);
+      $('#pzTotales').html(`${pzTotales.toFixed(4)}`);
+      //$('#pedidos tbody').html(filas);
+      datatable.rows.add($(filas)).columns.adjust().draw();
+      $('#loaderPedidos').addClass('d-none');
+    });
+  }
+  if((zona === null) && fechaInicio && fechaFin) {
+    db.ref('pedidoEntrada').once('value', snapshot => {
+      let pedidos = snapshot.val();
+      let filas = "";
+
+      /* let datatable = $('#pedidos').DataTable({
+        scrollY: "400px",
+        pageLength: 25,
+        lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],     
+        destroy: true,
+        ordering: false,
+        language: LANGUAGE
+      });
+       datatable.clear(); */
+
+      for(let pedido in pedidos) {
+        let encabezado = pedidos[pedido].encabezado;
+        if(encabezado.agrupado) {
+          let fechaPedido = encabezado.fechaCaptura;
+          let date = fechaPedido.split('/');
+          let fechaCaptura = new Date(`${date[1]}/${date[0]}/${date[2]}`);
+          if((fechaCaptura >= fechaDesde) && (fechaCaptura <= fechaHasta)) {
+            let numOrden = encabezado.numOrden || "";
+            let totalKilos = encabezado.totalKilos || "";
+            let totalPiezas = encabezado.totalPiezas || "";
+            kgTotales += Number(totalKilos);
+            pzTotales += Number(totalPiezas);
+
+            filas += `<tr>
+                        <td class="text-center">${encabezado.clave}</td>
+                        <td class="text-center">${numOrden}</td>
+                        <td class="text-center">${encabezado.fechaCaptura}</td>
+                        <td>${encabezado.tienda}</td>
+                        <td>${encabezado.ruta}</td>
+                        <td>${totalKilos}</td>
+                        <td>${totalPiezas}</td>
+                      </tr>`;
+          }
+        }
+      }
+      $('#kgTotales').html(`${kgTotales.toFixed(4)}`);
+      $('#pzTotales').html(`${pzTotales.toFixed(4)}`);
+      //$('#pedidos tbody').html(filas);
+      datatable.rows.add($(filas)).columns.adjust().draw();
+      $('#loaderPedidos').addClass('d-none');
+    });
+  }
+}
+
+let mostrarTodosPedidos = () => {
+  $('#loaderPedidos').removeClass('d-none');
+
+  /* $('#pedidos').DataTable().clear().destroy(); */
+
+  db.ref('pedidoEntrada').once('value', snapshot => {
+    let pedidos = snapshot.val();
+    let kgTotales = 0;
+    let pzTotales = 0;
+    let arrPedidos = [];
+    snapshot.forEach(pedido => {
+      arrPedidos.push(pedido.val());
+    });
+
+    let datatable = $('#pedidos').DataTable({
+      data: arrPedidos,
+      scrollY: "400px",
+      pageLength: 25,
+      lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],
+      columns: [
+        { data: 'encabezado.clave', className: 'text-center' },
+        { data: 'encabezado.numOrden', defaultContent: "" },
+        {
+          data: 'encabezado.fechaCaptura',
+          render: (fechaCaptura) => {
+            moment.locale('es');
+            return moment(`${fechaCaptura.substr(3,2)}/${fechaCaptura.substr(0,2)}/${fechaCaptura.substr(6,4)}`).format('LL')
+          }
+        },
+        { data: 'encabezado.tienda' },
+        { data: 'encabezado.ruta', className: 'text-center' },
+        { 
+          data: 'encabezado.totalKilos',
+          render: (totalKilos) => {
+            kgTotales += Number(totalKilos);
+            return totalKilos;
+          },
+          className: 'text-center', 
+          defaultContent: ""},
+        { 
+          data: 'encabezado.totalPiezas',
+          render: (totalPiezas) => {
+            pzTotales += Number(totalPiezas);
+            return totalPiezas;
+          },
+          className: 'text-center',
+          defaultContent: ""
+        }
+      ],
+      destroy: true,
+      ordering: false,
+      language: LANGUAGE
+    });
+
+    $('#kgTotales').html(`${kgTotales.toFixed(4)}`);
+    $('#pzTotales').html(`${pzTotales.toFixed(4)}`);
+
+    $('#loaderPedidos').addClass('d-none');
+  });
 }
 
 let limpiarCampos = () => {
@@ -292,31 +332,38 @@ let limpiarCampos = () => {
 }
 
 function llenarSelectZonas() {
-  let zonas = JSON.parse(localStorage.getItem('zonas'));
-  let options = '<option selected disabled value="Seleccionar">Seleccionar</option>';
-  for (let zona in zonas) {
-    options += `<option value="${zona}">${zona}</option>`;
-  }
+  db.ref('regiones').once('value', regiones => {
+    let zonas = regiones.val();
 
-  $('#zona').html(options);
-  $('#zonaProducto').html(options);
+    let options = '<option selected disabled value="Seleccionar">Seleccionar</option>';
+    for (let zona in zonas) {
+      options += `<option value="${zona}">${zona}</option>`;
+    }
+
+    $('#zona').html(options);
+    $('#zonaProducto').html(options);
+  });
 }
 
 function llenarSelectClaves() {
-  let claves = JSON.parse(localStorage.getItem('claves'));
-  let options = '<option selected disabled value="Seleccionar">Seleccionar</option>';
-  for(let clave in claves) {
-    options += `<option value="${clave}">${clave}</option>`;
-  }
+  db.ref('listadoProductos').once('value', snapshot => {
+    let productos = snapshot.val();
+    let options = '<option selected disabled value="Seleccionar">Seleccionar</option>';
+    for(let producto in productos) {
+      options += `<option value="${producto}">${producto}</option>`;
+    }
+
+    $('#claves').html(options);
+  })
 }
 
 let filtrarProductos = () => {
-  let estadisticasProductos = JSON.parse(localStorage.getItem('estadisticasProductos'));
   let clave = $('#clave').val();
   let zona = $('#zona').val();
   let fecha = $('#fecha').val();
+  let ref = db.ref('estadisticasProductos');
   let datatable = $('#productos').DataTable({
-    data: pedidos,
+    scrollY: "400px",
     pageLength: 25,
     lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todos"]],     
     destroy: true,
@@ -325,96 +372,141 @@ let filtrarProductos = () => {
   });
 
   datatable.clear();
-
-  let filas = "";
-  for(let estadistica in estadisticasProductos) {
-    let producto = estadisticasProductos[estadistica];
-    if(clave && zona && fecha) {
-      if(producto.clave === clave && producto.zona === zona && producto.fecha === fecha) {
-        filas += `<tr>
-                    <td>${producto.clave}</td>
-                    <td>${producto.nombre}</td>
-                    <td>${producto.zona}</td>
-                    <td>${producto.fecha}</td>
-                    <td>${producto.totalKilos}</td>
-                    <td>${producto.totalPiezas}</td>
-                  </tr>`;
+  
+  if(clave && zona && fecha) {
+    ref.orderByChild('clave').equalTo(clave).once('value', snapshot => {
+      let estadisiticasProductos = snapshot.val();
+      let filas = "";
+      for(let estadistica in estadisticasProductos) {
+        let producto = estadisticasProductos[estadistica];
+        if(producto.zona === zona && producto.fecha === fecha) {
+          filas += `<tr>
+                      <td>${producto.clave}</td>
+                      <td>${producto.nombre}</td>
+                      <td>${producto.zona}</td>
+                      <td>${producto.fecha}</td>
+                      <td>${producto.totalKilos}</td>
+                      <td>${producto.totalPiezas}</td>
+                    </tr>`;
+        }
       }
-    }
-    if(clave && zona && fecha.length === 0) {
-      if(producto.clave === clave && producto.zona === zona) {
-        filas += `<tr>
-                    <td>${producto.clave}</td>
-                    <td>${producto.nombre}</td>
-                    <td>${producto.zona}</td>
-                    <td>${producto.fecha}</td>
-                    <td>${producto.totalKilos}</td>
-                    <td>${producto.totalPiezas}</td>
-                  </tr>`;
-      }
-    }
-    if(clave && zona === null && fecha) {
-      if(producto.clave === clave && producto.fecha === fecha) {
-        filas += `<tr>
-                    <td>${producto.clave}</td>
-                    <td>${producto.nombre}</td>
-                    <td>${producto.zona}</td>
-                    <td>${producto.fecha}</td>
-                    <td>${producto.totalKilos}</td>
-                    <td>${producto.totalPiezas}</td>
-                  </tr>`;
-      }
-    }
-    if(clave === null & zona && fecha) {
-      if(producto.zona = zona && producto.fecha == fecha) {
-        filas += `<tr>
-                    <td>${producto.clave}</td>
-                    <td>${producto.nombre}</td>
-                    <td>${producto.zona}</td>
-                    <td>${producto.fecha}</td>
-                    <td>${producto.totalKilos}</td>
-                    <td>${producto.totalPiezas}</td>
-                  </tr>`;
-      }
-    }
-    if(clave && zona === null && fecha.length === 0) {
-      if(producto.clave === clave) {
-        filas += `<tr>
-                    <td>${producto.clave}</td>
-                    <td>${producto.nombre}</td>
-                    <td>${producto.zona}</td>
-                    <td>${producto.fecha}</td>
-                    <td>${producto.totalKilos}</td>
-                    <td>${producto.totalPiezas}</td>
-                  </tr>`;
-      }
-    }
-    if(clave === null && zona && fecha.length === 0) {
-      if(producto.zona === zona) {
-        filas += `<tr>
-                    <td>${producto.clave}</td>
-                    <td>${producto.nombre}</td>
-                    <td>${producto.zona}</td>
-                    <td>${producto.fecha}</td>
-                    <td>${producto.totalKilos}</td>
-                    <td>${producto.totalPiezas}</td>
-                  </tr>`;
-      }
-    }
-    if(clave === null && zona === null && fecha) {
-      if(producto.fecha === fecha) {
-        filas += `<tr>
-                    <td>${producto.clave}</td>
-                    <td>${producto.nombre}</td>
-                    <td>${producto.zona}</td>
-                    <td>${producto.fecha}</td>
-                    <td>${producto.totalKilos}</td>
-                    <td>${producto.totalPiezas}</td>
-                  </tr>`;
-      }
-    }
+    });
+    datatable.rows.add($(filas)).columns.adjust().draw();
   }
-  datatable.rows.add($(filas)).columns.adjust().draw();
+  if(clave && zona && fecha.length === 0) {
+    ref.orderByChild('clave').equalTo(clave).once('value', snapshot => {
+      let estadisiticasProductos = snapshot.val();
+      let filas = "";
+      for(let estadistica in estadisticasProductos) {
+        let producto = estadisticasProductos[estadistica];
+        if(producto.zona === zona) {
+          filas += `<tr>
+                      <td>${producto.clave}</td>
+                      <td>${producto.nombre}</td>
+                      <td>${producto.zona}</td>
+                      <td>${producto.fecha}</td>
+                      <td>${producto.totalKilos}</td>
+                      <td>${producto.totalPiezas}</td>
+                    </tr>`;
+        }
+      }
+      datatable.rows.add($(filas)).columns.adjust().draw();
+    });
+  }
+  if(clave && zona === null && fecha) {
+    ref.orderByChild('clave').equalTo(clave).once('value', snapshot => {
+      let estadisiticasProductos = snapshot.val();
+      let filas = "";
+      for(let estadistica in estadisticasProductos) {
+        let producto = estadisticasProductos[estadistica];
+        if(producto.fecha === fecha) {
+          filas += `<tr>
+                      <td>${producto.clave}</td>
+                      <td>${producto.nombre}</td>
+                      <td>${producto.zona}</td>
+                      <td>${producto.fecha}</td>
+                      <td>${producto.totalKilos}</td>
+                      <td>${producto.totalPiezas}</td>
+                    </tr>`;
+        }
+      }
+      datatable.rows.add($(filas)).columns.adjust().draw();
+    });
+  }
+  if(clave === null & zona && fecha) {
+    ref.orderByChild(zona).equalTo(zona).once('value', snapshot => {
+      let estadisiticasProductos = snapshot.val();
+      let filas = "";
+      for(let estadistica in estadisticasProductos) {
+        let producto = estadisticasProductos[estadistica];
+        if(producto.fecha === fecha) {
+          filas += `<tr>
+                      <td>${producto.clave}</td>
+                      <td>${producto.nombre}</td>
+                      <td>${producto.zona}</td>
+                      <td>${producto.fecha}</td>
+                      <td>${producto.totalKilos}</td>
+                      <td>${producto.totalPiezas}</td>
+                    </tr>`;
+        } 
+      }
+      datatable.rows.add($(filas)).columns.adjust().draw();
+    });
+  }
+  if(clave && zona === null && fecha.length === 0) {
+    ref.orderByChild(clave).equalTo(clave).once('value', snapshot => {
+      let estadisiticasProductos = snapshot.val();
+      let filas = "";
+      for(let estadistica in estadisticasProductos) {
+        let producto = estadisticasProductos[estadistica];
+        filas += `<tr>
+                    <td>${producto.clave}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.zona}</td>
+                    <td>${producto.fecha}</td>
+                    <td>${producto.totalKilos}</td>
+                    <td>${producto.totalPiezas}</td>
+                  </tr>`;
+      }
+      datatable.rows.add($(filas)).columns.adjust().draw();
+    });
+  }
+  if(clave === null && zona && fecha.length === 0) {
+    ref.orderByChild('zona').equalTo(zona).once('value', snapshot => {
+      let estadisiticasProductos = snapshot.val();
+      let filas = "";
+      for(let estadistica in estadisticasProductos) {
+        let producto = estadisticasProductos[estadistica];
+        filas += `<tr>
+                    <td>${producto.clave}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.zona}</td>
+                    <td>${producto.fecha}</td>
+                    <td>${producto.totalKilos}</td>
+                    <td>${producto.totalPiezas}</td>
+                  </tr>`;
+      }
+      datatable.rows.add($(filas)).columns.adjust().draw();
+    });
+  }
+  if(clave === null && zona === null && fecha) {
+    ref.orderByChild('fecha').equalTo(fecha).once('value', snapshot => {
+      let estadisiticasProductos = snapshot.val();
+      let filas = "";
+      for(let estadistica in estadisticasProductos) {
+        let producto = estadisticasProductos[estadistica];
+        filas += `<tr>
+                    <td>${producto.clave}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.zona}</td>
+                    <td>${producto.fecha}</td>
+                    <td>${producto.totalKilos}</td>
+                    <td>${producto.totalPiezas}</td>
+                  </tr>`;
+      }
+      datatable.rows.add($(filas)).columns.adjust().draw();
+    });
+  }
 }
 
 function mostrarNotificaciones() {

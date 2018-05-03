@@ -1,23 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
     <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
     <title>Recepción de pedidos</title>
-    <!-- <link rel="stylesheet" href="css/combinado.css"> -->
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <link href="vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap4.min.css">
+    <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
+    <link href="css/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
     <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
-    <link href="dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="css/panel.css" rel="stylesheet">
     <link href="vendor/morrisjs/morris.css" rel="stylesheet">
-    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="css/icon.css">
     <link rel="stylesheet" href="dist/css/bootstrap-select.css">
     <link rel="stylesheet" href="css/dragula.min.css">
@@ -25,99 +22,94 @@
     <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
     <link rel="stylesheet" href="css/bootstrap-datepicker3.standalone.css">
     <link rel="stylesheet" href="css/sexyradio.css">
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-      <![endif]-->
+    <script defer src="js/fontawesome-all.min.js"></script>
   </head>
   <body>
-    <nav class="navbar">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">
-            <img style="max-width: 50px; margin-top: -7px;" src="logo.png"></img>
+    <!-- <nav class="navbar navbar-expand-lg navbar" style="background-color: rgb(255, 110, 2)"> -->
+    <nav class="navbar navbar-expand-lg navbar" style="background: url(img/FONDO.jpg) no-repeat; background-size: cover;">
+      <a class="navbar-brand" href="#">
+        <img src="logo.png" width="50" height="33" class="d-inline-block align-top" alt="">
+        Sistema de pedidos
+      </a>
+      <a class="navbar-brand" href="#" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        <span class="navbar-text material-icons" data-toggle="tooltip" data-placement="bottom" title="Formar pedido">playlist_add</span>
+      </a>
+      <a class="navbar-brand" href="tickets.html">
+        <span class="navbar-text material-icons" data-toggle="tooltip" data-placement="bottom" title="Tickets">receipt</span>
+      </a>
+      <a class="navbar-brand" href="agregarProducto.html">
+        <div data-toggle="tooltip" data-placement="bottom" title="Agregar productos">
+          <span class="fas fa-plus-square"></span>
+        </div>  
+      </a>
+      <a class="navbar-brand" href="ofertas.html">
+        <div data-toggle="tooltip" data-placement="bottom" title="Estadísticas">
+          <span class="fas fa-percent"></span>
+        </div>
+      </a>
+      <a class="navbar-brand" href="estadisticas.html">
+        <div data-toggle="tooltip" data-placement="bottom" title="Estadísticas">
+          <span class="fas fa-chart-line"></span>
+        </div>
+      </a>
+      <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom" title="Notificaciones">
+        <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="far fa-bell"></span>
+            <span id="spanNotificaciones" style="display: none;" class="badge badge-pill badge-danger"></span>
+        </a>
+        <div id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+          
+        </div>
+      </div>
+      <a href="" class="navbar-brand" id="btnPerfil">
+        <img src="http://lorempixel.com/25/25/" alt="..." class="rounded-circle" data-toggle="tooltip" data-placement="bottom" title="Perfil">
+      </a>
+      <div class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom" title="Cerrar sesión">
+        <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-sign-out-alt"></i>
+        </a>
+        <div class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" onclick="logout()">
+            <span class="fas fa-power-off"></span> Cerrar sesión
           </a>
-          <a class="navbar-brand" href="#">Sistema de pedidos</a>
-          <a class="navbar-brand" href="#" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-            <span class="textnavbar material-icons" data-toggle="tooltip" data-placement="bottom" title="Formar pedido">playlist_add</span>
-          </a>
-          <a class="navbar-brand" href="tickets.html">
-            <span class="textnavbar material-icons" data-toggle="tooltip" data-placement="bottom" title="Tickets">receipt</span>
-          </a>
-          <a class="navbar-brand" href="agregarProducto.html">
-            <span class="fa fa-plus-square" data-toggle="tooltip" data-placement="bottom" title="Agregar producto"></span>
-          </a>
-          <a class="navbar-brand" href="estadisticas.html">
-            <span class="fa fa-line-chart" data-toggle="tooltip" data-placement="bottom" title="Estadísticas"></span>
-          </a>
-          <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown">
-            <a class="links-panel" class="dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="textnavbar fa fa-bell-o" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Notificaciones"></i>
-              <span id="spanNotificaciones" style="background-color: red; display: none;" class="badge"></span>
-              <i class="fa fa-caret-down"></i>
-            </a>
-            <ul id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts">
-
-            </ul>
-          </div>
-          <a href="" class="navbar-brand" id="btnPerfil">
-            <img src="http://lorempixel.com/25/25/" alt="..." class="img-circle" data-toggle="tooltip" data-placement="bottom" title="Perfil">
-          </a>
-          <div class="navbar-brand dropdown">
-            <a class="links-panel dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="fa fa-sign-out" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Cerrar sesión"></i>
-              <i class="fa fa-caret-down"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-alerts">
-              <li class="divider"></li>
-              <li>
-                <a onclick="logout()">
-                  <span class="glyphicon glyphicon-off"></span> Cerrar sesión</a>
-              </li>
-            </ul>
-          </div>
         </div>
       </div>
     </nav>
-    <div class="app" id="wrapper">
-      <div class="container-fluid">
-        <div class="row">
-          <ul class="nav nav-pills nav-justified" style="padding:30px;">
-            <li role="presentation" class="active">
-              <a onclick="pedidosRecibidos()" class="pills" href="#pedidosRecibidos" aria-controls="pedidosRecibidos" role="tab"
-                data-toggle="tab">
-                <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Pedidos recibidos</a>
-            </li>
-            <li role="presentation">
-              <a onclick="pedidosEnProceso()" class="pills" href="#pedidosEnProceso" aria-controls="pedidosEnProceso" role="tab"
-                data-toggle="tab">
-                <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Pedidos en proceso</a>
-            </li>
-            <li role="presentation">
-              <a onclick="pedidosFinalizados()" class="pills" href="#pedidosFinalizados" aria-controls="pedidosFinalizados" role="tab"
-                data-toggle="tab">
-                <i class="fa fa-check-square-o" aria-hidden="true"></i> Pedidos finalizados</a>
-            </li>
-            <li role="presentation">
-              <a onclick="historialPedidos()" class="pills" href="#historialPedidos" aria-controls="historialPedidos" role="tab"
-                data-toggle="tab">
-                <span class="glyphicon glyphicon-folder-open"></span> Historial de pedidos</a>
-            </li>
-          </ul>
-          <div class="tab-content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 mt-5">
+          <div class="container-fluid">
+            <ul class="nav nav-pills nav-justified">
+              <li role="presentation" class="nav-item">
+                <a onclick="pedidosRecibidos()" class="nav-link pills active" href="#pedidosRecibidos" aria-controls="pedidosRecibidos" role="tab"
+                  data-toggle="tab">
+                  <span class="fas fa-arrow-circle-right" aria-d-none="true"></span> Pedidos recibidos</a>
+              </li>
+              <li class="nav-item">
+                <a onclick="pedidosEnProceso()" class="nav-link pills" href="#pedidosEnProceso" aria-controls="pedidosEnProceso" role="tab" data-toggle="tab">
+                  <span class="far fa-list-alt" aria-d-none="true"></span> Pedidos en proceso</a>
+              </li>
+              <li class="nav-item">
+                <a onclick="pedidosFinalizados()" class="nav-link pills" href="#pedidosFinalizados" aria-controls="pedidosFinalizados" role="tab"
+                  data-toggle="tab">
+                  <i class="far fa-check-square" aria-d-none="true"></i> Pedidos finalizados</a>
+              </li>
+              <li class="nav-item">
+                <a onclick="historialPedidos()" class="nav-link pills" href="#historialPedidos" aria-controls="historialPedidos" role="tab" data-toggle="tab">
+                  <span class="fas fa-folder-open"></span> Historial de pedidos</a>
+              </li>
+            </ul>
+          </div>
+          <div class="tab-content mt-4">
             <div role="tabpanel" class="tab-pane active" id="pedidosRecibidos">
               <div class="container-fluid">
-                <div id="loaderPedidos" class="loader"></div>
-                <div class="panel panel-default">
-                  <div class="panel-body"> 
-                    <table width="100%" id="tablaPedidos" class="table-hover table table-condensed table-bordered table-striped" style="margin-top:15px;">
+                <div id="loaderPedidos" class="alert alert-primary" role="alert">
+                  <i class="fas fa-sync fa-spin"></i> Cargando...
+                </div>
+                <div class="card">
+                  <div class="card-body">
+                    <table width="100%" id="tablaPedidos" cellspacing="0" class="table-hover table table-sm table-bordered table-striped" style="margin-top:15px;">
                       <thead>
                         <tr>
                           <th>Id</th>
@@ -137,39 +129,43 @@
                 </div>
               </div>
               <div class="collapse" id="collapseExample">
-                <div class="well">
-                  <div class="table-responsive">
-                    <table width="100%" id="tablaPedidoPadre" class="table table-condensed table-bordered" style="padding:0px 0px 0px; ">
-                      <thead>
-                        <tr>
-                          <th>Id</th>
-                          <th>Clave</th>
-                          <th>Núm. de orden</th>
-                          <th>Fecha de captura</th>
-                          <th>Tienda</th>
-                          <th>Ruta</th>
-                          <th>Detalles</th>
-                          <th>Estado</th>
-                          <th>Eliminar</th>
-                        </tr>
-                      </thead>
-                      <tbody id="tbodyTablaPedidoPadre" style="border: 2px solid grey; border-style: dashed; height:200px; width:100%;" class="tabla-drag">
-                        <h4>Arrastra los pedidos dentro de las líneas punteadas para agruparlos</h4>
-                        <tr id="vacio" style="padding:0px 0px 0px;" class="no-pading">
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <button class="btn btn-success" type="button" onclick="tirarAlertaGenerarPedidoPadre()">Generar pedido</button>
-                    <button class="btn btn-danger" type="button" onclick="cancelarPedidoPadre()">Cancelar</button>
+                <div class="container-fluid">
+                  <div class="card bg-light mt-3">
+                    <div class="card-body">
+                      <div class="table-responsive">
+                        <table width="100%" id="tablaPedidoPadre" class="table table-sm table-bordered" style="padding:0px 0px 0px; ">
+                          <thead>
+                            <tr>
+                              <th>Id</th>
+                              <th>Clave</th>
+                              <th>Núm. de orden</th>
+                              <th>Fecha de captura</th>
+                              <th>Tienda</th>
+                              <th>Ruta</th>
+                              <th>Detalles</th>
+                              <th>Estado</th>
+                              <th>Eliminar</th>
+                            </tr>
+                          </thead>
+                          <tbody id="tbodyTablaPedidoPadre" style="border: 2px solid grey; border-style: dashed; height:200px; width:100%;" class="tabla-drag">
+                            <h4>Arrastra los pedidos dentro de las líneas punteadas para agruparlos</h4>
+                            <tr id="vacio" style="padding:0px 0px 0px;" class="no-pading">
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <button class="btn btn-success" type="button" onclick="tirarAlertaGenerarPedidoPadre()">Generar pedido</button>
+                        <button class="btn btn-danger" type="button" onclick="cancelarPedidoPadre()">Cancelar</button>
+                      </div>           
+                    </div>
                   </div>
                 </div>
               </div>
@@ -179,15 +175,21 @@
               <h4 class="text-center" id="pPedidosProceso"></h4>
               <div class="container-fluid">
                 <ul class="nav nav-tabs" role="tablist">
-                  <li role="presentation" class="active"><a id="linkEnProceso" href="#enProceso" aria-controls="enProceso" role="tab" data-toggle="tab">En proceso</a></li>
-                  <li role="presentation"><a id="linkVerificados" href="#verificados" aria-controls="verificados" role="tab" data-toggle="tab">Verificados</a></li>
-                  <li role="presentation"><a id="linkCargados" href="#cargados" aria-controls="cargados" role="tab" data-toggle="tab">Cargados</a></li>
-                </ul>     
+                    <li class="nav-item">
+                      <a class="nav-link active" id="linkEnProceso" data-toggle="tab" href="#enProceso" role="tab" aria-controls="enProceso" aria-selected="true">En proceso</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="linkVerificados" data-toggle="tab" href="#verificados" role="tab" aria-controls="verificados" aria-selected="false">Verificados</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="linkCargados" data-toggle="tab" href="#cargados" role="tab" aria-controls="cargados" aria-selected="false">Cargados</a>
+                    </li>
+                  </ul>
                 <div class="tab-content">
                   <div role="tabpanel" class="tab-pane active" id="enProceso">
-                    <div class="panel panel-default">
-                      <div class="panel-body">
-                        <table id="tablaPedidosEnProceso" width="100%" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                    <div class="card">
+                      <div class="card-body">
+                        <table id="tablaPedidosEnProceso" width="100%" cellspacing="0" class="table-hover table table-sm table-striped table-bordered" style="margin-top:15px;">
                           <thead>
                             <tr>
                               <th>Clave</th>
@@ -205,16 +207,17 @@
                             </tr>
                           </thead>
                           <tbody id="tbodyTablaPedidos">
-      
+
                           </tbody>
                         </table>
                       </div>
                     </div>
                   </div>
                   <div role="tabpanel" class="tab-pane" id="verificados">
-                    <div class="panel panel-default">
-                      <div class="panel-body">
-                        <table id="tablaPedidosEnProcesoVerificados" width="100%" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                    <div class="card">
+                      <div class="card-body">
+                        <table id="tablaPedidosEnProcesoVerificados" cellspacing="0" width="100%" class="table-hover table table-sm table-striped table-bordered"
+                          style="margin-top:15px;">
                           <thead>
                             <tr>
                               <th>Clave</th>
@@ -230,16 +233,17 @@
                             </tr>
                           </thead>
                           <tbody id="tbodyTablaPedidos">
-        
+
                           </tbody>
                         </table>
                       </div>
                     </div>
                   </div>
                   <div role="tabpanel" class="tab-pane" id="cargados">
-                    <div class="panel panel-default">
-                      <div class="panel-body">
-                        <table id="tablaPedidosEnProcesoCargados" width="100%" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                    <div class="card">
+                      <div class="card-body">
+                        <table id="tablaPedidosEnProcesoCargados" cellspacing="0" width="100%" class="table-hover table table-sm table-striped table-bordered"
+                          style="margin-top:15px;">
                           <thead>
                             <tr>
                               <th>Clave</th>
@@ -256,7 +260,7 @@
                             </tr>
                           </thead>
                           <tbody id="tbodyTablaPedidos">
-        
+
                           </tbody>
                         </table>
                       </div>
@@ -269,9 +273,9 @@
               <div id="loaderPedidosFinalizados" class="loader"></div>
               <h4 class="text-center" id="pPedidosFinalizados"></h4>
               <div class="container-fluid">
-                <div class="panel panel-default">
-                  <div class="panel-body">
-                    <table width="100%" id="tablaPedidosFinalizados" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                <div class="card">
+                  <div class="card-body">
+                    <table width="100%" id="tablaPedidosFinalizados" cellspacing="0" class="table-hover table table-sm table-striped table-bordered" style="margin-top:15px;">
                       <thead>
                         <tr>
                           <th>Clave</th>
@@ -293,9 +297,9 @@
             </div>
             <div role="tabpanel" class="tab-pane" id="historialPedidos">
               <div class="container-fluid">
-                <div class="panel panel-default">
-                  <div class="panel-body">
-                    <table width="100%" id="tablaHistorialPedidos" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                <div class="card">
+                  <div class="card-body">
+                    <table width="100%" cellspacing="0" id="tablaHistorialPedidos" class="table-hover table table-sm table-striped table-bordered" style="margin-top:15px;">
                       <thead>
                         <tr>
                           <th>Id</th>
@@ -319,14 +323,14 @@
         </div>
       </div>
     </div>
-    <div id="modalModificarRuta" class="modal fade" tabindex="-1" role="dialog">
+    <div id="modalModificarRuta" class="modal" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
+            <h5 class="modal-title">Modificar datos</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+              <span aria-d-none="true">&times;</span>
             </button>
-            <h4 class="modal-title">Modificar datos</h4>
           </div>
           <div class="modal-body">
             <div class="row">
@@ -336,7 +340,7 @@
                   <div class="input-group date">
                     <input id="fechaRuta" class="form-control input-sm" type="text" placeholder="Fecha de ruta">
                     <span style="color: white;" class="input-group-addon btn-primary btn-sm">
-                      <i class="fa fa-calendar"></i>
+                      <i class="far fa-calendar-alt"></i>
                     </span>
                   </div>
                 </div>
@@ -352,37 +356,35 @@
               <div class="col-md-6">
                 <label for="agente">Agente:</label>
                 <select name="agente" id="agente" class="form-control">
-
+    
                 </select>
               </div>
               <!-- <div class="col-md-10">
-                  <label for="agente">Asignar agente:</label>
-                  <div class="input-group">
-                    <select name="agente" id="agente" class="form-control">
-                          
-                    </select>
-                    <span class="input-group-btn">
-                      <button id="btnAsignarAgente" onclick="asignarAgente()" class="btn btn-default">Asignar</button>
-                    </span>
-                  </div>
-                </div> -->
+                                    <label for="agente">Asignar agente:</label>
+                                    <div class="input-group">
+                                      <select name="agente" id="agente" class="form-control">
+                                            
+                                      </select>
+                                      <span class="input-group-btn">
+                                        <button id="btnAsignarAgente" onclick="asignarAgente()" class="btn btn-default">Asignar</button>
+                                      </span>
+                                    </div>
+                                  </div> -->
             </div>
             <!-- <br> -->
             <!-- <div class="row">
-                <div class="col-md-6">
-                  <label for="">Agente asignado:</label>
-                  <a id="agenteAsignado" class="hidden btn btn-agente"></a>
-                </div>
-              </div>   -->
+                                  <div class="col-md-6">
+                                    <label for="">Agente asignado:</label>
+                                    <a id="agenteAsignado" class="d-none btn btn-agente"></a>
+                                  </div>
+                                </div>   -->
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
             <button id="btnGuardarRuta" type="button" class="btn btn-success">Guardar</button>
           </div>
         </div>
-        <!-- /.modal-content -->
       </div>
-      <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
     <div id="modalConfirmarEliminarPedido" class="modal fade" tabindex="-1" role="dialog">
@@ -390,7 +392,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+              <span aria-d-none="true">&times;</span>
             </button>
             <h4 class="modal-title">Confirmar eliminación</h4>
           </div>
@@ -409,7 +411,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+              <span aria-d-none="true">&times;</span>
             </button>
             <h4 class="modal-title">Confirmar eliminación</h4>
           </div>
@@ -423,14 +425,14 @@
         </div>
       </div>
     </div>
-    <div id="modalPerfil" class="modal fade" tabindex="-1" role="dialog">
+    <div id="modalPerfil" class="modal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
+            <h5 class="modal-title">Editar perfil</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+              <span aria-d-none="true">&times;</span>
             </button>
-            <h4 class="modal-title">Editar perfil</h4>
           </div>
           <div class="modal-body">
             <form>
@@ -440,21 +442,22 @@
                     <img src="http://lorempixel.com/40/40/" style="height: 200px;">
                   </div>
                   <div class="form-group">
-                    <input type="file" accept="image/jpeg" class="form-control">
+                    <!--<input type="file" accept="image/jpeg" class="form-control">-->
+                    <input type="file" accept="image/jpeg" class="form-control-file">
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label for="nombreEditar">Nombre:</label>
                     <input type="text" class="form-control" id="nombreEditar">
-                    <span id="helpBlockNombreEditar" class="hidden help-block">Campo obligatorio</span>
+                    <span id="helpBlockNombreEditar" class="d-none help-block">Campo obligatorio</span>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label for="emailEditar">Email:</label>
                     <input type="text" class="form-control" id="emailEditar">
-                    <span id="helpBlockEmailEditar" class="hidden help-block">Campo obligatorio</span>
+                    <span id="helpBlockEmailEditar" class="d-none help-block">Campo obligatorio</span>
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -479,7 +482,7 @@
                   <div class="form-group">
                     <label for="usernameEditar">Nombre de usuario:</label>
                     <input type="text" class="form-control" id="usernameEditar">
-                    <span id="helpBlockUsernameEditar" class="hidden help-block">Campo obligatorio</span>
+                    <span id="helpBlockUsernameEditar" class="d-none help-block">Campo obligatorio</span>
                   </div>
                 </div>
                 <div class="col-md-5">
@@ -487,21 +490,21 @@
                   <div class="input-group">
                     <input type="text" class="form-control" id="contraseñaEditar" name="contraseñaEditar" readonly>
                     <span class="input-group-btn">
-                      <button onclick="permitirCambioContraseña()" class="btn btn-default" type="button">
-                        <i class="fa fa-pencil"></i>
+                      <button onclick="permitirCambioContraseña()" class="btn btn-light" type="button">
+                        <i class="fas fa-pencil-alt"></i>
                       </button>
                     </span>
                     <span class="input-group-btn">
                       <button id="btnCambiarContraseña" class="btn btn-success" type="button" disabled>Guardar</button>
                     </span>
                   </div>
-                  <span id="helpBlockContraseñaEditar" class="hidden help-block"></span>
+                  <span id="helpBlockContraseñaEditar" class="d-none help-block"></span>
                 </div>
               </div>
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
             <button id="btnActualizarProducto" type="button" class="btn btn-primary">Guardar cambios</button>
           </div>
         </div>
@@ -512,7 +515,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+              <span aria-d-none="true">&times;</span>
             </button>
             <h4 class="modal-title">Finalizar pedido</h4>
           </div>
@@ -529,20 +532,89 @@
       <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
-    <div id="modalSeparar" class="modal fade" tabindex="-1" role="dialog">
+    <div id="modalSeparar" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-d-none="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Separar pedido</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-d-none="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="card">
+              <!-- <div class="card-header">Pedido</div> -->
+              <div class="card-body">
+                <h5 class="card-title">Pedidohr</h5>
+                <hr>
+                <div class="table-responsive">
+                  <table id="tablaPedidoSeparar" cellspacing="0" class="table table-hover table-striped table-sm table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Clave</th>
+                        <th>Núm. de orden</th>
+                        <th>Fecha de captura</th>
+                        <th>Tienda</th>
+                        <th>Ruta</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbodyTablaPedidoSeparar"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="card mt-2">
+              <!-- <div class="card-header">Pedido separado</div> -->
+              <div class="card-body">
+                <h5 class="card-title">Pedido separado</h5>
+                <hr>
+                <div class="table-responsive">
+                  <table id="tablaPedidoSeparado" cellspacing="0" class="table table-hover table-striped table-sm table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Clave</th>
+                        <th>Núm. de orden</th>
+                        <th>Fecha de captura</th>
+                        <th>Tienda</th>
+                        <th>Ruta</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbodyTablaPedidoSeparado" style="border: 2px solid grey; border-style: dashed; height:200px; width:100%;" class="tabla-drag">
+                      <h6>Arrastra los pedidos dentro de las líneas punteadas para agruparlos en otro pedido</h6>
+                      <tr id="filavacia" style="padding:0px 0px 0px;" class="no-pading">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button id="btnSeparar" type="button" class="btn btn-primary">Separar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div id="modalSeparar" class="modal fade" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+              <span aria-d-none="true">&times;</span>
             </button>
             <h4 class="modal-title">Separar pedido</h4>
           </div>
           <div class="modal-body">
             <h4>Pedido</h4>
-            <div class="panel panel-default">
-              <div class="panel-body">
-                <table id="tablaPedidoSeparar" width="100%" class="table-hover table table-condensed table-bordered table-striped" style="margin-top:15px;">
+            <div class="card">
+              <div class="card-body">
+                <table id="tablaPedidoSeparar" cellspacing="0" width="100%" class="table-hover table table-sm table-bordered table-striped" style="margin-top:15px;">
                   <thead>
                     <tr>
                       <th>Clave</th>
@@ -557,10 +629,10 @@
               </div>
             </div>
             <h4>Pedido separado</h4>
-            <div class="panel panel-default">
-              <div class="panel-body">
+            <div class="card">
+              <div class="card-body">
                 <div class="table-responsive">
-                  <table id="tablaPedidoSeparado" class="table table-hover table-striped table-condensed table-bordered">
+                  <table id="tablaPedidoSeparado" cellspacing="0" class="table table-hover table-striped table-sm table-bordered">
                     <thead>
                       <tr>
                         <th>Clave</th>
@@ -590,37 +662,30 @@
             <button id="btnSeparar" type="button" class="btn btn-primary">Separar</button>
           </div>
         </div>
-        <!-- /.modal-content -->
-      </div>
-      <!-- /.modal-dialog -->
-    </div>
-    <!-- /.modal -->
-    <!-- <script src="./node_modules/jquery/dist/jquery.min.js"></script> -->
-    <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
+      </div> -->
 
-    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
-    <script src="js/jquery-3.2.1.min.js"></script>
-    <script>if (window.module) module = window.module;</script>
-    
-    <script src="js/localforage.min.js"></script>
-    <script src="js/panel.min.js"></script>
-    <!--Todos los javascript están concatenados y minificados en este archivo -->
-    <!-- <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-    <script src="dist/js/bootstrap-select.js"></script>
-    <script src="vendor/metisMenu/metisMenu.min.js"></script>
-    <script src="dist/js/sb-admin-2.js"></script>
-    <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables-plugins/dataTables.bootstrap.min.js"></script> -->
-    <!-- <script src="vendor/datatables-responsive/dataTables.responsive.js"></script> -->
-    <!-- <script src="js/bootstrap-datepicker.min.js"></script>
-    <script src="js/bootstrap-datepicker.es.min.js"></script>
-    <script src="js/bootstrap-tooltip.js"></script>
-    <script src="js/jquery.toaster.js"></script>
-    <script src="js/firebase.js"></script>
-    <script src="js/dragula.min.js"></script>
-    <script src="js/moment-with-locales.js"></script>
-    <script src="js/panel.js"></script>
-    <script src="js/perfil.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+      <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+      <script src="js/jquery-3.3.1.slim.min.js"></script>
+      <script>if (window.module) module = window.module;</script>
+      <!-- <script src="js/panel.min.js"></script> -->
+      <script src="js/popper.min.js"></script>
+      <script src="js/bootstrap4.min.js"></script>
+      <script src="dist/js/bootstrap-select.js"></script>
+      <script src="vendor/metisMenu/metisMenu.min.js"></script>
+      <script src="dist/js/sb-admin-2.js"></script>
+      <script src="js/jquery.dataTables.min.js"></script>
+      <script src="js/dataTables.bootstrap4.min.js"></script>
+      <script src="vendor/datatables-responsive/dataTables.responsive.js"></script>
+      <script src="js/bootstrap-datepicker.min.js"></script>
+      <script src="js/bootstrap-datepicker.es.min.js"></script>
+      <script src="js/jquery.toaster.js"></script>
+      <script src="js/firebase.js"></script>
+      <script src="js/dragula.min.js"></script>
+      <script src="js/moment-with-locales.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+      <script src="js/localforage.min.js"></script>
+      <script src="js/sweetalert.min.js"></script>
+      <script src="babel/panel.js"></script>
+      <script src="babel/perfil.js"></script>
   </body>
 </html>

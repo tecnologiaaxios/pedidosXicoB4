@@ -1,134 +1,113 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
     <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
-    <title>Agregar producto</title>
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <link href="vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
+    <title>Detalles del pedido</title>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/bootstrap4.min.css">
+    <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
+    <link href="css/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
-    <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
-    <link href="dist/css/sb-admin-2.css" rel="stylesheet">
-    <link href="vendor/morrisjs/morris.css" rel="stylesheet">
-    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="css/dragula.min.css">
+    <!-- <link rel="stylesheet" href="css/responsive.bootstrap.min.css"> -->
+    <!-- <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet"> -->
+    <!-- <link href="dist/css/sb-admin-2.css" rel="stylesheet"> -->
+    <link href="css/panel.css" rel="stylesheet">
+    <!-- <link href="vendor/morrisjs/morris.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="css/icon.css">
+    <link rel="stylesheet" href="dist/css/bootstrap-select.css">
     <link rel="stylesheet" href="css/bootstrap-datepicker.min.css">
     <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
     <link rel="stylesheet" href="css/bootstrap-datepicker3.standalone.css">
-    <link rel="stylesheet" href="css/bootstrap-select.min.css">
-    <link rel="stylesheet" href="css/buttons.dataTables.min.css">
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-      <![endif]-->
+    <script defer src="js/fontawesome-all.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
   </head>
   <body>
-    <nav class="navbar">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">
-            <img style="max-width: 50px; margin-top: -7px;" src="logo.png"></img>
+    <!-- <nav class="navbar navbar-expand-lg navbar" style="background-color: rgb(255, 110, 2)"> -->
+    <nav class="navbar navbar-expand-lg navbar" style="background: url(img/FONDO.jpg) no-repeat; background-size: cover;">
+      <a class="navbar-brand" href="#">
+        <img src="logo.png" width="50" height="33" class="d-inline-block align-top" alt=""> Sistema de pedidos
+      </a>
+      <a class="navbar-brand" href="panel.html">
+        <span class="navbar-text material-icons" data-toggle="tooltip" data-placement="bottom" title="Volver al panel">dvr</span>
+      </a>
+      <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom"
+        title="Notificaciones">
+        <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="far fa-bell"></span>
+          <span id="spanNotificaciones" style="display: none;" class="badge badge-pill badge-danger"></span>
+        </a>
+        <div id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+    
+        </div>
+      </div>
+      <a href="" class="navbar-brand" id="btnPerfil">
+        <img src="http://lorempixel.com/25/25/" alt="..." class="rounded-circle" data-toggle="tooltip" data-placement="bottom" title="Perfil">
+      </a>
+      <div class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom" title="Cerrar sesión">
+        <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-sign-out-alt"></i>
+        </a>
+        <div class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" onclick="logout()">
+            <span class="fas fa-power-off"></span> Cerrar sesión
           </a>
-          <a class="navbar-brand" href="#">Sistema de pedidos</a>
-          <a class="navbar-brand" href="panel.html">
-            <span class="material-icons no-padding" data-toggle="tooltip" data-placement="bottom" title="Volver al panel">dvr</span>
-          </a>
-          <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown">
-            <a class="links-panel" class="dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="textnavbar fa fa-bell-o" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Notificaciones"></i>
-              <span id="spanNotificaciones" style="background-color: red; display: none;" class="badge"></span>
-              <i class="fa fa-caret-down"></i>
-            </a>
-            <ul id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts">
-
-            </ul>
-          </div>
-          <a href="" class="navbar-brand" id="btnPerfil">
-            <img src="http://lorempixel.com/25/25/" alt="..." class="img-circle" data-toggle="tooltip" data-placement="bottom" title="Perfil">
-          </a>
-          <div class="navbar-brand dropdown">
-            <a class="links-panel dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="fa fa-sign-out" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Cerrar sesión"></i>
-              <i class="fa fa-caret-down"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-alerts">
-              <li class="divider"></li>
-              <li>
-                <a onclick="logout()">
-                  <span class="glyphicon glyphicon-off"></span> Cerrar sesión</a>
-              </li>
-            </ul>
-          </div>
         </div>
       </div>
     </nav>
-    <div id="wrapper">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-lg-12 col-md-12 col-sm-12">
-            <h2 class="page-header">Formulario de alta de producto para agentes:</h2>
-          </div>
+    <div class="container-fluid">
+      <!-- <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+          <h2 class="page-header">Formulario de alta de producto para agentes:</h2>
         </div>
-        <div class="row">
-          <div class="col-lg-2 col-md-4 col-sm-4">
-            <br>
-            <div class="panel panel-default">
-              <div class="panel-body">
-                <form id="newProduct" @submit.prevent="guardarProducto">
-                  <div class="form-group">
-                    <label for="clave">Clave:</label>
-                    <input v-model="clave" type="text" class="form-control" id="clave" placeholder="Clave">
-                  </div>
-                  <div class="form-group">
-                    <label for="nombre">Nombre:</label>
-                    <input v-model="nombre" type="text" class="form-control" id="nombre" placeholder="Nombre">
-                  </div>
-                  <div class="form-group">
-                    <label for="descripcion">Empaque:</label>
-                    <input v-model="empaque" type="text" class="form-control" placeholder="Empaque" id="empaque">
-                  </div>
-                  <button type="submit" class="pull-right btn btn-danger">Guardar</button>
-                </form>
-              </div>
+      </div> -->
+      <div class="row mt-3 justify-content-center">
+        <div class="col-lg-2 col-md-4 col-sm-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title text-center">Formulario de alta de producto para agentes</h5>
+              <form id="newProduct" @submit.prevent="guardarProducto">
+                <div class="form-group">
+                  <label for="clave">Clave:</label>
+                  <input v-model="clave" type="text" class="form-control" id="clave" placeholder="Clave">
+                </div>
+                <div class="form-group">
+                  <label for="nombre">Nombre:</label>
+                  <input v-model="nombre" type="text" class="form-control" id="nombre" placeholder="Nombre">
+                </div>
+                <div class="form-group">
+                  <label for="descripcion">Empaque:</label>
+                  <input v-model="empaque" type="text" class="form-control" placeholder="Empaque" id="empaque">
+                </div>
+                <button type="submit" class="pull-right btn btn-danger">Guardar</button>
+              </form>
             </div>
           </div>
         </div>
       </div>
-    </div>  
-
-    <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
-    <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
+    </div> 
     <script>if (typeof module  === 'object') {window.module = module; module = undefined;}</script>
     <script src="js/jquery-3.2.1.min.js"></script>
     <script>if (window.module) module = window.module;</script>
-
-    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap4.min.js"></script>
     <script src="dist/js/bootstrap-select.js"></script>
     <script src="vendor/metisMenu/metisMenu.min.js"></script>
-    <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
-    <script src="vendor/datatables-responsive/dataTables.responsive.js"></script>
-    <script src="js/dataTables.buttons.min.js"></script>
+    <script src="js/jquery.dataTables.min.js"></script>
+    <script src="js/dataTables.bootstrap4.min.js"></script>
+    <script src="js/dataTables.responsive.min.js"></script>
     <script src="dist/js/sb-admin-2.js"></script>
-    <script type="text/javascript" src="js/bootstrap-datepicker.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap-datepicker.es.min.js"></script>
-    <script src="js/bootstrap-tooltip.js"></script>
+    <script src="js/bootstrap-datepicker.min.js"></script>
+    <script src="js/bootstrap-datepicker.es.min.js"></script>
     <script src="js/jquery.toaster.js"></script>
     <script src="js/bootstrap-select.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+    <script src="js/firebase.js"></script>
     <script src="js/jspdf.debug.js"></script>
     <script>
       // Initialize Firebase
@@ -147,12 +126,11 @@
     <script src="js/jspdf.min.js"></script>
     <script src="js/jspdf.plugin.autotable.js"></script>
     <script src="js/dataTables.buttons.min.js"></script>
-    <script src="js/buttons.flash.min.js"></script>
     <script src="js/jszip.min.js"></script>
     <script src="js/pdfmake.min.js"></script>
     <script src="js/vfs_fonts.js"></script>
     <script src="js/buttons.print.min.js"></script>
-    <script src="js/buttons.bootstrap.js"></script>
+    <script src="js/buttons.bootstrap4.min.js"></script>
     <script src="js/buttons.html5.min.js"></script>
     <script src="js/localforage.min.js"></script>
     <script src="js/vue.js"></script>

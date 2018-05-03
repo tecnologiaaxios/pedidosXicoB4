@@ -1,387 +1,391 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
-  <title>Detalles del pedidos</title>
-  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-  <link href="vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
-  <link href="vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
-  <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
-  <link href="dist/css/sb-admin-2.css" rel="stylesheet">
-  <link href="vendor/morrisjs/morris.css" rel="stylesheet">
-  <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="css/dragula.min.css">
-  <link rel="stylesheet" href="css/bootstrap-datepicker.min.css">
-  <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
-  <link rel="stylesheet" href="css/bootstrap-datepicker3.standalone.css">
-  <link rel="stylesheet" href="css/bootstrap-select.min.css">
-  <link rel="stylesheet" href="css/buttons.dataTables.min.css">
-  <link href="https://unpkg.com/vue2-datatable-component/dist/min.css" rel="stylesheet">
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  <style>
-    .fade-enter-active,
-    .fade-leave-active {
-      transition: opacity .5s
-    }
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
+    <title>Detalles del pedido</title>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/bootstrap4.min.css">
+    <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
+    <link href="css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="css/responsive.bootstrap.min.css"> -->
+    <!-- <link href="dist/css/sb-admin-2.css" rel="stylesheet"> -->
+    <link href="css/panel.css" rel="stylesheet">
+    <!-- <link href="vendor/morrisjs/morris.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="css/icon.css">
+    <link rel="stylesheet" href="dist/css/bootstrap-select.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.standalone.css">
+    <script defer src="js/fontawesome-all.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
+    <link href="https://unpkg.com/vue2-datatable-component/dist/min.css" rel="stylesheet">
 
-    .fade-enter,
-    .fade-leave-to {
-      opacity: 0
-    }
-  </style>
-</head>
+    <style>
+      .fade-enter-active,
+      .fade-leave-active {
+        transition: opacity .5s
+      }
+  
+      .fade-enter,
+      .fade-leave-to {
+        opacity: 0
+      }
+    </style>
+  </head>
 <body>
-  <nav class="navbar">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">
-          <img style="max-width: 50px; margin-top: -7px;" src="logo.png"></img>
+  <!-- <nav class="navbar navbar-expand-lg navbar" style="background-color: rgb(255, 110, 2)"> -->
+  <nav class="navbar navbar-expand-lg navbar" style="background: url(img/FONDO.jpg) no-repeat; background-size: cover;">
+    <a class="navbar-brand" href="#">
+      <img src="logo.png" width="50" height="33" class="d-inline-block align-top" alt=""> Sistema de pedidos
+    </a>
+    <a class="navbar-brand" href="panel.html">
+      <span class="navbar-text material-icons" data-toggle="tooltip" data-placement="bottom" title="Volver al panel">dvr</span>
+    </a>
+    <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom"
+      title="Notificaciones">
+      <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="far fa-bell"></span>
+        <span id="spanNotificaciones" style="display: none;" class="badge badge-pill badge-danger"></span>
+      </a>
+      <div id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+  
+      </div>
+    </div>
+    <a href="" class="navbar-brand" id="btnPerfil">
+      <img src="http://lorempixel.com/25/25/" alt="..." class="rounded-circle" data-toggle="tooltip" data-placement="bottom" title="Perfil">
+    </a>
+    <div class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom" title="Cerrar sesión">
+      <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-sign-out-alt"></i>
+      </a>
+      <div class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" onclick="logout()">
+          <span class="fas fa-power-off"></span> Cerrar sesión
         </a>
-        <a class="navbar-brand" href="#">Sistema de pedidos</a>
-        <a class="navbar-brand" href="panel.html">
-          <span class="material-icons no-padding" data-toggle="tooltip" data-placement="bottom" title="Volver al panel">dvr</span>
-        </a>
-        <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown">
-          <a class="links-panel" class="dropdown-toggle" data-toggle="dropdown" href="#">
-            <i class="textnavbar fa fa-bell-o" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Notificaciones"></i>
-            <span id="spanNotificaciones" style="background-color: red; display: none;" class="badge"></span>
-            <i class="fa fa-caret-down"></i>
-          </a>
-          <ul id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts">
-
-          </ul>
-        </div>
-        <a href="" class="navbar-brand" id="btnPerfil">
-          <img src="http://lorempixel.com/25/25/" alt="..." class="img-circle" data-toggle="tooltip" data-placement="bottom" title="Perfil">
-        </a>
-        <div class="navbar-brand dropdown">
-          <a class="links-panel dropdown-toggle" data-toggle="dropdown" href="#">
-            <i class="fa fa-sign-out" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Cerrar sesión"></i>
-            <i class="fa fa-caret-down"></i>
-          </a>
-          <ul class="dropdown-menu dropdown-alerts">
-            <li class="divider"></li>
-            <li>
-              <a onclick="logout()">
-                <span class="glyphicon glyphicon-off"></span> Cerrar sesión</a>
-            </li>
-          </ul>
-        </div>
       </div>
     </div>
   </nav>
-  <div id="wrapper">
-    <div id="app" class="container-fluid">
-      <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12">
-          <h1 class="page-header">Estadísticas</h1>
-        </div>
+  <div id="app" class="container-fluid">
+    <div class="row mt-4">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <h1 class="display-5">Estadísticas</h1>
       </div>
-      <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#panePedidos" aria-controls="panePedidos" role="tab" data-toggle="tab">Pedidos</a></li>
-        <li role="presentation"><a href="#paneProductos" aria-controls="paneProductos" role="tab" data-toggle="tab">Productos</a></li>
-        <li role="presentation"><a href="#paneGraficas" aria-controls="paneGraficas" role="tab" data-toggle="tab">Gráficas</a></li>
-      </ul>
-      <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active" id="panePedidos">
-          <div class="panel panel-default">
-            <div class="panel-body">
-              <div class="row">
-                <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">
-                  <form class="form-inline"></form>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active"data-toggle="tab" href="#panePedidos" role="tab" aria-controls="panePedidos" aria-selected="true">Pedidos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#paneProductos" role="tab" aria-controls="paneProductos" aria-selected="false">Productos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#paneGraficas" role="tab" aria-controls="paneGraficas" aria-selected="false">Gráficas</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="panePedidos" role="tabpanel" aria-labelledby="panePedidos">
+            <div class="card">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">
+                    <form class="form-inline"></form>
                     <div class="form-group">
-                      <label for="tipoAcumulado"><i class="fa fa-filter" aria-controls="true"></i> Filtrar pedidos:</label>
+                      <label for="tipoAcumulado" class="mr-sm-2">
+                        <i class="fa fa-filter" aria-controls="true"></i> Filtrar pedidos:
+                      </label>
                       <select class="form-control" name="filtro" id="filtro">
                         <option selected disabled value="">Seleccionar</option>
                         <option value="Todos">Todos</option>
                         <option value="PorZona">Por zona</option>
                       </select>
                     </div>
-                  </form>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12">
-                  <form class="form-inline">
-                    <div class="form-group">
-                      <label for="zona">Zona:</label>
-                      <select readonly type="text" id="zona" class="form-control">
-      
-                      </select>
-                    </div>
-                    <div class="form-group">
-                      <label for="fechaInicio">Desde:</label>
-                      <input id="fechaInicio" name="fechaInicio" type="date" class="form-control" readonly>
-                    </div>
-                    <div class="form-group">
-                      <label for="fechaFin">Hasta:</label>
-                      <input id="fechaFin" name="fechaFin" type="date" class="form-control" readonly>
-                    </div>
-                    <button id="btnBuscar" onclick="filtrarPedidos()" disabled type="button" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> Buscar</button>
-                  </form>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12">
-                  <br>
-                  <!-- <div class="panel panel-default">
-                    <div class="panel-body"> -->
-                      <table width="100%" id="pedidos" class="table table-condensed table-bordered table-striped table-hover">
-                        <thead>
-                          <tr>
-                            <th class="text-center">Clave</th>
-                            <th class="text-center">Núm. orden</th>
-                            <th>Fecha captura</th>
-                            <th>Tienda</th>
-                            <th>Zona</th>
-                            <th class="text-center">Total Kg</th>
-                            <th class="text-center">Total Pz</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-      
-                        </tbody>
-                      </table>
-                      <!-- <todos v-show="filtro"></todos> -->
-                    <!-- </div>
-                  </div> -->
-                </div><!-- /.col-lg-12 -->
-              </div><!-- /.row -->
-              <div class="row">
-                <div class="col-lg-4 col-md-8 col-sm-8 col-lg-offset-8 col-md-offset-4 col-sm-offset-4">
-                  <!-- <div class="jumbotron">
-                    <h2 id="kgTotales">Kg totales: 500</h2>
-                    <h2 id="pzTotales">Pz totales: 300</h2>
-                  </div> -->
-                  <!-- <div class="well">
-                    <h2 id="kgTotales">Kg totales:</h2>
-                    <h2 id="pzTotales">Pz totales:</h2>
-                  </div> -->
-      
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h3 class="panel-title">Totales</h3>
-                    </div>
-                    <div class="panel-body">
-                      <h4 id="kgTotales">Kg:</h4>
-                      <h4 id="pzTotales">Pz:</h4>
-                    </div>
+                    </form>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div role="tabpanel" class="tab-pane" id="paneProductos">
-          <div class="panel panel-default">
-            <div class="panel-body" id="appProductos">
-                <!-- <transition name="fade">
                 <div class="row">
-                    <div class="col-lg-12">
-                      <table class="table table-striped table-condensed table-hover">
-                        <thead>
-                          <tr>
-                              <th>Clave</th>
-                              <th>Fecha</th>
-                              <th>Nombre</th>
-                              <th>Total Kilos</th>
-                              <th>Total Piezas</th>
-                              <th>Zona</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="producto in vueProductos">
-                            <td>{{ producto.clave }}</td>
-                            <td>{{ producto.fecha }}</td>
-                            <td>{{ producto.nombre }}</td>
-                            <td>{{ producto.totalKilos }}</td>
-                            <td>{{ producto.totalPiezas }}</td>
-                            <td>{{ producto.zona }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  </transition> -->
-              <div class="row">
-                <div class="col-lg-8 col-md-8 col-sm-8">
-                  <form class="form-inline">
-                    <div class="form-group">
-                      <label for="clave">Clave:</label>
-                      <!-- <input id="clave" name="clave" type="date" class="form-control"> -->
-                      <select v-model="clave" :value="clave" class="form-control" name="clave" id="clave">
-                        <option selected disabled value="">Seleccionar</option>
-                        <option value="PT-01-01">PT-01-01</option>
-                        <option value="PT-01-02">PT-01-02</option>
-                        <option value="PT-02-01">PT-02-01</option>
-                        <option value="PT-04-01">PT-04-01</option>
-                        <option value="PT-07-01">PT-07-01</option>
-                        <option value="PT-10-01">PT-10-01</option>
-                      </select>
-                    </div>
-                    <div class="form-group">
-                      <label for="zonaProducto">Zona:</label>
-                      <select v-model="zona" :value="zona" type="text" id="zonaProducto" class="form-control"></select>
-                    </div>
-                    <div class="form-group">
-                      <label for="fecha">Fecha:</label>
-                      <input v-model="fecha" @change="cambiarFecha" id="fecha" name="fecha" type="date" class="form-control">
-                    </div>
-                    <!-- <div class="form-group">
-                      <label for="fecha">Fecha:</label>
-                      <div class="input-group date">
-                        <input v-model="fecha" id="fecha" class="form-control" type="text" placeholder="Fecha">
-                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                  <div class="col-lg-12 col-md-12 col-sm-12">
+                    <form class="form-inline">
+                      <div class="form-group">
+                        <label for="zona" class="mr-sm-2">Zona:</label>
+                        <select readonly type="text" id="zona" class="form-control mr-sm-2">
+      
+                        </select>
                       </div>
-                    </div> -->
-                    <button id="btnFiltrarProductos" @click="filtrar" type="button" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> Buscar</button>
-                    <button type="button" @click="limpiarBusqueda" class="btn btn-info">Limpiar</button>
-                  </form>
+                      <div class="form-group">
+                        <label for="fechaInicio" class="mr-sm-2">Desde:</label>
+                        <input id="fechaInicio" name="fechaInicio" type="date" class="form-control mr-sm-2" readonly>
+                      </div>
+                      <div class="form-group">
+                        <label for="fechaFin" class="mr-sm-2">Hasta:</label>
+                        <input id="fechaFin" name="fechaFin" type="date" class="form-control mr-sm-2" readonly>
+                      </div>
+                      <button id="btnBuscar" onclick="filtrarPedidos()" disabled type="button" class="btn btn-primary">
+                        <i class="fa fa-search" aria-hidden="true"></i> Buscar</button>
+                    </form>
+                  </div>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-4">
-                  <div class="panel panel-default">
-                    <div class="panel-body">
-                      <h4>{{ strTotalKg }}</h4>
-                      <h4>{{ strTotalPz }}</h4>
+                <div class="row mt-3">
+                  <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div id="loaderPedidos" class="alert alert-primary d-none" role="alert">
+                      <i class="fas fa-sync fa-spin"></i> Cargando...
+                    </div>
+                    <br>
+                    <!-- <div class="card">
+                          <div class="card-body"> -->
+                    <table width="100%" cellspacing="0" id="pedidos" class="table table-sm table-bordered table-striped table-hover">
+                      <thead>
+                        <tr>
+                          <th class="text-center">Clave</th>
+                          <th class="text-center">Núm. orden</th>
+                          <th>Fecha captura</th>
+                          <th>Tienda</th>
+                          <th>Zona</th>
+                          <th class="text-center">Total Kg</th>
+                          <th class="text-center">Total Pz</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+      
+                      </tbody>
+                    </table>
+                    <!-- <todos v-show="filtro"></todos> -->
+                    <!-- </div>
+                        </div> -->
+                  </div>
+                  <!-- /.col-lg-12 -->
+                </div>
+                <!-- /.row -->
+                <div class="row">
+                  <div class="col-lg-4 col-md-8 col-sm-8 offset-lg-8 offset-md-4 offset-sm-4">
+                    <!-- <div class="jumbotron">
+                          <h2 id="kgTotales">Kg totales: 500</h2>
+                          <h2 id="pzTotales">Pz totales: 300</h2>
+                        </div> -->
+                    <!-- <div class="well">
+                          <h2 id="kgTotales">Kg totales:</h2>
+                          <h2 id="pzTotales">Pz totales:</h2>
+                        </div> -->
+      
+                    <div class="card">
+                      <div class="card-header">
+                        <h5 class="card-title">Totales</h5>
+                      </div>
+                      <div class="card-body">
+                        <h4>Kg: <span id="kgTotales" class="text-muted"></span></h4>
+                        <h4>Pz: <span id="pzTotales" class="text-muted"></span></h4>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <br>
-              <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12">
-                  <!-- <tabla-productos :productos="productosFiltrados"></tabla-productos> -->
-                  <table width="100%" id="tablaProductos" class="table table-condensed table-bordered table-striped table-hover">
-                    <thead>
-                      <tr>
-                        <th class="text-center">Clave</th>
-                        <th>Nombre</th>
-                        <th>Zona</th>
-                        <th>Fecha</th>
-                        <th class="text-center">Total Kg</th>
-                        <th class="text-center">Total Pz</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      
-                    </tbody>
-                  </table>
-                </div>
-                <!-- <template id="productos2">
-                  <table width="100%" id="tablaProductos" class="table table-condensed table-bordered table-striped table-hover">
-                    <thead>
-                      <tr>
-                        <th class="text-center">Clave</th>
-                        <th>Nombre</th>
-                        <th>Zona</th>
-                        <th>Fecha</th>
-                        <th class="text-center">Total Kg</th>
-                        <th class="text-center">Total Pz</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="producto in productos">
-                        <td class="text-center">{{ producto.clave }}</td>
-                        <td>{{ producto.nombre }}</td>
-                        <td>{{ producto.zona }}</td>
-                        <td>{{ producto.fecha }}</td>
-                        <td class="text-center">{{ producto.totalKilos }}</td>
-                        <td class="text-center">{{ producto.totalPiezas }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </template> -->
               </div>
             </div>
           </div>
-        </div>
-        <div role="tabpanel" class="tab-pane active" id="paneGraficas">
-          <div class="panel panel-default">
-            <div class="panel-body">
-              <div class="row">
-                <div class="col-lg-4 col-md-4 col-sm-4">
-                  <form class="form-inline">
-                    <div class="form-group">
-                      <label for="claveGrafica">Producto:</label>
-                      <select type="" class="form-control" id="claveGrafica">
-                        <option selected disabled value="">Seleccionar</option>
-                        <option value="PT-01-01">PT-01-01</option>
-                        <option value="PT-01-02">PT-01-02</option>
-                        <option value="PT-02-01">PT-02-01</option>
-                        <option value="PT-04-01">PT-04-01</option>
-                        <option value="PT-07-01">PT-07-01</option>
-                        <option value="PT-10-01">PT-10-01</option>
-                      </select>
-                    </div>
-                    <button type="button" id="btnGenerar" class="btn btn-default">Generar</button>
-                  </form><br>
-                  <div class="panel panel-default">
-                    <div class="panel-body">
-
-                      <canvas id="graficaProductos" width="400" height="400"></canvas>
+          <div class="tab-pane fade" id="paneProductos" role="tabpanel" aria-labelledby="paneProductos">
+            <div class="card">
+              <div class="card-body" id="appProductos">
+                <!-- <transition name="fade">
+                      <div class="row">
+                          <div class="col-lg-12">
+                            <table class="table table-striped table-sm table-hover">
+                              <thead>
+                                <tr>
+                                    <th>Clave</th>
+                                    <th>Fecha</th>
+                                    <th>Nombre</th>
+                                    <th>Total Kilos</th>
+                                    <th>Total Piezas</th>
+                                    <th>Zona</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr v-for="producto in vueProductos">
+                                  <td>{{ producto.clave }}</td>
+                                  <td>{{ producto.fecha }}</td>
+                                  <td>{{ producto.nombre }}</td>
+                                  <td>{{ producto.totalKilos }}</td>
+                                  <td>{{ producto.totalPiezas }}</td>
+                                  <td>{{ producto.zona }}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        </transition> -->
+                <div class="row">
+                  <div class="col-lg-8 col-md-8 col-sm-8">
+                    <form class="form-inline">
+                      <div class="form-group">
+                        <label for="clave" class="mr-sm-2">Clave:</label>
+                        <!-- <input id="clave" name="clave" type="date" class="form-control"> -->
+                        <select id="clave" v-model="clave" :value="clave" class="form-control mr-sm-2" name="clave">
+                          <option selected disabled value="">Seleccionar</option>
+                       
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="zonaProducto" class="mr-sm-2">Zona:</label>
+                        <select v-model="zona" :value="zona" type="text" id="zonaProducto" class="form-control mr-sm-2"></select>
+                      </div>
+                      <div class="form-group">
+                        <label for="fechaInicioProductos" class="mr-sm-2">Fecha inicio:</label>
+                        <input v-model="fechaInicioProductos" @change="cambiarFecha" id="fechaInicioProductos" name="fechaInicioProductos" type="date" class="form-control mr-sm-2">
+                      </div>
+                      <div class="form-group">
+                        <label for="fechaFinProductos" class="mr-sm-2">Fecha fin:</label>
+                        <input v-model="fechaFinProductos" @change="cambiarFechaFin" id="fechaFinProductos" name="fechaFinProductos" type="date" class="form-control mr-sm-2">
+                      </div>
+                      <!-- <div class="form-group">
+                            <label for="fecha">Fecha:</label>
+                            <div class="input-group date">
+                              <input v-model="fecha" id="fecha" class="form-control" type="text" placeholder="Fecha">
+                              <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            </div>
+                          </div> -->
+                      <button id="btnFiltrarProductos" @click="filtrar" type="button" class="btn btn-primary mr-sm-2">
+                        <i class="fa fa-search" aria-hidden="true"></i> Buscar</button>
+                      <button type="button" @click="limpiarBusqueda" class="btn btn-info">Limpiar</button>
+                    </form>
+                  </div>
+                  <div class="col-lg-4 col-md-4 col-sm-4">
+                    <div class="card border-secondary">
+                      <div class="card-body">
+                        <h5 class="card-title">{{ strTotalKg }}</h5>
+                        <h5 class="card-title">{{ strTotalPz }}</h5>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-4">
-                  <form class="form-inline">
-                    <div class="form-group">
-                      <label for="claveGrafica">Zona:</label>
-                      <select type="" class="form-control" id="claveGrafica">
-                        <option selected disabled value="">Seleccionar</option>
-                        <option value="PT-01-01">PT-01-01</option>
-                        <option value="PT-01-02">PT-01-02</option>
-                        <option value="PT-02-01">PT-02-01</option>
-                        <option value="PT-04-01">PT-04-01</option>
-                        <option value="PT-07-01">PT-07-01</option>
-                        <option value="PT-10-01">PT-10-01</option>
-                      </select>
-                    </div>
-                    <button type="button" id="btnGenerar" class="btn btn-default">Generar</button>
-                  </form><br>
-                  <div class="panel panel-default">
-                    <div class="panel-body">
-  
-                      <canvas id="graficaPedidos" width="400" height="400"></canvas>
+                <br>
+                <div class="row">
+                  <div class="col-lg-12 col-md-12 col-sm-12">
+                    <!-- <tabla-productos :productos="productosFiltrados"></tabla-productos> -->
+                    <table width="100%" id="tablaProductos" cellspacing="0" class="table table-sm table-bordered table-striped table-hover">
+                      <thead>
+                        <tr>
+                          <th class="text-center">Clave</th>
+                          <th>Nombre</th>
+                          <th>Zona</th>
+                          <th>Fecha</th>
+                          <th class="text-center">Total Kg</th>
+                          <th class="text-center">Total Pz</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+        
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- <template id="productos2">
+                        <table width="100%" id="tablaProductos" class="table table-sm table-bordered table-striped table-hover">
+                          <thead>
+                            <tr>
+                              <th class="text-center">Clave</th>
+                              <th>Nombre</th>
+                              <th>Zona</th>
+                              <th>Fecha</th>
+                              <th class="text-center">Total Kg</th>
+                              <th class="text-center">Total Pz</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="producto in productos">
+                              <td class="text-center">{{ producto.clave }}</td>
+                              <td>{{ producto.nombre }}</td>
+                              <td>{{ producto.zona }}</td>
+                              <td>{{ producto.fecha }}</td>
+                              <td class="text-center">{{ producto.totalKilos }}</td>
+                              <td class="text-center">{{ producto.totalPiezas }}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </template> -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="paneGraficas" role="tabpanel" aria-labelledby="paneGraficas">
+            <div class="card">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-lg-4 col-md-4 col-sm-4">
+                    <form class="form-inline">
+                      <div class="form-group">
+                        <label for="claveGrafica" class="mr-sm-2">Producto:</label>
+                        <select type="" class="form-control mr-sm-2" id="claveGrafica">
+                          <option selected disabled value="">Seleccionar</option>
+                          <option value="PT-01-01">PT-01-01</option>
+                          <option value="PT-01-02">PT-01-02</option>
+                          <option value="PT-02-01">PT-02-01</option>
+                          <option value="PT-04-01">PT-04-01</option>
+                          <option value="PT-07-01">PT-07-01</option>
+                          <option value="PT-10-01">PT-10-01</option>
+                        </select>
+                      </div>
+                      <button type="button" id="btnGenerar" class="btn btn-outline-dark">Generar</button>
+                    </form>
+                    <br>
+                    <div class="card">
+                      <div class="card-body">
+        
+                        <canvas id="graficaProductos" width="400" height="400"></canvas>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-4">
-                  <form class="form-inline">
-                    <div class="form-group">
-                      <label for="claveGrafica">Zona:</label>
-                      <select type="" class="form-control" id="claveGrafica">
-                        <option selected disabled value="">Seleccionar</option>
-                        <option value="PT-01-01">PT-01-01</option>
-                        <option value="PT-01-02">PT-01-02</option>
-                        <option value="PT-02-01">PT-02-01</option>
-                        <option value="PT-04-01">PT-04-01</option>
-                        <option value="PT-07-01">PT-07-01</option>
-                        <option value="PT-10-01">PT-10-01</option>
-                      </select>
+                  <div class="col-lg-4 col-md-4 col-sm-4">
+                    <form class="form-inline">
+                      <div class="form-group">
+                        <label for="claveGrafica" class="mr-sm-2">Zona:</label>
+                        <select type="" class="form-control mr-sm-2" id="claveGrafica">
+                          <option selected disabled value="">Seleccionar</option>
+                          <option value="PT-01-01">PT-01-01</option>
+                          <option value="PT-01-02">PT-01-02</option>
+                          <option value="PT-02-01">PT-02-01</option>
+                          <option value="PT-04-01">PT-04-01</option>
+                          <option value="PT-07-01">PT-07-01</option>
+                          <option value="PT-10-01">PT-10-01</option>
+                        </select>
+                      </div>
+                      <button type="button" id="btnGenerar" class="btn btn-outline-dark">Generar</button>
+                    </form>
+                    <br>
+                    <div class="card">
+                      <div class="card-body">
+        
+                        <canvas id="graficaPedidos" width="400" height="400"></canvas>
+                      </div>
                     </div>
-                    <button type="button" id="btnGenerar" class="btn btn-default">Generar</button>
-                  </form><br>
-                  <div class="panel panel-default">
-                    <div class="panel-body">
-  
-                      <canvas id="graficaPedidos" width="400" height="400"></canvas>
+                  </div>
+                  <div class="col-lg-4 col-md-4 col-sm-4">
+                    <form class="form-inline">
+                      <div class="form-group">
+                        <label for="claveGrafica" class="mr-sm-2">Zona:</label>
+                        <select type="" class="form-control mr-sm-2" id="claveGrafica">
+                          <option selected disabled value="">Seleccionar</option>
+                          <option value="PT-01-01">PT-01-01</option>
+                          <option value="PT-01-02">PT-01-02</option>
+                          <option value="PT-02-01">PT-02-01</option>
+                          <option value="PT-04-01">PT-04-01</option>
+                          <option value="PT-07-01">PT-07-01</option>
+                          <option value="PT-10-01">PT-10-01</option>
+                        </select>
+                      </div>
+                      <button type="button" id="btnGenerar" class="btn btn-outline-dark">Generar</button>
+                    </form>
+                    <br>
+                    <div class="card">
+                      <div class="card-body">
+        
+                        <canvas id="graficaPedidos" width="400" height="400"></canvas>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -391,24 +395,22 @@
         </div>
       </div>
     </div>
-  </div><!-- /#wrapper -->
+  </div>
   <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
   <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
   <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
   <script src="js/jquery-3.2.1.min.js"></script>
   <script>if (window.module) module = window.module;</script>
-
-  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap4.min.js"></script>
   <script src="dist/js/bootstrap-select.js"></script>
   <script src="vendor/metisMenu/metisMenu.min.js"></script>
-  <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
-  <script src="vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
-  <script src="vendor/datatables-responsive/dataTables.responsive.js"></script>
-  <script src="js/dataTables.buttons.min.js"></script>
+  <script src="js/jquery.dataTables.min.js"></script>
+  <script src="js/dataTables.bootstrap4.min.js"></script>
+  <script src="js/dataTables.responsive.min.js"></script>
   <script src="dist/js/sb-admin-2.js"></script>
   <script src="js/bootstrap-datepicker.min.js"></script>
   <script src="js/bootstrap-datepicker.es.min.js"></script>
-  <script src="js/bootstrap-tooltip.js"></script>
   <script src="js/jquery.toaster.js"></script>
   <script src="js/bootstrap-select.min.js"></script>
   <script src="js/firebase.js"></script>
@@ -425,23 +427,22 @@
     };
     firebase.initializeApp(config);
   </script>
-  <!--<script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/$VERSION/dragula.min.js'></script>-->
   <script src="js/moment-with-locales.js"></script>
   <script src="js/jspdf.min.js"></script>
   <script src="js/jspdf.plugin.autotable.js"></script>
   <script src="js/dataTables.buttons.min.js"></script>
-  <script src="js/buttons.flash.min.js"></script>
   <script src="js/jszip.min.js"></script>
   <script src="js/pdfmake.min.js"></script>
   <script src="js/vfs_fonts.js"></script>
   <script src="js/buttons.print.min.js"></script>
-  <script src="js/buttons.bootstrap.js"></script>
+  <script src="js/buttons.bootstrap4.min.js"></script>
   <script src="js/buttons.html5.min.js"></script>
-  <script src="js/localforage.min.js"></script>
   <script src="js/vue.js"></script>
   <script src="https://unpkg.com/vuefire/dist/vuefire.js"></script>
   <script src="https://unpkg.com/vue2-datatable-component/dist/min.js"></script>
+  <script src="js/localforage.min.js"></script>
   <script src="js/Chart.min.js"></script>
+  <script src='js/decimal.min.js'></script>
   <script src="babel/estadisticas.js"></script>
   <script src="js/estadisticasvue.js"></script>
 </body>

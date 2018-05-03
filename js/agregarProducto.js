@@ -5,6 +5,10 @@ function logout() {
   auth.signOut();
 }
 
+$(document).ready(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+})
+
 function haySesion() {
   auth.onAuthStateChanged((user) => {
     //si hay un usuario
