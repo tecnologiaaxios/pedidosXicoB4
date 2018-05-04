@@ -40,9 +40,9 @@ $(document).ready(function () {
     language: "es"
   });
 
-  llenarSelectZona();
+  // llenarSelectZona();
   llenarSelectConsorcio();
-  llenarSelectTienda();
+  // llenarSelectTienda();
   llenarSelectProducto();
 });
 
@@ -94,17 +94,23 @@ function llenarSelectConsorcio() {
   })
 }
 
-function llenarSelectTienda() {
-  db.ref('regiones').once('value', snapshot => {
-    let regiones = snapshot.val();
+/* $('#consorcio').change(function() {
+  let consorcio = $(this).val();
+  llenarSelectTienda(consorcio);
+}); */
+
+function llenarSelectTienda(consorcio) {
+  db.ref('tiendas').orderByChild('consorcio').equalTo(consorcio).once('value', snapshot => {
+    let tiendas = snapshot.val();
 
     let options = `<option selected disabled value="Seleccionar">Seleccionar</option>`;
-    for(let region in regiones) {
-      let tiendas = regiones[region];
+    for(let tienda in tiendas) {
+      // let tiendas = tiendas[tienda];
+      let nombreTienda = tiendas[tienda].nombre
+      options += `<option value="${nombreTienda}">${nombreTienda}</option>`;
 
-      for(let tienda in tiendas) {
-        options += `<option value="${tienda}">${tienda}</option>`;
-      }
+      /* for(let tienda in tiendas) {
+      } */
     }
     $('#tienda').html(options);
   });
@@ -167,6 +173,10 @@ function mostrarContador() {
   });
 }
 
+// todas las que no sean division que sean tiendas
+// por ejemplo hiper y super (soriana)
+// poner el tipo de clasificacion
+
 Vue.use(VueFire);
 
 new Vue({
@@ -193,9 +203,31 @@ new Vue({
     }
   },
   firebase: {
-    ofertas: db.ref('ofertas')  
+    ofertas: db.ref('ofertas'),
+    tiendas: db.ref('tiendas')
   },
   methods: {
+    llenarSelectTienda() {
+      let options = `<option selected disabled value="Seleccionar">Seleccionar</option>`;
+      this.tiendas.forEach(tienda => {
+        if(tienda.consorcio == this.consorcio) {
+          options += `<option value="${tienda.nombre}">${tienda.nombre}</option>`;
+        }
+      });
+      $('#tienda').html(options);
+    },
+    /* llenarSelectTienda() {
+      db.ref('tiendas').orderByChild('consorcio').equalTo(this.consorcio).once('value', snapshot => {
+        let tiendas = snapshot.val();
+    
+        let options = `<option selected disabled value="Seleccionar">Seleccionar</option>`;
+        for(let tienda in tiendas) {
+          let nombreTienda = tiendas[tienda].nombre
+          options += `<option value="${nombreTienda}">${nombreTienda}</option>`;
+        }
+        $('#tienda').html(options);
+      });
+    }, */
     limpiarCampos() {
       this.producto = "Seleccionar",
       this.precioOferta = 0,
@@ -222,60 +254,77 @@ new Vue({
     },
     guardarOferta() {
       if(this.consorcio != "Seleccionar" && this.productos.length > 0) {
-        db.ref('ofertas').once('value', snapshot => {
-          let ofertas = snapshot.val();
-          if(ofertas != undefined) {
-            let keys = Object.keys(ofertas),
-            last = keys[keys.length - 1],
-            ultimaOferta = ofertas[last],
-            lastclave = ultimaOferta.clave,
-            clave = lastclave + 1;
+        swal({
+          title: "¿Está seguro de crear esta oferta?",
+          text: "",
+          icon: "info",
+          buttons: true,
+          confirm: true,
+        })
+        .then((will) => {
+          if (will) {
+            db.ref('ofertas').once('value', snapshot => {
+              let ofertas = snapshot.val();
+              if(ofertas != undefined) {
+                let keys = Object.keys(ofertas),
+                last = keys[keys.length - 1],
+                ultimaOferta = ofertas[last],
+                lastclave = ultimaOferta.clave,
+                clave = lastclave + 1;
+                
+                if(this.tienda == "Seleccionar") {
+                  db.ref('ofertas').push({
+                    activa: true,
+                    clave,
+                    /* zona: this.zona, */
+                    consorcio: this.consorcio,
+                    tienda: '',
+                    productos: this.productos   
+                  });
+                }
+                else {
+                  db.ref('ofertas').push({
+                    activa: true,
+                    clave,
+                    /* zona: this.zona, */
+                    consorcio: this.consorcio,
+                    tienda: this.tienda,
+                    productos: this.productos
+                  });
+                }
+              }
+              else {
+                if(this.tienda == "Seleccionar") {
+                  db.ref('ofertas').push({
+                    clave: 1,
+                    /* zona: this.zona, */
+                    consorcio: this.consorcio,
+                    tienda: '',
+                    productos: this.productos
+                  });
+                }
+                else {
+                  db.ref('ofertas').push({
+                    clave: 1,
+                    /* zona: this.zona, */
+                    consorcio: this.consorcio,
+                    tienda: this.tienda,
+                    productos: this.productos
+                  });
+                }
+              }
             
-            if(this.tienda == "Seleccionar") {
-              db.ref('ofertas').push({
-                clave,
-                /* zona: this.zona, */
-                consorcio: this.consorcio,
-                tienda: '',
-                productos: this.productos
-              });
-            }
-            else {
-              db.ref('ofertas').push({
-                clave,
-                /* zona: this.zona, */
-                consorcio: this.consorcio,
-                tienda: this.tienda,
-                productos: this.productos
-              });
-            }
+              this.consorcio = "Seleccionar";
+              this.tienda = "Seleccionar",
+              this.productos = [];
+              this.limpiarCampos();
+            }); 
+            
+            swal("La oferta se ha dado de alta", {
+              icon: "success",
+            });
           }
-          else {
-            if(this.tienda == "Seleccionar") {
-              db.ref('ofertas').push({
-                clave: 1,
-                /* zona: this.zona, */
-                consorcio: this.consorcio,
-                tienda: '',
-                productos: this.productos
-              });
-            }
-            else {
-              db.ref('ofertas').push({
-                clave: 1,
-                /* zona: this.zona, */
-                consorcio: this.consorcio,
-                tienda: this.tienda,
-                productos: this.productos
-              });
-            }
-          }
-        
-          this.consorcio = "Seleccionar";
-          this.tienda = "Seleccionar",
-          this.productos = [];
-          this.limpiarCampos();
-        }); 
+        });
       } 
 
       /* if(this.zona != "Seleccionar" && this.consorcio != "Seleccionar" && this.tienda != "Seleccionar" && this.productos.length > 0) {

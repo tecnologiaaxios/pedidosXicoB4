@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
-    <title>Agregar producto para agentes</title>
+    <title>Agregar tienda para pedidos</title>
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
     <link rel="stylesheet" href="css/bootstrap4.min.css">
     <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
@@ -71,19 +71,31 @@
         <div class="col-lg-2 col-md-4 col-sm-4">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title text-center">Formulario de alta de producto para agentes</h5>
-              <form id="newProduct" @submit.prevent="guardarProducto">
+              <h5 class="card-title text-center">Formulario de alta de tienda para pedidos</h5>
+              <form id="newShop" @submit.prevent="guardarTienda">
+                <div class="form-group">
+                  <label for="region">Región:</label>
+                  <select v-model="region" class="form-control" id="region">
+                    <option selected disabled value="Seleccionar">Seleccionar</option>
+                  </select>
+                </div>
                 <div class="form-group">
                   <label for="clave">Clave:</label>
                   <input v-model="clave" type="text" class="form-control" id="clave" placeholder="Clave">
                 </div>
                 <div class="form-group">
                   <label for="nombre">Nombre:</label>
-                  <input v-model="nombre" type="text" class="form-control" id="nombre" placeholder="Nombre">
+                  <input v-model="nombre" type="text" class="form-control" placeholder="Nombre" id="nombre">
                 </div>
                 <div class="form-group">
-                  <label for="descripcion">Empaque:</label>
-                  <input v-model="empaque" type="text" class="form-control" placeholder="Empaque" id="empaque">
+                  <label for="consorcio">Consorcio:</label>
+                  <select v-model="consorcio" :value="consorcio" class="form-control" id="consorcio">
+                    <option selected disabled value="Seleccionar">Seleccionar</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="ciudad">Ciudad:</label>
+                  <input v-model="ciudad" type="text" class="form-control" placeholder="Ciudad" id="ciudad">
                 </div>
                 <button type="submit" class="pull-right btn btn-danger">Guardar</button>
               </form>
@@ -135,6 +147,6 @@
     <script src="js/localforage.min.js"></script>
     <script src="js/vue.js"></script>
     <script src="https://unpkg.com/vuefire/dist/vuefire.js"></script>
-    <script src="js/agregarProducto.js"></script>
+    <script src="js/agregar.js"></script>
   </body>
 </html>

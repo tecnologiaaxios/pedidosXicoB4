@@ -109,7 +109,6 @@ $(document).ready(function () {
     });
 
     //localStorage.setItem('pedidos', JSON.stringify(arrayPedidos)); //se usa para mostrar los pedidos recibidos
-
     localforage.setItem('pedidos', arrayPedidos, function (err) {
       console.log(err ? err : 'Pedidos guardados en localforage');
       mostrarPedidos();

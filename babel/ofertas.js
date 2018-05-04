@@ -42,9 +42,9 @@ $(document).ready(function () {
     language: "es"
   });
 
-  llenarSelectZona();
+  // llenarSelectZona();
   llenarSelectConsorcio();
-  llenarSelectTienda();
+  // llenarSelectTienda();
   llenarSelectProducto();
 });
 
@@ -97,17 +97,23 @@ function llenarSelectConsorcio() {
   });
 }
 
-function llenarSelectTienda() {
-  db.ref('regiones').once('value', function (snapshot) {
-    var regiones = snapshot.val();
+/* $('#consorcio').change(function() {
+  let consorcio = $(this).val();
+  llenarSelectTienda(consorcio);
+}); */
+
+function llenarSelectTienda(consorcio) {
+  db.ref('tiendas').orderByChild('consorcio').equalTo(consorcio).once('value', function (snapshot) {
+    var tiendas = snapshot.val();
 
     var options = '<option selected disabled value="Seleccionar">Seleccionar</option>';
-    for (var region in regiones) {
-      var tiendas = regiones[region];
+    for (var tienda in tiendas) {
+      // let tiendas = tiendas[tienda];
+      var nombreTienda = tiendas[tienda].nombre;
+      options += '<option value="' + nombreTienda + '">' + nombreTienda + '</option>';
 
-      for (var tienda in tiendas) {
-        options += '<option value="' + tienda + '">' + tienda + '</option>';
-      }
+      /* for(let tienda in tiendas) {
+      } */
     }
     $('#tienda').html(options);
   });
@@ -162,6 +168,10 @@ function mostrarContador() {
   });
 }
 
+// todas las que no sean division que sean tiendas
+// por ejemplo hiper y super (soriana)
+// poner el tipo de clasificacion
+
 Vue.use(VueFire);
 
 new Vue({
@@ -188,85 +198,124 @@ new Vue({
     }
   },
   firebase: {
-    ofertas: db.ref('ofertas')
+    ofertas: db.ref('ofertas'),
+    tiendas: db.ref('tiendas')
   },
   methods: {
+    llenarSelectTienda: function llenarSelectTienda() {
+      var _this = this;
+
+      var options = '<option selected disabled value="Seleccionar">Seleccionar</option>';
+      this.tiendas.forEach(function (tienda) {
+        if (tienda.consorcio == _this.consorcio) {
+          options += '<option value="' + tienda.nombre + '">' + tienda.nombre + '</option>';
+        }
+      });
+      $('#tienda').html(options);
+    },
+
+    /* llenarSelectTienda() {
+      db.ref('tiendas').orderByChild('consorcio').equalTo(this.consorcio).once('value', snapshot => {
+        let tiendas = snapshot.val();
+    
+        let options = `<option selected disabled value="Seleccionar">Seleccionar</option>`;
+        for(let tienda in tiendas) {
+          let nombreTienda = tiendas[tienda].nombre
+          options += `<option value="${nombreTienda}">${nombreTienda}</option>`;
+        }
+        $('#tienda').html(options);
+      });
+    }, */
     limpiarCampos: function limpiarCampos() {
       this.producto = "Seleccionar", this.precioOferta = 0, this.fechaInicio = "", this.fechaFin = "";
     },
     agregarProducto: function agregarProducto() {
-      var _this = this;
+      var _this2 = this;
 
       if (this.producto != 'Seleccionar' && this.precioOferta > 0 && this.fechaInicio != '' && this.fechaFin != '') {
         db.ref('listadoProductos').child(this.producto).once('value', function (snapshot) {
           var datos = snapshot.val();
 
           var producto = {
-            clave: _this.producto,
+            clave: _this2.producto,
             nombre: datos.nombre,
             precioLista: datos.precioUnitario,
-            precioOferta: _this.precioOferta,
-            fechaInicio: _this.fechaInicioFormateada,
-            fechaFin: _this.fechaFinFormateada
+            precioOferta: Number(_this2.precioOferta),
+            fechaInicio: _this2.fechaInicioFormateada,
+            fechaFin: _this2.fechaFinFormateada
           };
-          _this.productos.push(producto);
-          _this.limpiarCampos();
+          _this2.productos.push(producto);
+          _this2.limpiarCampos();
         });
       }
     },
     guardarOferta: function guardarOferta() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (this.consorcio != "Seleccionar" && this.productos.length > 0) {
-        db.ref('ofertas').once('value', function (snapshot) {
-          var ofertas = snapshot.val();
-          if (ofertas != undefined) {
-            var keys = Object.keys(ofertas),
-                last = keys[keys.length - 1],
-                ultimaOferta = ofertas[last],
-                lastclave = ultimaOferta.clave,
-                clave = lastclave + 1;
+        swal({
+          title: "¿Está seguro de crear esta oferta?",
+          text: "",
+          icon: "info",
+          buttons: true,
+          confirm: true
+        }).then(function (will) {
+          if (will) {
+            db.ref('ofertas').once('value', function (snapshot) {
+              var ofertas = snapshot.val();
+              if (ofertas != undefined) {
+                var keys = Object.keys(ofertas),
+                    last = keys[keys.length - 1],
+                    ultimaOferta = ofertas[last],
+                    lastclave = ultimaOferta.clave,
+                    clave = lastclave + 1;
 
-            if (_this2.tienda == "Seleccionar") {
-              db.ref('ofertas').push({
-                clave: clave,
-                /* zona: this.zona, */
-                consorcio: _this2.consorcio,
-                tienda: '',
-                productos: _this2.productos
-              });
-            } else {
-              db.ref('ofertas').push({
-                clave: clave,
-                /* zona: this.zona, */
-                consorcio: _this2.consorcio,
-                tienda: _this2.tienda,
-                productos: _this2.productos
-              });
-            }
-          } else {
-            if (_this2.tienda == "Seleccionar") {
-              db.ref('ofertas').push({
-                clave: 1,
-                /* zona: this.zona, */
-                consorcio: _this2.consorcio,
-                tienda: '',
-                productos: _this2.productos
-              });
-            } else {
-              db.ref('ofertas').push({
-                clave: 1,
-                /* zona: this.zona, */
-                consorcio: _this2.consorcio,
-                tienda: _this2.tienda,
-                productos: _this2.productos
-              });
-            }
+                if (_this3.tienda == "Seleccionar") {
+                  db.ref('ofertas').push({
+                    clave: clave,
+                    /* zona: this.zona, */
+                    consorcio: _this3.consorcio,
+                    tienda: '',
+                    productos: _this3.productos
+                  });
+                } else {
+                  db.ref('ofertas').push({
+                    clave: clave,
+                    /* zona: this.zona, */
+                    consorcio: _this3.consorcio,
+                    tienda: _this3.tienda,
+                    productos: _this3.productos
+                  });
+                }
+              } else {
+                if (_this3.tienda == "Seleccionar") {
+                  db.ref('ofertas').push({
+                    clave: 1,
+                    /* zona: this.zona, */
+                    consorcio: _this3.consorcio,
+                    tienda: '',
+                    productos: _this3.productos
+                  });
+                } else {
+                  db.ref('ofertas').push({
+                    clave: 1,
+                    /* zona: this.zona, */
+                    consorcio: _this3.consorcio,
+                    tienda: _this3.tienda,
+                    productos: _this3.productos
+                  });
+                }
+              }
+
+              _this3.consorcio = "Seleccionar";
+              _this3.tienda = "Seleccionar", _this3.productos = [];
+              _this3.limpiarCampos();
+            });
+
+            swal("La oferta se ha dado de alta", {
+              icon: "success"
+            });
           }
-
-          _this2.consorcio = "Seleccionar";
-          _this2.tienda = "Seleccionar", _this2.productos = [];
-          _this2.limpiarCampos();
         });
       }
 
