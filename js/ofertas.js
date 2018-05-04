@@ -344,3 +344,7 @@ function verNotificaciones() {
 $('#campana').click(function () {
   verNotificaciones();
 });
+
+function logout() {
+  auth.signOut();
+}

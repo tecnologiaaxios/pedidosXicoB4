@@ -80,7 +80,7 @@
   <div id="app" class="container-fluid">
     <div class="row mt-4">
       <div class="col-lg-12 col-md-12 col-sm-12">
-        <h1 class="display-5">Ofertas</h1>
+        <h1 class="display-6">Datos de la oferta</h1>
       </div>
     </div>
     <div class="row">
@@ -92,11 +92,28 @@
         </nav>
       </div>
     </div>
-    <div class="row">
+    <div id="oferta" class="row">
       <div class="col-lg-12 col-md-12 col-sm-12">
         <div class="card">
           <div class="card-body">
+            <h5 class="card-title">Clave: <span id="clave" class="text-muted"></span></h5>
+            <p class="card-text">Consorcio <span id="consorcio" class="text-muted"></span></p>
+            <p class="card-text">Tienda: <span id="tienda" class="text-muted"></span></p>
+            <table id="productos" class="table table-bordered table-striped table-sm table-hover">
+              <thead>
+                <tr>
+                  <th>Clave</th>
+                  <th>Nombre</th>
+                  <th>Precio lista</th>
+                  <th>Precio oferta</th>
+                  <th>Fecha inicio</th>
+                  <th>Fecha fin</th>
+                </tr>
+              </thead>
+              <tbody>
 
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

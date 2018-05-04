@@ -233,16 +233,10 @@
                       <div class="card">
                         <div class="card-body">
                           <div class="card-body">
-                            <div class="row">
-                              <div class="col">
-                                <h5 class="card-title">Oferta: <span id="claveOferta">{{ oferta.clave }}</span></h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Consorcio: <span id="consorcioOferta">{{oferta.consorcio}}</span></h6>
-                                <p class="card-text">Cantidad de productos: <span id="cantidadOferta" class="badge badge-danger">{{ oferta.productos.length }}</span></p>
-                              </div>
-                              <div class="col">
-                                <a :href="`oferta.html?id=${oferta['.key']}`" role="button" class="card-link btn btn-outline-info"><span class="fas fa-eye"></span> Ver oferta</a>
-                              </div>
-                            </div>
+                            <h5 class="card-title">Oferta: <span id="claveOferta">{{ oferta.clave }}</span></h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Consorcio: <span id="consorcioOferta">{{oferta.consorcio}}</span></h6>
+                            <p class="card-text">Cantidad de productos: <span style="font-size: 20px;" id="cantidadOferta" class="badge badge-danger">{{ oferta.productos.length }}</span></p>
+                            <a :href="`oferta.html?id=${oferta['.key']}`" role="button" class="card-link btn btn-outline-info"><span class="fas fa-eye"></span> Ver oferta</a>
                           </div>
                         </div>
                       </div>

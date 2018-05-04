@@ -272,6 +272,7 @@ new Vue({
 
                 if (_this3.tienda == "Seleccionar") {
                   db.ref('ofertas').push({
+                    activa: true,
                     clave: clave,
                     /* zona: this.zona, */
                     consorcio: _this3.consorcio,
@@ -280,6 +281,7 @@ new Vue({
                   });
                 } else {
                   db.ref('ofertas').push({
+                    activa: true,
                     clave: clave,
                     /* zona: this.zona, */
                     consorcio: _this3.consorcio,
@@ -335,3 +337,7 @@ function verNotificaciones() {
 $('#campana').click(function () {
   verNotificaciones();
 });
+
+function logout() {
+  auth.signOut();
+}
