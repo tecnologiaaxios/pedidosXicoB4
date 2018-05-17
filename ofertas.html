@@ -17,7 +17,8 @@
     <link href="css/panel.css" rel="stylesheet">
     <!-- <link href="vendor/morrisjs/morris.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="css/icon.css">
-    <link rel="stylesheet" href="dist/css/bootstrap-select.css">
+    <!-- <link rel="stylesheet" href="dist/css/bootstrap-select.css"> -->
+    
     <link rel="stylesheet" href="css/bootstrap-datepicker.min.css">
     <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
     <link rel="stylesheet" href="css/bootstrap-datepicker3.standalone.css">
@@ -25,7 +26,8 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
     <link href="https://unpkg.com/vue2-datatable-component/dist/min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="css/bootstrap-multiselect.css">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.15.0/slimselect.min.css" rel="stylesheet"></link> -->
     <style>
       .fade-enter-active,
       .fade-leave-active {
@@ -85,9 +87,6 @@
         <li class="nav-item">
           <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Panel de ofertas</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a>
-        </li>
       </ul>
       <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
@@ -106,18 +105,60 @@
                       </div> -->
                       <div class="col-md-2">
                         <div class="form-group">
-                          <label for="exampleInputPassword1">Consorcio:</label>
-                          <select v-model="consorcio" @change="llenarSelectTienda" class="form-control" id="consorcio">
+                          <label for="consorcio">Consorcio:</label>
+                          <select class="form-control" id="consorcio">
                             <option selected disabled value="Seleccionar">Seleccionar</option>
+                            <!-- <option v-for="consorcio in consorcios" :value="consorcio['.key']">{{consorcio['.key']}}</option> -->
+                          </select>
+                          <div class="invalid-feedback">
+                            No has llenado este campo
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label for="formatos">Formatos:</label>
+                          <select id="formatos" class="form-control" multiple="multiple">
+
                           </select>
                         </div>
                       </div>
                       <div class="col-md-2">
                         <div class="form-group">
-                          <label for="tienda">Tienda:</label>
-                          <select v-model="tienda" :value="tienda" class="form-control" id="tienda">
-                            <option selected disabled value="Seleccionar">Seleccionar</option>
+                          <label for="tiendas">Tiendas:</label>
+                          <select id="tiendas" class="form-control" multiple="multiple">
+
                           </select>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <!-- <div class="form-group">
+                          <label for="fechaInicio">Fecha inicio:</label>
+                          <input v-model="fechaInicio" id="fechaInicio" class="form-control" type="date" format="" placeholder="Fecha de inicio">
+                        </div> -->
+                        <div class="form-group">
+                          <label for="fechaInicio">Fecha inicio:</label>
+                          <div class="input-group date">
+                            <input id="fechaInicio" class="form-control" type="text" placeholder="">
+                            <span class="input-group-addon btn-primary btn-sm">
+                              <i class="far fa-calendar-alt"></i>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <!-- <div class="form-group">
+                          <label for="fechaFin">Fecha fin:</label>
+                          <input v-model="fechaFin" id="fechaFin" class="form-control" type="date">
+                        </div> -->
+                        <div class="form-group">
+                          <label for="fechaFin">Fecha fin:</label>
+                          <div class="input-group date">
+                            <input id="fechaFin" class="form-control" type="text" placeholder="">
+                            <span class="input-group-addon btn-primary btn-sm">
+                              <i class="far fa-calendar-alt"></i>
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -129,7 +170,7 @@
                               <div class="col-md-2">
                                 <div class="form-group">
                                   <label for="producto">Producto:</label>
-                                  <select v-model="producto" :value="producto" name="producto" id="producto" class="form-control">
+                                  <select name="producto" id="producto" class="form-control">
                                     <option selected disabled value="Seleccionar">Seleccionar</option>
                                   </select>
                                 </div>
@@ -143,44 +184,13 @@
                               <div class="col-md-2">
                                 <div class="form-group">
                                   <label for="precioOferta">Precio oferta:</label>
-                                  <input v-model="precioOferta" type="number" min="0" name="precioOferta" id="precioOferta" class="form-control">
+                                  <input type="number" min="0" name="precioOferta" id="precioOferta" class="form-control">
                                 </div>
-                              </div>
+                              </div>          
                               <div class="col-md-2">
-                                <div class="form-group">
-                                  <label for="fechaInicio">Fecha inicio:</label>
-                                  <input v-model="fechaInicio" id="fechaInicio" class="form-control" type="date" format="" placeholder="Fecha de inicio">
-                                </div>
-                                <!-- <div class="input-group date">
-                                  <input v-model="fechaInicio" id="fechaInicio" class="form-control" type="text" placeholder="Fecha de inicio">
-                                  <span class="input-group-addon btn-primary btn-sm">
-                                    <i class="far fa-calendar-alt"></i>
-                                  </span>
-                                </div> -->
+                                <button type="button" onclick="agregarProducto()" class="btn btn-success mt-3">Agregar <i class="fas fa-plus"></i></button>
                               </div>
-                              <div class="col-md-2">
-                                <div class="form-group">
-                                  <label for="fechaFin">Fecha fin:</label>
-                                  <input v-model="fechaFin" id="fechaFin" class="form-control" type="date">
-                                </div>
-                                <!-- <div class="input-group date">
-                                  <input v-model="fechaFin" id="fechaFin" class="form-control" type="text" placeholder="Fecha de fin">
-                                  <span class="input-group-addon btn-primary btn-sm">
-                                    <i class="far fa-calendar-alt"></i>
-                                  </span>
-                                </div> -->
-                              </div>
-                              <div class="col-md-2">
-                                <button type="button" @click="agregarProducto" class="btn btn-success mt-3">Agregar <i class="fas fa-plus"></i></button>
-                              </div>
-                            </div>
-                            <!-- <div class="row">
-                              <div class="col-md-4">
-                                <button type="button" @click="agregarProducto" class="btn btn-success">Agregar <i class="fas fa-plus"></i></button>
-                              </div>
-                            </div> -->
-                            <div class="row mt-3">
-                              <div class="col-md-12">
+                              <div class="col-md-6">
                                 <label for="">Productos de la oferta:</label>
                                 <table id="productos" cellspacing="0" width="100%" class="table table-hover table-striped table-bordered table-sm">
                                   <thead>
@@ -189,46 +199,67 @@
                                       <th>Nombre</th>
                                       <th>Precio de lista</th>
                                       <th>Precio de oferta</th>
-                                      <th>Fecha inicio</th>
-                                      <th>Fecha fin</th>
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    <tr v-for="producto in productos">
+
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                            <!-- <div class="row">
+                              <div class="col-md-4">
+                                <button type="button" @click="agregarProducto" class="btn btn-success">Agregar <i class="fas fa-plus"></i></button>
+                              </div>
+                            </div> -->
+                            <!-- <div class="row mt-3">
+                              <div class="col-md-12">
+                                <label for="">Productos de la oferta:</label>
+                                <table id="productos" cellspacing="0" width="100%" class="table table-hover table-striped table-bordered table-sm">
+                                  <thead>
+                                    <tr>
+                                      <th>Clave</th>
+                                      <th>Nombre</th>
+                                      <th>Precio de lista</th>
+                                      <th>Precio de oferta</th> -->
+                                      <!-- <th>Fecha inicio</th>
+                                      <th>Fecha fin</th> -->
+                                    <!-- </tr>
+                                  </thead>
+                                  <tbody> -->
+                                    <!-- <tr v-for="producto in productos">
                                       <td>{{ producto.clave }}</td>
                                       <td>{{ producto.nombre }}</td>
                                       <td>{{ producto.precioLista }}</td>
                                       <td>{{ producto.precioOferta }}</td>
                                       <td>{{ producto.fechaInicio }}</td>
                                       <td>{{ producto.fechaFin }}</td>
-                                    </tr>
-                                  </tbody>
+                                    </tr> -->
+                                  <!-- </tbody>
                                 </table>
                               </div>
-                            </div>
+                            </div> -->
                           </div>
                         </div>
                       </div>
                     </div>
                     <div class="row mt-3">
                       <div class="col-md-2">
-                        <button @click="guardarOferta" type="button" class="btn btn-outline-primary btn-block">Guardar oferta</button>
+                        <button onclick="guardarOferta()" type="button" class="btn btn-outline-primary btn-block">Guardar oferta</button>
                       </div>
                     </div>
                   </form>
                 </div>
               </div>
-            </div>
-            
+            </div>         
           </div>
-
         </div>
         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
           <div class="row">
             <div class="col-md-12">
               <div class="card">
                 <div class="card-body">
-                  <div class="row">
+                  <!-- <div class="row">
                     <div v-for="oferta in ofertas" class="col-md-3 mt-3">
                       <div class="card">
                         <div class="card-body">
@@ -241,13 +272,61 @@
                         </div>
                       </div>
                     </div>
+                  </div> -->
+                  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active" data-toggle="pill" href="#ofertasActivas" role="tab" aria-controls="ofertasActivas" aria-selected="true">Activas</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" data-toggle="pill" href="#ofertasInactivas" role="tab" aria-controls="ofertasInactivas" aria-selected="false">Inactivas</a>
+                    </li>
+                  </ul>
+                  <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="ofertasActivas" role="tabpanel" aria-labelledby="ofertasActivas">
+                      <table id="tablaOfertasActivas" cellspacing="0" width="100%" class="table table-sm table-bordered table-striped table-hover">
+                        <thead>
+                          <tr>
+                            <th>Id</th>
+                            <th>Clave</th>
+                            <th>Consorcio</th>
+                            <th>Tiendas</th>
+                            <th class="text-center">Cantidad productos</th>
+                            <th>Fecha inicio</th>
+                            <th>Fecha fin</th>
+                            <th class="text-center">Detalles</th>
+                            <th class="text-center">Finalizar</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="tab-pane fade" id="ofertasInactivas" role="tabpanel" aria-labelledby="pillofertasInactivas">
+                      <table id="tablaOfertasActivas" cellspacing="0" width="100%" class="table table-sm table-bordered table-striped table-hover">
+                        <thead>
+                          <tr>
+                            <th>Id</th>
+                            <th>Clave</th>
+                            <th>Consorcio</th>
+                            <th>Tiendas</th>
+                            <th class="text-center">Cantidad productos</th>
+                            <th>Fecha inicio</th>
+                            <th>Fecha fin</th>
+                            <th class="text-center">Detalles</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
       </div>
 
 
@@ -290,7 +369,9 @@
   <script src="js/bootstrap-datepicker.min.js"></script>
   <script src="js/bootstrap-datepicker.es.min.js"></script>
   <script src="js/jquery.toaster.js"></script>
-  <script src="js/bootstrap-select.min.js"></script>
+  <!-- <script src="js/bootstrap-select.min.js"></script> -->
+  <script src="js/bootstrap-multiselect.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.15.0/slimselect.min.js"></script> -->
   <script src="js/firebase.js"></script>
   <!-- <script src="js/jspdf.debug.js"></script> -->
   <script>

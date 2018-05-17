@@ -1288,7 +1288,7 @@ function generarPedidoPadre() {
                   <td></td>
                 </tr>`;
       $('#tbodyTablaPedidoPadre').html(row);
-      $.toaster({ priority: 'success', title: 'Mensaje de información', message: `Se generó el pedido padre correctamente` });
+      //$.toaster({ priority: 'success', title: 'Mensaje de información', message: `Se generó el pedido padre correctamente` });
 
       // for(let promotora in promotoras) {
       //   let notificacionesListaRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}/lista`);
@@ -1372,7 +1372,7 @@ function generarPedidoPadre() {
                 </tr>`;
       $('#tbodyTablaPedidoPadre').html(row);
 
-      $.toaster({ priority: 'success', title: 'Mensaje de información', message: `Se generó el pedido padre correctamente` });
+      //$.toaster({ priority: 'success', title: 'Mensaje de información', message: `Se generó el pedido padre correctamente` });
 
       // for(let promotora in promotoras) {
       //   let notificacionesListaRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}/lista`);

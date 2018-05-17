@@ -59,42 +59,73 @@ function getQueryVariable(variable) {
 
 function mostrarDatosOferta() {
   var idOferta = getQueryVariable('id');
-  db.ref('ofertas/' + idOferta).once('value', function (snapshot) {
+  db.ref('ofertas/' + idOferta).on('value', function (snapshot) {
     var oferta = snapshot.val();
 
     $('#clave').html(oferta.clave);
     $('#consorcio').html(oferta.consorcio);
-    $('#tienda').html(oferta.tienda);
+    $('#tiendas').html(oferta.tiendas.join(', '));
     var productos = oferta.productos;
 
+    var datatable = $('#productos').DataTable({
+      pageLength: 25,
+      lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todas"]],
+      destroy: true,
+      ordering: false,
+      language: LANGUAGE
+    });
     var filas = '';
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
+    datatable.clear();
 
-    try {
-      for (var _iterator = productos[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var producto = _step.value;
+    productos.forEach(function (producto, i) {
+      filas += '<tr>\n                  <td>' + producto.clave + '</td>\n                  <td>' + producto.nombre + '</td>\n                  <td>$ ' + producto.precioLista + '</td>\n                  <td>$ ' + producto.precioOferta + '</td>\n                  <td class="text-center"><button type="button" onclick="abrirModalEditarProducto(\'' + i + '\')"  class="btn btn-xs btn-warning"><span class="fas fa-pencil-alt"></span></button></td>\n                  <td class="text-center"><button type="button" onclick="eliminarProducto(\'' + producto + '\')" class="btn btn-xs btn-danger"><span class="fas fa-trash"></span></button></td>\n                </tr>';
+    });
+    datatable.rows.add($(filas)).columns.adjust().draw();
 
-        filas += '<tr>\n                  <td>' + producto.clave + '</td>\n                  <td>' + producto.nombre + '</td>\n                  <td>' + producto.precioLista + '</td>\n                  <td>' + producto.precioOferta + '</td>\n                  <td>' + producto.fechaInicio + '</td>\n                  <td>' + producto.fechaFin + '</td>\n                </tr>';
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
+    //$('#productos tbody').html(filas);
+  });
+}
+
+function abrirModalEditarProducto(idProducto) {
+  var idOferta = getQueryVariable('id');
+  db.ref('ofertas/' + idOferta + '/productos/' + idProducto).once('value', function (snapshot) {
+    var producto = snapshot.val();
+    $('#claveProducto').val(producto.clave);
+    $('#nombreProducto').val(producto.nombre);
+    $('#precioLista').val(producto.precioLista);
+    $('#precioOferta').val(producto.precioOferta);
+
+    $('#btnEditar').attr('onclick', 'actualizarProducto(\'' + idProducto + '\')');
+    $('#modalEditarProducto').modal('show');
+  });
+}
+
+function actualizarProducto(idProducto) {
+  var idOferta = getQueryVariable('id');
+  var precioOferta = $('#precioOferta').val();
+
+  db.ref('ofertas/' + idOferta + '/productos/' + idProducto).update({
+    precioOferta: precioOferta
+  });
+  $.toaster({ priority: 'success', title: 'Mensaje de información', message: 'El producto fue actualizado con exito' });
+  $('#modalEditarProducto').modal('hide');
+}
+
+function eliminarProducto(producto) {
+  swal({
+    title: "¿Está seguro de eliminar este producto?",
+    text: "",
+    icon: "warning",
+    buttons: true,
+    confirm: true
+  }).then(function (will) {
+    if (will) {
+      db.ref('ofertas/' + idOferta + '/productos').child(producto).remove();
+
+      swal("El producto se ha eliminado", {
+        icon: "success"
+      });
     }
-
-    console.log(filas);
-    $('#productos tbody').html(filas);
   });
 }
 

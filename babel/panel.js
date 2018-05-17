@@ -1196,7 +1196,7 @@ function generarPedidoPadre() {
 
         var row = "<tr id=\"vacio\" style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                </tr>";
         $('#tbodyTablaPedidoPadre').html(row);
-        $.toaster({ priority: 'success', title: 'Mensaje de información', message: "Se gener\xF3 el pedido padre correctamente" });
+        //$.toaster({ priority: 'success', title: 'Mensaje de información', message: `Se generó el pedido padre correctamente` });
 
         // for(let promotora in promotoras) {
         //   let notificacionesListaRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}/lista`);
@@ -1279,7 +1279,7 @@ function generarPedidoPadre() {
         var row = "<tr id=\"vacio\" style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td scope=\"row\" style=\"border:none;\"></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td class=\"no-padding\"></td>\n                  <td class=\"no-padding\"> </td>\n                </tr>";
         $('#tbodyTablaPedidoPadre').html(row);
 
-        $.toaster({ priority: 'success', title: 'Mensaje de información', message: "Se gener\xF3 el pedido padre correctamente" });
+        //$.toaster({ priority: 'success', title: 'Mensaje de información', message: `Se generó el pedido padre correctamente` });
 
         // for(let promotora in promotoras) {
         //   let notificacionesListaRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}/lista`);

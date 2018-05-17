@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
+    <title>Detalles del pedido de materiales</title>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/bootstrap4.min.css">
+    <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
+    <link href="css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="css/responsive.bootstrap.min.css"> -->
+    <!-- <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet"> -->
+    <!-- <link href="dist/css/sb-admin-2.css" rel="stylesheet"> -->
+    <link href="css/panel.css" rel="stylesheet">
+    <!-- <link href="vendor/morrisjs/morris.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="css/icon.css">
+    <link rel="stylesheet" href="dist/css/bootstrap-select.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.standalone.css">
+    <script defer src="js/fontawesome-all.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
+  </head>
+  <body>
+    <!-- <nav class="navbar navbar-expand-lg navbar" style="background-color: rgb(255, 110, 2)"> -->
+    <nav class="navbar navbar-expand-lg navbar" style="background: url(img/FONDO.jpg) no-repeat; background-size: cover;">
+      <a class="navbar-brand" href="#">
+        <img src="logo.png" width="50" height="33" class="d-inline-block align-top" alt=""> Sistema de pedidos
+      </a>
+      <a class="navbar-brand" href="panel.html">
+        <span class="navbar-text material-icons" data-toggle="tooltip" data-placement="bottom" title="Volver al panel">dvr</span>
+      </a>
+      <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom"
+        title="Notificaciones">
+        <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="far fa-bell"></span>
+          <span id="spanNotificaciones" style="display: none;" class="badge badge-pill badge-danger"></span>
+        </a>
+        <div id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+    
+        </div>
+      </div>
+      <a href="" class="navbar-brand" id="btnPerfil">
+        <img src="http://lorempixel.com/25/25/" alt="..." class="rounded-circle" data-toggle="tooltip" data-placement="bottom" title="Perfil">
+      </a>
+      <div class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom" title="Cerrar sesión">
+        <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-sign-out-alt"></i>
+        </a>
+        <div class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" onclick="logout()">
+            <span class="fas fa-power-off"></span> Cerrar sesión
+          </a>
+        </div>
+      </div>
+    </nav>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 mt-5">
+          <div class="card">
+            <div class="card-body">
+              <div id="panel" class="card">
+                <div class="card-header bg-primary" style="color: white;">
+                  <span id="clavePedido" style="font-size: 30px; font-style: italic;"></span>
+                  <span id="fechaPedido" class="float-md-right" style="font-size: 20px;"></span>
+                </div>
+                <div class="card-body" id="contenedorDatos">
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <div class="card border">
+                        <div class="card-header">
+                          <small>Id del pedido: <span id="keyPedido" class="text-muted"></span></small>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                          <li class="list-group-item"><small>Tienda: <span id="tienda" class="text-muted"></span></small></li>
+                          <li class="list-group-item"><small>Coordinador(a): <span id="coordinador" class="text-muted"></span></small></li>
+                          <li class="list-group-item"><small>Cantidad de materiales:</small> <span id="cantidad" class="badge badge-pill badge-danger"></span></li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="col-sm-9">
+                      <div class="card">
+                        <div class="card-header">
+                          Materiales
+                          <button type="button" class="btn btn-success btn-sm float-md-right" onclick="abrirModal()"><i class="fas fa-plus"></i> Agregar material</button>
+                        </div>
+                        <div class="card-body">
+                          <table id="materiales" width="100%" cellspacing="0" class="no-padding table table-sm table-bordered table-striped table-hover">
+                            <thead>
+                              <tr>
+                                <th>Clave</th>
+                                <th>Nombre</th>
+                                <th>Cantidad</th>
+                                <th>Precio unitario</th>
+                                <th>Costo</th>
+                                <th>Unidad</th>
+                                <th class="text-center"><i class="fas fa-cog"></i></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                  
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>                 
+                </div>
+              </div>
+              <!-- <button id="Imprimir" onclick="generarPDF();" class="btn btn-lg btn-danger mt-3">
+                <i class="fas fa-print" aria-hidden="true"></i> Imprimir
+              </button> -->
+            </div>
+          </div>
+        </div><!-- /.col-lg-12 -->
+      </div><!-- /.row -->
+    </div>
+    <div id="modalAgregarProducto" class="modal fade modalAgrearProducto-modal-lg" tabindex="-1" role="dialog" aria-labelledby="modalAgregarProducto" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Agregar producto</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <form>
+                <div class="form-group row">
+                  <div class="col-md-12">
+                    <label for="productos">Elige un producto:</label>
+                    <select class="form-control" name="productos" id="listaProductos">
+                      <option value="Seleccionar" id="SeleccionarProducto">Seleccionar</option>
+                    </select>
+                    <span style="display: none;" id="helpblockProductos" class="help-block">Campo obligatorio</span>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="hidden col-md-4">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Nombre">
+                  </div>
+                  <div class="col-md-4">
+                    <label for="claveConsorcio">Clave consorcio:</label>
+                    <input type="text" id="claveConsorcio" name="claveConsorcio" class="form-control" placeholder="Clave consorcio" readonly>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="pedidoPz">Pedido Pz:</label>
+                    <input type="number" id="pedidoPz" min="0" name="pedidoPz" class="form-control" placeholder="Pedido Pz">
+                    <span style="display: none;" id="helpblockPedidoPz" class="help-block">Campo obligatorio</span>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="degusPz">Degustación Pz:</label>
+                    <input type="number" id="degusPz" min="0" name="degusPz" class="form-control" placeholder="Degustación Pz">
+                    <span style="display: none;" id="helpblockDegusPz" class="help-block">Campo obligatorio</span>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-md-4">
+                    <label for="cambioFisico">Cambio físico:</label>
+                    <input type="number" id="cambioFisicoPz" min="0" name="cambioFisicoPz" class="form-control" placeholder="Cambio físico">
+                    <span style="display: none;" id="helpblockCambioFisicoPz" class="help-block">Campo obligatorio</span>
+                  </div>
+                  <div class="hidden col-md-4">
+                    <label for="empaque" class="">Empaque:</label>
+                    <input type="number" id="empaque" min="0" name="empaque" class="form-control">
+                  </div>
+                  <div class="col-md-4">
+                    <label for="precioUnitario">Precio unitario:</label>
+                    <input type="number" id="precioUnitario" min="0" name="precioUnitario" class="form-control" placeholder="Precio unitario"
+                      readonly>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="unidad">Unidad:</label>
+                    <input type="text" id="unidad" name="unidad" class="form-control" placeholder="Unidad" readonly>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-md-4">
+                    <label for="totalPz">Total Pz</label>
+                    <input readonly type="number" id="totalPz" name="totalPz" class="form-control">
+                  </div>
+                  <div class="col-md-4">
+                    <label for="totalKg">Total Kg</label>
+                    <input readonly type="number" id="totalKg" name="totalKg" class="form-control">
+                  </div>
+                </div>
+              </form>
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button id="" onclick="agregarProducto()" type="button" class="btn btn-primary">Guardar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="modalEditarProducto" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAgregarProducto">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="myModalLabel">Editar producto</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group row">
+                <div class="col-md-12 col-lg-12">
+                  <label for="nombreEditar">Nombre:</label>
+                  <input type="text" id="nombreEditar" name="nombreEditar" class="form-control" placeholder="Nombre" readonly>
+                </div>
+              </div>
+              <div class="form-group row">
+                <div class="col-md-3">
+                  <label for="claveConsorcioEditar">Clave consorcio:</label>
+                  <input readonly type="text" id="claveConsorcioEditar" name="claveConsorcioEditar" class="form-control" placeholder="Clave consorcio"
+                    readonly>
+                </div>
+                <div class="col-md-3">
+                  <label for="pedidoPzEditar">Pedido Pz:</label>
+                  <input type="number" id="pedidoPzEditar" min="0" name="pedidoPzEditar" class="form-control" placeholder="Pedido Pz">
+                  <span style="display: none;" id="helpblockPedidoPzEditar" class="help-block">Campo obligatorio</span>
+                </div>
+                <div class="col-md-3">
+                  <label for="degusPzEditar">Degustación Pz:</label>
+                  <input type="number" id="degusPzEditar" min="0" name="degusPzEditar" class="form-control" placeholder="Degustación Pz">
+                  <span style="display: none;" id="helpblockDegusPzEditar" class="help-block">Campo obligatorio</span>
+                </div>
+                <div class="col-md-3">
+                  <label for="cambioFisicoEditar">Cambio físico:</label>
+                  <input type="number" id="cambioFisicoPzEditar" min="0" name="cambioFisicoPzEditar" class="form-control" placeholder="Cambio físico">
+                  <span style="display: none;" id="helpblockCambioFisicoPzEditar" class="help-block">Campo obligatorio</span>
+                </div>
+                <div class="hidden col-md-3">
+                  <label for="empaqueEditar">Empaque:</label>
+                  <input type="text" id="empaqueEditar" min="0" name="empaqueEditar" class="form-control" readonly>
+                </div>
+              </div>
+              <div class="form-group row">
+                <div class="col-md-3">
+                  <label for="precioUnitarioEditar">Precio unitario:</label>
+                  <input type="text" id="precioUnitarioEditar" min="0" name="precioUnitarioEditar" class="form-control" placeholder="Precio unitario"
+                    readonly>
+                </div>
+                <div class="col-md-3">
+                  <label for="unidadEditar">Unidad:</label>
+                  <input type="text" id="unidadEditar" name="unidadEditar" class="form-control" placeholder="Unidad" readonly>
+                </div>
+                <div class="col-md-3">
+                  <label for="totalPzEditar">Total Pz</label>
+                  <input readonly type="text" id="totalPzEditar" name="totalPzEditar" class="form-control">
+                </div>
+                <div class="col-md-3">
+                  <label for="totalKgEditar">Total Kg</label>
+                  <input readonly type="text" id="totalKgEditar" name="totalKgEditar" class="form-control">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            <button id="btnActualizarProducto" onclick="agregarProducto()" type="button" class="btn btn-primary">Guardar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="modalConfirmarEliminarProducto" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirmar eliminación</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>¿Realmente desea eliminar este producto?</p>
+          </div>
+          <div class="modal-footer">
+            <button id="btnCancelar" type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            <button id="btnConfirmar" type="button" class="btn btn-primary" data-dismiss="modal">Confirmar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script>if (window.module) module = window.module;</script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap4.min.js"></script>
+    <script src="dist/js/bootstrap-select.js"></script>
+    <script src="vendor/metisMenu/metisMenu.min.js"></script>
+    <script src="js/jquery.dataTables.min.js"></script>
+    <script src="js/dataTables.bootstrap4.min.js"></script>
+    <script src="js/dataTables.responsive.min.js"></script>
+    <script src="dist/js/sb-admin-2.js"></script>
+    <script src="js/bootstrap-datepicker.min.js"></script>
+    <script src="js/bootstrap-datepicker.es.min.js"></script>
+    <script src="js/jquery.toaster.js"></script>
+    <script src="js/bootstrap-select.min.js"></script>
+    <script src="js/firebase.js"></script>
+    <!-- <script src="js/jspdf.debug.js"></script> -->
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyA19j6-VLNcXLJfBkfd_lZfFFbzg6z0Imc",
+        authDomain: "xico-netcontrol.firebaseapp.com",
+        databaseURL: "https://xico-netcontrol.firebaseio.com",
+        projectId: "xico-netcontrol",
+        storageBucket: "xico-netcontrol.appspot.com",
+        messagingSenderId: "248615705793"
+      };
+      firebase.initializeApp(config);
+    </script>
+    <!--<script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/$VERSION/dragula.min.js'></script>-->
+    <script src="js/moment-with-locales.js"></script>
+    <script src="js/jspdf.min.js"></script>
+    <script src="js/jspdf.plugin.autotable.js"></script>
+    <script src="js/dataTables.buttons.min.js"></script>
+    <!-- <script src="js/buttons.flash.min.js"></script> -->
+    <script src="js/jszip.min.js"></script>
+    <script src="js/pdfmake.min.js"></script>
+    <script src="js/vfs_fonts.js"></script>
+    <script src="js/buttons.print.min.js"></script>
+    <script src="js/buttons.bootstrap4.min.js"></script>
+    <script src="js/buttons.html5.min.js"></script>
+    <!-- <script src="js/buttons.colVis.min.js"></script> -->
+    <script src="js/localforage.min.js"></script>
+    <script src="babel/pedidoMaterial.js"></script>
+  </body>
+</html>

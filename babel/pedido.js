@@ -136,7 +136,7 @@ function mostrarDatos(pedido) {
       piezaTotal = 0,
       precioUnitarioTotal = 0,
       cambioFisicoTotal = 0;
-  datatable.clear();
+  datatable.clear().draw();
   for (var producto in detalle) {
     var datosProducto = detalle[producto];
     kgTotal += datosProducto.totalKg;
@@ -153,7 +153,6 @@ function mostrarDatos(pedido) {
   actualizarTotales(kgTotal, piezaTotal);
   datatable.rows.add($(filas)).columns.adjust().draw();
   datatable.buttons().container().appendTo('#example_wrapper .col-md-6:eq(0)');
-
   $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
 }
 

@@ -55,27 +55,81 @@ function getQueryVariable(variable) {
 
 function mostrarDatosOferta() {
   let idOferta = getQueryVariable('id');
-  db.ref(`ofertas/${idOferta}`).once('value', (snapshot) => {
+  db.ref(`ofertas/${idOferta}`).on('value', (snapshot) => {
     let oferta = snapshot.val();
 
     $('#clave').html(oferta.clave);
     $('#consorcio').html(oferta.consorcio);
-    $('#tienda').html(oferta.tienda);
+    $('#tiendas').html(oferta.tiendas.join(', '));
     let productos = oferta.productos;
 
+    let datatable = $('#productos').DataTable({
+      pageLength: 25,
+      lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todas"]],
+      destroy: true,
+      ordering: false,
+      language: LANGUAGE
+    });
     let filas = '';
-    for(let producto of productos) {
+    datatable.clear();
+
+    productos.forEach((producto, i) => {
       filas += `<tr>
                   <td>${producto.clave}</td>
                   <td>${producto.nombre}</td>
                   <td>$ ${producto.precioLista}</td>
                   <td>$ ${producto.precioOferta}</td>
-                  <td>${producto.fechaInicio}</td>
-                  <td>${producto.fechaFin}</td>
+                  <td class="text-center"><button type="button" onclick="abrirModalEditarProducto('${i}')"  class="btn btn-xs btn-warning"><span class="fas fa-pencil-alt"></span></button></td>
+                  <td class="text-center"><button type="button" onclick="eliminarProducto('${producto}')" class="btn btn-xs btn-danger"><span class="fas fa-trash"></span></button></td>
                 </tr>`;
+    });
+    datatable.rows.add($(filas)).columns.adjust().draw();
+    
+    //$('#productos tbody').html(filas);
+  });
+}
+
+function abrirModalEditarProducto(idProducto) {
+  let idOferta = getQueryVariable('id');
+  db.ref(`ofertas/${idOferta}/productos/${idProducto}`).once('value', snapshot => {
+    let producto = snapshot.val();
+    $('#claveProducto').val(producto.clave);
+    $('#nombreProducto').val(producto.nombre);
+    $('#precioLista').val(producto.precioLista);
+    $('#precioOferta').val(producto.precioOferta);
+
+    $('#btnEditar').attr('onclick', `actualizarProducto('${idProducto}')`);
+    $('#modalEditarProducto').modal('show');
+  });
+}
+
+function actualizarProducto(idProducto) {
+  let idOferta = getQueryVariable('id');
+  let precioOferta = $('#precioOferta').val();
+
+  db.ref(`ofertas/${idOferta}/productos/${idProducto}`).update({
+    precioOferta
+  });
+  $.toaster({ priority: 'success', title: 'Mensaje de información', message: `El producto fue actualizado con exito` });
+  $('#modalEditarProducto').modal('hide');
+}
+
+function eliminarProducto(producto) {
+  swal({
+    title: "¿Está seguro de eliminar este producto?",
+    text: "",
+    icon: "warning",
+    buttons: true,
+    confirm: true,
+  })
+  .then((will) => {
+    if (will) {
+      db.ref(`ofertas/${idOferta}/productos`).child(producto).remove();
+
+      swal("El producto se ha eliminado", {
+        icon: "success",
+      });
     }
-    console.log(filas)
-    $('#productos tbody').html(filas);
   });
 }
 

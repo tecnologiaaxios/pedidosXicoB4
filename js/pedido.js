@@ -129,7 +129,7 @@ function mostrarDatos(pedido) {
   
   $('#cantidad').html(`<small class="lead">${cantidadProductos}</small>`);
   let filas = "", kgTotal = 0, degusTotal = 0, pedidoPzTotal = 0, piezaTotal = 0, precioUnitarioTotal = 0, cambioFisicoTotal = 0;
-  datatable.clear();
+  datatable.clear().draw();
   for(let producto in detalle) {
     let datosProducto = detalle[producto];
     kgTotal += datosProducto.totalKg;
@@ -169,10 +169,8 @@ function mostrarDatos(pedido) {
   //$('#productos tbody').html(filas);
   actualizarTotales(kgTotal, piezaTotal);
   datatable.rows.add($(filas)).columns.adjust().draw();
-  datatable.buttons().container()
-        .appendTo( '#example_wrapper .col-md-6:eq(0)' );
-
-        $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+  datatable.buttons().container().appendTo( '#example_wrapper .col-md-6:eq(0)' );
+  $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
 }
 
 function actualizarTotales(kilos, piezas) {

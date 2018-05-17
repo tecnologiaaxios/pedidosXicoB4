@@ -15,7 +15,9 @@ gulp.task('es6', function() {
     'js/pedido.js',
     'js/estadisticas.js',
     'js/ofertas.js',
-    'js/oferta.js'
+    'js/oferta.js',
+    'js/pedidosMateriales.js',
+    'js/pedidoMaterial.js'
   ])
 		.pipe( babel({presets : ['es2015'], plugins: ["transform-object-rest-spread"]}))
 		.pipe(gulp.dest(`babel/`));
