@@ -119,13 +119,194 @@ function mostrarDatosPedido() {
       totalCosto += datosMaterial.costo;
       totalCantidad += datosMaterial.cantidad;
 
-      filas += '<tr>\n                  <td>' + datosMaterial.clave + '</td>\n                  <td>' + datosMaterial.nombre + '</td>\n                  <td class="text-right">' + datosMaterial.cantidad + '</td>\n                  <td class="text-right">' + datosMaterial.precioUnitario + '</td>\n                  <td class="text-right">' + datosMaterial.costo + '</td>\n                  <td>' + datosMaterial.unidad + '</td>\n                  <td align="center">\n                    <a role="button" class="btn btn-warning btn-xs" onclick="abrirModalEditarMaterial(\'' + material + '\', \'' + datosMaterial.clave + '\')" data-toggle="tooltip" data-placement="top" title="Editar"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>\n                    <a style="color: white;" role="button" class="btn btn-danger btn-xs" onclick="abrirModalEliminarMaterial(\'' + material + '\', \'' + datosMaterial.clave + '\')" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fas fa-trash-alt" aria-hidden="true"></i></a>\n                  </td>\n                </tr>';
+      filas += '<tr>\n                  <td>' + datosMaterial.clave + '</td>\n                  <td>' + datosMaterial.nombre + '</td>\n                  <td class="text-right">' + datosMaterial.cantidad + '</td>\n                  <td class="text-right">' + datosMaterial.precioUnitario + '</td>\n                  <td class="text-right">' + datosMaterial.costo + '</td>\n                  <td>' + datosMaterial.unidad + '</td>\n                  <td align="center">\n                    <a role="button" class="btn btn-warning btn-xs" onclick="abrirModalEditarMaterial(\'' + material + '\', \'' + datosMaterial.clave + '\')" data-toggle="tooltip" data-placement="top" title="Editar"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>\n                    <a style="color: white;" role="button" class="btn btn-danger btn-xs" onclick="eliminarMaterial(\'' + material + '\')" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fas fa-trash-alt" aria-hidden="true"></i></a>\n                  </td>\n                </tr>';
     }
     filas += '<tr>\n                <td></td>\n                <td class="text-right"><strong>Totales</strong></td>\n                <td class="text-right"><strong>' + totalCantidad + '</strong></td>\n                <td class="text-right"></td>\n                <td class="text-right"><strong>' + totalCosto + '</strong></td>\n                <td class="text-right"></td>\n                <td class="text-right"></td>\n              </tr>';
 
     //actualizarTotales(kgTotal, piezaTotal);
     datatable.rows.add($(filas)).columns.adjust().draw();
     $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+  });
+}
+
+function abrirModalAgregar() {
+  $('#modalAgregarMaterial').modal('show');
+  llenarSelectMateriales();
+}
+
+$('#modalAgregarMateriales').on('hide.bs.modal', function () {
+  $('#selectMateriales').val('');
+  $('#nombreMateriales').val('');
+  $('#empaqueMateriales').val('');
+  $('#precioMateriales').val('');
+  $('#unidadMateriales').val('');
+  $('#cantidadMateriales').val('');
+});
+
+$('#modalEditarProducto').on('hide.bs.modal', function () {
+  $('#nombreEditarMateriales').val('');
+  $('#empaqueEditarMateriales').val('');
+  $('#precioEditarMateriales').val('');
+  $('#unidadEditarMateriales').val('');
+  $('#cantidadEditarMateriales').val('');
+});
+
+function llenarSelectMateriales() {
+  db.ref('materiales').on('value', function (snapshot) {
+    var materiales = snapshot.val();
+    var options = '<option value="Seleccionar" id="Seleccionar">Seleccionar</option>';
+    for (var material in materiales) {
+      options += '<option value="' + material + '"> ' + material + ' ' + materiales[material].nombre + ' ' + materiales[material].empaque + '</option>';
+    }
+    $('#selectMateriales').html(options);
+  });
+}
+
+$('#selectMateriales').change(function () {
+  var idMaterial = $(this).val();
+
+  if (idMaterial != undefined) {
+    db.ref('materiales/' + idMaterial).on('value', function (snapshot) {
+      var material = snapshot.val();
+      $('#nombreMateriales').val(material.nombre);
+      $('#empaqueMateriales').val(material.empaque);
+      $('#precioUnitarioMateriales').val(material.precioUnitario);
+      $('#unidadMateriales').val(material.unidad);
+      $('#claveConsorcio').val(material.claveConsorcio);
+    });
+
+    if (this.value != null || this.value != undefined) {
+      $('#selectMateriales').parent().removeClass('has-error');
+      $('#helpblockMateriales').hide();
+    } else {
+      $('#selectMateriales').parent().addClass('has-error');
+      $('#helpblockMateriales').show();
+    }
+  }
+});
+
+$('#cantidadMateriales').change(function () {
+  var cantidad = Number($(this).val());
+  var precioUnitario = Number($('#precioUnitarioMateriales').val());
+  var costo = Number(cantidad * precioUnitario);
+  $('#costoMateriales').val(costo);
+});
+
+function agregarMaterial() {
+  var idPedido = getQueryVariable('id');
+  var clave = Number($('#selectMaterialesMateriales').val());
+  var nombre = $('#nombreMateriales').val();
+  var cantidad = Number($('#cantidadMateriales').val());
+  var unidad = $('#unidadMateriales').val();
+  var precioUnitario = Number($('#precioUnitarioMateriales').val());
+  var costo = cantidad * precioUnitario;
+
+  if (clave != undefined && clave != null && cantidad > 0) {
+    db.ref('pedidosMateriales/' + idPedido).once('value', function (snapshot) {
+      var materiales = snapshot.val().materiales;
+      var arrMateriales = [];
+      materiales.forEach(function (material) {
+        arrMateriales.push(material.clave);
+      });
+      if (arrMateriales.includes(clave)) {
+        $.toaster({ priority: 'warning', title: 'Mensaje de información', message: 'El material ' + clave + ' ya se encuentra en el pedido' });
+      } else {
+        db.ref('pedidosMateriales/' + idPedido + '/materiales').push({
+          clave: clave,
+          nombre: nombre,
+          cantidad: cantidad,
+          unidad: unidad,
+          costo: Number(costo),
+          precioUnitario: precioUnitario
+        });
+        $.toaster({ priority: 'success', title: 'Mensaje de información', message: 'Se agreg\xF3 el material ' + claveProducto + ' al pedido' });
+        limpiarCampos();
+        $('#modalAgregarMaterial').modal('hide');
+      }
+    });
+  } else {
+    if (clave == null || clave == undefined || clave == "Seleccionar") {
+      $('#selectMateriales').parent().addClass('has-error');
+      $('#helpblockMateriales').show();
+    } else {
+      $('#selectMateriales').parent().removeClass('has-error');
+      $('#helpblockMateriales').hide();
+    }
+    if (cantidad < 1) {
+      $('#cantidadMateriales').parent().addClass('has-error');
+      $('#helpblockCantidadMateriales').show();
+    } else {
+      $('#cantidadMateriales').parent().removeClass('has-error');
+      $('#helpblockCantidadMateriales').hide();
+    }
+  }
+}
+
+function limpiarCampos() {
+  $('#selectMateriales').val('');
+  $('#nombreMateriales').val('');
+  $('#cantidadMateriales').val('');
+  $('#empaqueMateriales').val('');
+  $('#unidadMateriales').val('');
+  $('#precioUnitarioMateriales').val('');
+}
+
+function abrirModalEditarMaterial(idMaterial) {
+  var idPedido = getQueryVariable('id');
+  db.ref('pedidosMateriales/' + idPedido + '/materiales/' + idMaterial).once('value', function (snapshot) {
+    var material = snapshot.val();
+    $('#nombreMaterialEditar').val(material.nombre);
+    $('#cantidadMaterialEditar').val(material.cantidad);
+    $('#unidadMaterialEditar').val(material.unidad);
+    $('#precioUnitarioMaterialEditar').val(material.precioUnitario);
+  });
+
+  $('#modalEditarMaterial').modal('show');
+  $('#btnActualizarMaterial').attr('onclick', 'editarMaterial("' + idMaterial + '")');
+}
+
+$('#cantidadMaterialEditar').change(function () {
+  var cantidad = Number($(this).val());
+  var precioUnitario = Number($('#precioUnitarioMaterialEditar').val());
+  var costo = Number(cantidad * precioUnitario);
+  $('#costoMaterialEditar').val(costo);
+});
+
+function editarMaterial(idMaterial) {
+  var idPedido = getQueryVariable('id');
+  var cantidad = Number($('#cantidadMaterialEditar').val());
+  var precioUnitario = $('#precioUnitarioMaterialEditar').val();
+
+  if (cantidad > 0) {
+    var costo = cantidad * precioUnitario;
+    db.ref('pedidosMateriales/' + idPedido + '/materiales/' + idMaterial).update({
+      cantidad: cantidad,
+      costo: costo
+    });
+
+    $('#modalEditarMaterial').modal('hide');
+    $.toaster({ priority: 'info', title: 'Mensaje de información', message: 'El material ' + idMaterial + ' se actualiz\xF3 correctamente' });
+  } else {
+    $.toaster({ priority: 'warning', title: 'Mensaje de información', message: 'La cantidad no puede ser 0' });
+  }
+}
+
+function eliminarMaterial(idMaterial) {
+  swal({
+    title: "¿Está seguro de eliminar este material?",
+    text: "",
+    icon: "warning",
+    buttons: true,
+    confirm: true
+  }).then(function (will) {
+    if (will) {
+      var idPedido = getQueryVariable('id');
+      db.ref('pedidosMateriales/' + idPedido + '/materiales').child(idMaterial).remove();
+
+      swal("El material se ha eliminado", {
+        icon: "success"
+      });
+    }
   });
 }
 
