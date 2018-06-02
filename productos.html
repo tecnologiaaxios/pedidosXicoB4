@@ -1,182 +1,341 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link href='logo.ico' rel='shortcut icon' type='image/x-icon'/>
+<!doctype html>
+<html lang="en">
 
-    <title>Sistema Xico</title>
-    <!-- Bootstrap Core CSS -->
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- MetisMenu CSS -->
-    <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link href="dist/css/sb-admin-2.css" rel="stylesheet">
-    <!-- Morris Charts CSS -->
-    <link href="vendor/morrisjs/morris.css" rel="stylesheet">
-    <!-- Custom Fonts -->
-    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="dist/css/bootstrap-select.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="well well-sm">
-            <form class="form-horizontal">
-              <fieldset>
-                <legend class="text-center header">Producto</legend>
-                <div class="form-group">
-                  <span class="col-md-1 col-md-offset-2 text-center"><i class="fa fa-key" aria-hidden="true"></i></span>
-                  <div class="col-md-8">
-                    <input id="claveInterna" type="text" placeholder="Clave" class="form-control" required>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
+  <title>Productos</title>
+  <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+  <link rel="stylesheet" href="css/bootstrap4.min.css">
+  <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
+  <link href="css/dataTables.bootstrap4.min.css" rel="stylesheet">
+  <link href="vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+  <!-- <link rel="stylesheet" href="css/responsive.bootstrap.min.css"> -->
+  <!-- <link href="dist/css/sb-admin-2.css" rel="stylesheet"> -->
+  <link href="css/panel.css" rel="stylesheet">
+  <!-- <link href="vendor/morrisjs/morris.css" rel="stylesheet"> -->
+  <link rel="stylesheet" href="css/icon.css">
+  <!-- <link rel="stylesheet" href="dist/css/bootstrap-select.css"> -->
+
+  <link rel="stylesheet" href="css/bootstrap-datepicker.min.css">
+  <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
+  <link rel="stylesheet" href="css/bootstrap-datepicker3.standalone.css">
+  <script defer src="js/fontawesome-all.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
+  <link href="https://unpkg.com/vue2-datatable-component/dist/min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/bootstrap-multiselect.css">
+  <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.15.0/slimselect.min.css" rel="stylesheet"></link> -->
+  <style>
+    .fade-enter-active,
+    .fade-leave-active {
+      transition: opacity .5s
+    }
+
+    .fade-enter,
+    .fade-leave-to {
+      opacity: 0
+    }
+  </style>
+</head>
+
+<body>
+  <!-- <nav class="navbar navbar-expand-lg navbar" style="background-color: rgb(255, 110, 2)"> -->
+  <nav class="navbar navbar-expand-lg navbar" style="background: url(img/FONDO.jpg) no-repeat; background-size: cover;">
+    <a class="navbar-brand" href="#">
+      <img src="logo.png" width="50" height="33" class="d-inline-block align-top" alt=""> Sistema de pedidos
+    </a>
+    <a class="navbar-brand" href="panel.html">
+      <span class="navbar-text material-icons" data-toggle="tooltip" data-placement="bottom" title="Volver al panel">dvr</span>
+    </a>
+    <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom"
+      title="Notificaciones">
+      <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="far fa-bell"></span>
+        <span id="spanNotificaciones" style="display: none;" class="badge badge-pill badge-danger"></span>
+      </a>
+      <div id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+
+      </div>
+    </div>
+    <a href="" class="navbar-brand" id="btnPerfil">
+      <img src="http://lorempixel.com/25/25/" alt="..." class="rounded-circle" data-toggle="tooltip" data-placement="bottom" title="Perfil">
+    </a>
+    <div class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom" title="Cerrar sesión">
+      <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-sign-out-alt"></i>
+      </a>
+      <div class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" onclick="logout()">
+          <span class="fas fa-power-off"></span> Cerrar sesión
+        </a>
+      </div>
+    </div>
+  </nav>
+  <div id="app" class="container">
+    <div class="row mt-4">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="administrar.html"><i class="fas fa-chevron-left"></i> Volver</a></li>
+          </ol>
+        </nav>
+        <h4 class="display-5" style="border-bottom: solid 1px rgb(132, 127, 127);">Productos</h4>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <!-- <div class="col-md-12">
+                <div class="card">
+                  <div class="card-body">
+                    <form>
+                      <div class="form-row">
+                        <div class="col-md-4">
+                          <div class="form-group row">
+                            <label for="clave" class="col-sm-3 col-form-label text-right">Clave:</label>
+                            <div class="col-sm-9">
+                              <input type="text" v-model="clave" id="clave" name="clave" class="form-control">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col">
+                          <div class="form-group row">
+                            <label for="nombre" class="col-sm-3 col-form-label text-right">Nombre:</label>
+                            <div class="col-sm-9">
+                              <input type="text" v-model="nombre" id="nombre" name="nombre" class="form-control">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="form-group row">
+                        <label for="consorcio" class="col-sm-3 col-form-label text-right">Consorcio:</label>
+                        <div class="col-sm-9">
+                          <input type="text" list="consorcios" v-model="consorcio" id="consorcio" name="consorcio" class="form-control">
+                          <datalist id="consorcios">
+                            <option v-for="consorcio in consorcios" :value="consorcio['.key']">{{ consorcio['.key'] }}</option>
+                          </datalist> 
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="claveConsorcio" class="col-sm-3 col-form-label text-right">Clave consorcio:</label>
+                        <div class="col-sm-9">
+                          <input type="text" v-model="claveConsorcio" class="form-control" id="claveConsorcio" name="claveConsorcio">
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="empaque" class="col-sm-3 col-form-label text-right">Empaque:</label>
+                        <div class="col-sm-9">
+                          <input type="number" v-model="empaque" id="empaque" name="empaque" class="form-control">
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="precioUnitario" class="col-sm-3 col-form-label text-right">Precio unitario:</label>
+                        <div class="col-sm-9">
+                          <input type="number" v-model="precioUnitario" id="precioUnitario" name="precioUnitario" class="form-control">
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="unidad" class="col-sm-3 col-form-label text-right">Unidad:</label>
+                        <div class="col-sm-9">
+                          <input type="text" list="unidades" v-model="unidad" id="unidad" name="unidad" class="form-control">
+                          <datalist id="unidades">
+                            <option v-for="unidad in unidades" :value="unidad">{{unidad}}</option>
+                          </datalist>
+                        </div>
+                      </div>
+                      <button type="submit" :click.prevent="guardarProducto" class="btn btn-primary">Guardar</button>
+                    </form>
                   </div>
                 </div>
-                <div class="form-group">
-                  <span class="col-md-1 col-md-offset-2 text-center"><i class="fa fa-shopping-cart" aria-hidden="true"></i></span>
-                  <div class="col-md-8">
-                    <input id="nombreProducto" type="text" placeholder="Nombre" class="form-control" required>
+              </div> -->
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-12">
+                <form>
+                  <div class="form-row">
+                    <div class="col-md-4">
+                      <div class="form-group row">
+                        <label for="consorcioFiltrar" class="col-sm-4 col-form-label">Consorcio:</label>
+                        <div class="col-sm-8">
+                          <select name="consorcioFiltrar" v-model="consorcioFiltrar" @change="filtrarProductos" id="consorcioFiltrar" class="form-control">
+                            <option v-for="(consorcio, index) in consorcios" :selected="index === 0 ? 'selected' : ''" :value="consorcio['.key']">{{consorcio['.key']}}</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      <button type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#modalAgregarProducto">
+                        <i class="fas fa-plus"></i> Producto</button>
+                    </div>
                   </div>
+                </form>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-12">
+                <div class="table-responsive">
+                  <table id="tablaProductos" class="table table-condensed table-hover table-sm table-striped">
+                    <thead>
+                      <tr>
+                        <th>Clave</th>
+                        <th>Clave consorcio</th>
+                        <th>Nombre</th>
+                        <th>Empaque</th>
+                        <th>Precio unitario</th>
+                        <th>Unidad</th>
+                        <th class="text-center">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody style="font-family: OpenSans,Open Sans,sans-serif;">
+                      <tr v-for="(producto, key) in productos">
+                        <td>{{ key }}</td>
+                        <td>{{ producto.claveConsorcio }}</td>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.empaque }}</td>
+                        <td>$ {{ producto.precioUnitario }}</td>
+                        <td>{{ producto.unidad }}</td>
+                        <td v-html="estado(producto.activo)" class="text-center"></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
-                <div class="form-group">
-                  <span class="col-md-1 col-md-offset-2 text-center"><i class="fa fa-shopping-cart" aria-hidden="true"></i></span>
-                  <div class="col-md-8">
-                    <input id="capEmpaque" type="number" placeholder="Empaque" class="form-control" required>
-                  </div>
-                </div>
-                <!--<div class="form-group">
-                  <span class="col-md-1 col-md-offset-2 text-center"><i class="fa fa-map-marker" aria-hidden="true"></i></span>
-                  <div class="col-md-8">
-                    <input id="region" type="text" placeholder="Región" class="form-control" required>
-                  </div>
-                </div>-->
-                <div class="form-group">
-                  <div class="col-md-12 text-center">
-                    <button class="btn btn-primary btn-lg" id="enviar" onclick="guardarProducto()" type="button">Guardar</button>
-                  </div>
-                </div>
-              </fieldset>
-            </form>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <!--<div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="well well-sm">
-            <form class="form-horizontal">
-              <fieldset>
-                <legend class="text-center header">Productos</legend>
-                <div class="form-group">
-                  <span class="col-md-1 col-md-offset-2 text-center"><i class="fa fa-shopping-cart" aria-hidden="true"></i></span>
-                  <div class="col-md-6">
-                    <select id="tienda" class="form-control" required></select>
-                    <label for="cantidadProductos">Cantidad de productos: <input class="form-control" id="cantidadProductos" name="cantidadProductos" disabled></input></label><br>
-                    <button class="btn btn-success btn-sm" onclick="contarProductos()" type="button">Calcular</button>
-                    <button class="btn btn-danger btn-sm" onclick="limpiarTabla()" type="button">Limpiar tabla</button>
+    <div id="modalAgregarProducto" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Agregar producto</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="clave">Clave:</label>
+                    <input type="text" v-model="clave" id="clave" name="clave" class="form-control">
                   </div>
                 </div>
-                <div class="form-group">
-                  <table id="listaProductos" class="table table-striped .table-hover">
-                    <thead>
-                      <th>Clave</th>
-                      <th>Empaque</th>
-                      <th>Nombre</th>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                  </table>
-                </div>
-                <div class="form-group">
-                  <span class="col-md-1 col-md-offset-2 text-center"><i class="fa fa-key" aria-hidden="true"></i></span>
-                  <div class="col-md-8">
-                    <input id="claveProducto" type="text" placeholder="Clave" class="form-control">
+                <div class="col">
+                  <div class="form-group">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" v-model="nombre" id="nombre" name="nombre" class="form-control">
                   </div>
                 </div>
-                <div class="form-group">
-                  <span class="col-md-1 col-md-offset-2 text-center"><i class="fa fa-product-hunt" aria-hidden="true"></i></span>
-                  <div class="col-md-8">
-                    <input id="nombreProducto" type="text" placeholder="Nombre" class="form-control">
+              </div>
+              <div class="form-row">
+                <div class="col">
+                  <div class="form-group">
+                    <label for="consorcio">Consorcio:</label>
+                    <!-- <input type="text" list="consorcios" v-model="consorcio" id="consorcio" name="consorcio" class="form-control"> -->
+                    <select id="consorcio" v-model="consorcio" class="form-control" name="consorcio">
+                      <option v-for="consorcio in consorcios" :value="consorcio['.key']">{{ consorcio['.key'] }}</option>
+                    </select>
                   </div>
                 </div>
-                <div class="form-group">
-                  <span class="col-md-1 col-md-offset-2 text-center"><i class="fa fa-archive" aria-hidden="true"></i></span>
-                  <div class="col-md-8">
-                    <input id="empaque" type="number" placeholder="Empaque" class="form-control">
+                <div class="col">
+                  <div class="form-group">
+                    <label for="claveConsorcio">Clave consorcio:</label>
+                    <input type="text" v-model="claveConsorcio" class="form-control" id="claveConsorcio" name="claveConsorcio">
                   </div>
                 </div>
-                <div class="form-group">
-                  <div class="col-md-12 text-center">
-                    <button class="btn btn-primary btn-lg" onclick="agregarProducto()" type="button">Agregar</button>
+                <div class="col">
+                  <div class="form-group">
+                    <label for="empaque">Empaque:</label>
+                    <input type="number" min="0" v-model.number="empaque" id="empaque" name="empaque" class="form-control">
                   </div>
                 </div>
-              </fieldset>
+              </div>
+              <div class="form-row">
+                <div class="col-md-4">
+                  <label for="precioUnitario">Precio unitario:</label>
+                  <input type="number" v-model.number="precioUnitario" id="precioUnitario" name="precioUnitario" class="form-control">
+                </div>
+                <div class="col-md-4">
+                  <label for="unidad">Unidad:</label>
+                  <!-- <input type="text" list="unidades" v-model="unidad" id="unidad" name="unidad" class="form-control"> -->
+                  <select id="unidad" v-model="unidad" class="form-control" name="unidad" class="form-control">
+                    <option v-for="unidad in unidades" :value="unidad">{{unidad}}</option>
+                  </select>
+                </div>
+              </div>
             </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="button" @click="guardarProducto" class="btn btn-primary">Guardar</button>
           </div>
         </div>
       </div>
-    </div>-->
-    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script src="dist/js/bootstrap-select.js"></script>
+    </div>
+  </div>
+  <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
+  <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
+  <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <script>if (window.module) module = window.module;</script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap4.min.js"></script>
+  <script src="dist/js/bootstrap-select.js"></script>
+  <script src="vendor/metisMenu/metisMenu.min.js"></script>
+  <script src="js/jquery.dataTables.min.js"></script>
+  <script src="js/dataTables.bootstrap4.min.js"></script>
+  <script src="js/dataTables.responsive.min.js"></script>
+  <script src="dist/js/sb-admin-2.js"></script>
+  <script src="js/bootstrap-datepicker.min.js"></script>
+  <script src="js/bootstrap-datepicker.es.min.js"></script>
+  <script src="js/jquery.toaster.js"></script>
+  <!-- <script src="js/bootstrap-select.min.js"></script> -->
+  <script src="js/bootstrap-multiselect.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.15.0/slimselect.min.js"></script> -->
+  <script src="js/firebase.js"></script>
+  <!-- <script src="js/jspdf.debug.js"></script> -->
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyA19j6-VLNcXLJfBkfd_lZfFFbzg6z0Imc",
+      authDomain: "xico-netcontrol.firebaseapp.com",
+      databaseURL: "https://xico-netcontrol.firebaseio.com",
+      projectId: "xico-netcontrol",
+      storageBucket: "xico-netcontrol.appspot.com",
+      messagingSenderId: "248615705793"
+    };
+    firebase.initializeApp(config);
+  </script>
+  <script src="js/moment-with-locales.js"></script>
+  <script src="js/jspdf.min.js"></script>
+  <script src="js/jspdf.plugin.autotable.js"></script>
+  <script src="js/dataTables.buttons.min.js"></script>
+  <script src="js/jszip.min.js"></script>
+  <script src="js/pdfmake.min.js"></script>
+  <script src="js/vfs_fonts.js"></script>
+  <script src="js/buttons.print.min.js"></script>
+  <script src="js/buttons.bootstrap4.min.js"></script>
+  <script src="js/buttons.html5.min.js"></script>
+  <script src="js/vue.js"></script>
+  <script src="https://unpkg.com/vuefire/dist/vuefire.js"></script>
+  <script src="https://unpkg.com/vue2-datatable-component/dist/min.js"></script>
+  <script src="js/localforage.min.js"></script>
+  <script src="js/Chart.min.js"></script>
+  <script src='js/decimal.min.js'></script>
+  <script src="js/sweetalert.min.js"></script>
+  <script src="babel/productos.js"></script>
+  <!-- <script src="js/estadisticasvue.js"></script> -->
+</body>
 
-    <!-- Bootstrap Core JavaScript -->
-    <!--<script src="vendor/bootstrap/js/bootstrap.min.js"></script>-->
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="vendor/metisMenu/metisMenu.min.js"></script>
-    <!-- Morris Charts JavaScript -->
-    <script src="vendor/raphael/raphael.min.js"></script>
-    <script src="vendor/morrisjs/morris.min.js"></script>
-    <script src="data/morris-data.js"></script>
-    <!-- Custom Theme JavaScript -->
-    <script src="dist/js/sb-admin-2.js"></script>
-    <!--<script>
-      $(document).ready(function () {
-        var mySelect = $('#first-disabled2');
-
-        $('#special').on('click', function () {
-          mySelect.find('option:selected').prop('disabled', true);
-          mySelect.selectpicker('refresh');
-        });
-
-        $('#special2').on('click', function () {
-          mySelect.find('option:disabled').prop('disabled', false);
-          mySelect.selectpicker('refresh');
-        });
-
-        $('#basic2').selectpicker({
-          liveSearch: true,
-          maxOptions: 1
-        });
-      });
-    </script>-->
-    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
-    <script>
-      // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyA19j6-VLNcXLJfBkfd_lZfFFbzg6z0Imc",
-        authDomain: "xico-netcontrol.firebaseapp.com",
-        databaseURL: "https://xico-netcontrol.firebaseio.com",
-        projectId: "xico-netcontrol",
-        storageBucket: "xico-netcontrol.appspot.com",
-        messagingSenderId: "248615705793"
-      };
-      firebase.initializeApp(config);
-    </script>
-    <script src="js/productos.js"></script>
-  </body>
 </html>

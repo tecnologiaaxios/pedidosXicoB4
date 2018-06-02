@@ -4,7 +4,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var db = firebase.database();
 var auth = firebase.auth();
-var productos = [];
+var productos = [],
+    productosComprobar = [];
 
 var LANGUAGE = {
   searchPlaceholder: "Buscar",
@@ -469,19 +470,34 @@ function agregarProducto() {
     db.ref('consorcios/' + consorcio + '/productos').child(claveProducto).once('value', function (snapshot) {
       var datos = snapshot.val();
 
-      var producto = {
-        clave: claveProducto,
-        nombre: datos.nombre,
-        precioLista: datos.precioUnitario,
-        precioOferta: Number(precioOferta)
-      };
-      productos.push(producto);
-      limpiarCampos();
+      if (productosComprobar.includes(claveProducto)) {
+        swal("Ese producto ya se ha agregado", {
+          icon: "info"
+        });
+      } else {
+        var producto = {
+          clave: claveProducto,
+          nombre: datos.nombre,
+          precioLista: datos.precioUnitario,
+          precioOferta: Number(precioOferta)
+        };
+        productos.push(producto);
+        productosComprobar.push(claveProducto);
+        limpiarCampos();
 
-      var fila = '<tr>\n                    <td>' + producto.clave + '</td>\n                    <td>' + producto.nombre + '</td>\n                    <td>' + producto.precioLista + '</td>\n                    <td>' + producto.precioOferta + '</td>\n                  </tr>';
-      $('#productos tbody').append(fila);
+        var fila = '<tr id="fila-' + producto.clave + '">\n                      <td>' + producto.clave + '</td>\n                      <td>' + producto.nombre + '</td>\n                      <td>' + producto.precioLista + '</td>\n                      <td>' + producto.precioOferta + '</td>\n                      <td class="text-center"><button type="button" class="btn btn-danger btn-xs" onclick="removerProducto(' + (productos.length - 1) + ', \'' + producto.clave + '\')"><span class="fas fa-trash-alt"></span></button></td>\n                    </tr>';
+        $('#productos tbody').append(fila);
+      }
     });
   }
+}
+
+function removerProducto(index, clave) {
+  console.log(productos);
+  productos.splice(index, 1);
+  productosComprobar.splice(index, 1);
+  $('#fila-' + clave).remove();
+  console.log(productos);
 }
 
 function limpiarCampos() {
@@ -607,7 +623,6 @@ function mostrarOfertasInactivas() {
   db.ref('ofertas').orderByChild('activa').equalTo(false).on('value', function (ofertas) {
 
     var filas = "";
-
     var arrOfertas = [];
     ofertas.forEach(function (oferta) {
       arrOfertas.unshift(_extends({
@@ -620,7 +635,7 @@ function mostrarOfertasInactivas() {
 
       datatable.clear().draw();
 
-      filas += '<tr>\n                  <td>' + oferta.key + '</td>\n                  <td>' + oferta.clave + '</td>\n                  <td>' + oferta.consorcio + '</td>\n                  <td>' + oferta.tiendas.join(', ') + '</td>\n                  <td class="text-center"><span class="badge badge-danger lead">' + oferta.productos.length + '</span></td>\n                  <td>' + oferta.fechaInicio + '</td>\n                  <td>' + oferta.fechaFin + '</td>\n                  <td class="text-center"><a href="oferta.html?id=' + oferta.key + '" role="button" class="card-link btn btn-xs btn-outline-success"><span class="fas fa-eye"></span> Ver oferta</a></td>\n                </tr>';
+      filas += '<tr>\n                  <td>' + oferta.key + '</td>\n                  <td>' + oferta.clave + '</td>\n                  <td>' + oferta.consorcio + '</td>\n                  <td>' + oferta.tiendas.join(', ') + '</td>\n                  <td class="text-center"><span class="badge badge-danger lead">' + oferta.productos.length + '</span></td>\n                  <td>' + oferta.fechaInicio + '</td>\n                  <td>' + oferta.fechaFin + '</td>\n                  <td class="text-center"><a href="oferta.html?id=' + oferta.key + '" role="button" class="card-link btn btn-xs btn-outline-info"><span class="fas fa-eye"></span> Ver oferta</a></td>\n                </tr>';
     });
 
     datatable.rows.add($(filas)).columns.adjust().draw();
@@ -636,7 +651,7 @@ function finalizarOferta(idOferta) {
     confirm: true
   }).then(function (will) {
     if (will) {
-      db.ref('oferta/' + idOferta).update({
+      db.ref('ofertas/' + idOferta).update({
         activa: false
       });
 

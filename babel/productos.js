@@ -1,8 +1,10 @@
-const db = firebase.database();
-const auth = firebase.auth();
-let productos = [];
+'use strict';
 
-const LANGUAGE = {
+var db = firebase.database();
+var auth = firebase.auth();
+var productos = [];
+
+var LANGUAGE = {
   searchPlaceholder: "Buscar",
   sProcessing: 'Procesando...',
   sLengthMenu: 'Mostrar _MENU_ registros',
@@ -11,7 +13,7 @@ const LANGUAGE = {
   sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
   sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
   sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
-  sInfoPostFix: '',   
+  sInfoPostFix: '',
   sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
   sUrl: '',
   sInfoThousands: ',',
@@ -43,39 +45,35 @@ $(document).ready(function () {
 });
 
 function getQueryVariable(variable) {
-  let query = window.location.search.substring(1);
-  let vars = query.split("&");
-  for (let i = 0; i < vars.length; i++) {
-    let pair = vars[i].split("=");
-    if (pair[0] == variable) { return pair[1]; }
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  for (var i = 0; i < vars.length; i++) {
+    var pair = vars[i].split("=");
+    if (pair[0] == variable) {
+      return pair[1];
+    }
   }
-  return (false);
+  return false;
 }
 
 function haySesion() {
-  auth.onAuthStateChanged((user) => {
+  auth.onAuthStateChanged(function (user) {
     //si hay un usuario
     if (user) {
       mostrarContador();
-    }
-    else {
+    } else {
       $(location).attr("href", "index.html");
     }
   });
 }
 
-function llenarConsorcios() {
-  
-}
+function llenarConsorcios() {}
 
-$('#consorcio').change(function() {
-  
-});
+$('#consorcio').change(function () {});
 
 function mostrarProductos() {
-  db.ref(`consorcios`).on('value', (snapshot) => {
-    let consorcios = snapshot.val();
-    
+  db.ref('consorcios').on('value', function (snapshot) {
+    var consorcios = snapshot.val();
   });
 }
 
@@ -95,14 +93,12 @@ new Vue({
     productos: [],
     consorcioFiltrar: ''
   },
-  computed: {
-    
-  },
+  computed: {},
   firebase: {
     consorcios: db.ref('consorcios')
   },
   methods: {
-    limpiarCampos() {
+    limpiarCampos: function limpiarCampos() {
       this.activo = true;
       this.clave = '';
       this.claveConsorcio = '';
@@ -112,9 +108,11 @@ new Vue({
       this.unidad = '';
       this.consorcio = '';
     },
-    guardarProducto() {
-      if(this.clave != '' && this.claveConsorcio != '' && this.empaque > 0 && this.nombre != '' && this.precioUnitario > 0 && unidad != '') {
-        let producto = {
+    guardarProducto: function guardarProducto() {
+      var _this = this;
+
+      if (this.clave != '' && this.claveConsorcio != '' && this.empaque > 0 && this.nombre != '' && this.precioUnitario > 0 && unidad != '') {
+        var producto = {
           activo: this.activo,
           clave: this.clave,
           claveConsorcio: this.claveConsorcio,
@@ -122,108 +120,98 @@ new Vue({
           nombre: this.nombre,
           precioUnitario: this.precioUnitario,
           unidad: this.unidad
-        }
+        };
 
-        db.ref(`productos/${this.consorcio}`).once('value', (snapshot) => {
-          if(snapshot.val() == null) {
-            db.ref(`consorcios/${this.consorcio}/productos/${this.clave}`).set(producto);
-            db.ref(`productos/${this.consorcio}/${this.clave}`).set(producto);
+        db.ref('productos/' + this.consorcio).once('value', function (snapshot) {
+          if (snapshot.val() == null) {
+            db.ref('consorcios/' + _this.consorcio + '/productos/' + _this.clave).set(producto);
+            db.ref('productos/' + _this.consorcio + '/' + _this.clave).set(producto);
 
             $('#modalAgregarProducto').modal('hide');
             swal({
               icon: 'success',
               text: 'El producto se ingresó'
             });
-            this.limpiarCampos()
-          }
-          else {
-            let listaProductos = Object.keys(snapshot.val());
-            if(listaProductos.includes(this.clave)) {
+            _this.limpiarCampos();
+          } else {
+            var listaProductos = Object.keys(snapshot.val());
+            if (listaProductos.includes(_this.clave)) {
               $('#modalAgregarProducto').modal('hide');
               swal({
                 icon: 'error',
                 text: 'Ya hay un producto con esa clave'
               });
-              this.limpiarCampos();
-            }
-            else {
-              db.ref(`consorcios/${this.consorcio}/productos/${this.clave}`).set(producto);
-              db.ref(`productos/${this.consorcio}/${this.clave}`).set(producto);
+              _this.limpiarCampos();
+            } else {
+              db.ref('consorcios/' + _this.consorcio + '/productos/' + _this.clave).set(producto);
+              db.ref('productos/' + _this.consorcio + '/' + _this.clave).set(producto);
 
               $('#modalAgregarProducto').modal('hide');
               swal({
                 icon: 'success',
                 text: 'El producto se ingresó'
               });
-              this.limpiarCampos()
+              _this.limpiarCampos();
             }
           }
-        })
-      }    
+        });
+      }
     },
-    filtrarProductos() {
-      this.consorcios.forEach(consorcio => {
-        if(consorcio['.key'] == this.consorcioFiltrar) {
-          this.productos = consorcio.productos;
+    filtrarProductos: function filtrarProductos() {
+      var _this2 = this;
+
+      this.consorcios.forEach(function (consorcio) {
+        if (consorcio['.key'] == _this2.consorcioFiltrar) {
+          _this2.productos = consorcio.productos;
         }
       });
     },
-    estado(activo) {
-      return (activo) ? `<span class="badge badge-success">Activo</span>` : `<span class="badge badge-secondary">Inactivo</span>`
+    estado: function estado(activo) {
+      return activo ? '<span class="badge badge-success">Activo</span>' : '<span class="badge badge-secondary">Inactivo</span>';
     }
   }
 });
 
-
-
 function mostrarNotificaciones() {
-  let usuario = auth.currentUser.uid;
-  let notificacionesRef = db.ref(`notificaciones/almacen/${usuario}/lista`);
+  var usuario = auth.currentUser.uid;
+  var notificacionesRef = db.ref('notificaciones/almacen/' + usuario + '/lista');
   notificacionesRef.on('value', function (snapshot) {
-    let lista = snapshot.val();
-    let lis = '<li class="dropdown-header">Notificaciones</li><li class="divider"></li>';
+    var lista = snapshot.val();
+    var lis = '<li class="dropdown-header">Notificaciones</li><li class="divider"></li>';
 
-    let arrayNotificaciones = [];
-    for (let notificacion in lista) {
+    var arrayNotificaciones = [];
+    for (var notificacion in lista) {
       arrayNotificaciones.unshift(lista[notificacion]);
     }
 
-    for (let i in arrayNotificaciones) {
-      let date = arrayNotificaciones[i].fecha;
+    for (var i in arrayNotificaciones) {
+      var date = arrayNotificaciones[i].fecha;
       moment.locale('es');
-      let fecha = moment(date, "MMMM DD YYYY, HH:mm:ss").fromNow();
+      var fecha = moment(date, "MMMM DD YYYY, HH:mm:ss").fromNow();
 
-      lis += `<li>
-                <a>
-                  <div>
-                    <i class="fa fa-comment fa-fw"></i>${arrayNotificaciones[i].mensaje}
-                    <span class="pull-right text-muted small">${fecha}</span>
-                  </div>
-                </a>
-              </li>`;
+      lis += '<li>\n                <a>\n                  <div>\n                    <i class="fa fa-comment fa-fw"></i>' + arrayNotificaciones[i].mensaje + '\n                    <span class="pull-right text-muted small">' + fecha + '</span>\n                  </div>\n                </a>\n              </li>';
     }
     $('#contenedorNotificaciones').html(lis);
   });
 }
 
 function mostrarContador() {
-  let uid = auth.currentUser.uid;
-  let notificacionesRef = db.ref(`notificaciones/almacen/${uid}`);
+  var uid = auth.currentUser.uid;
+  var notificacionesRef = db.ref('notificaciones/almacen/' + uid);
   notificacionesRef.on('value', function (snapshot) {
-    let cont = snapshot.val().cont;
+    var cont = snapshot.val().cont;
 
     if (cont > 0) {
       $('#spanNotificaciones').html(cont).show();
-    }
-    else {
+    } else {
       $('#spanNotificaciones').hide();
     }
   });
 }
 
 function verNotificaciones() {
-  let uid = auth.currentUser.uid;
-  let notificacionesRef = db.ref(`notificaciones/almacen/${uid}`);
+  var uid = auth.currentUser.uid;
+  var notificacionesRef = db.ref('notificaciones/almacen/' + uid);
   notificacionesRef.update({ cont: 0 });
 }
 

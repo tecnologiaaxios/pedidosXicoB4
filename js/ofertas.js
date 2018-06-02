@@ -1,6 +1,6 @@
 const db = firebase.database();
 const auth = firebase.auth();
-let productos = [];
+let productos = [], productosComprobar = [];
 
 const LANGUAGE = {
   searchPlaceholder: "Buscar",
@@ -444,24 +444,41 @@ function agregarProducto() {
     db.ref(`consorcios/${consorcio}/productos`).child(claveProducto).once('value', snapshot => {
       let datos = snapshot.val();
 
-      let producto = {
-        clave: claveProducto,
-        nombre: datos.nombre,
-        precioLista: datos.precioUnitario,
-        precioOferta: Number(precioOferta),
+      if(productosComprobar.includes(claveProducto)) {
+        swal("Ese producto ya se ha agregado", {
+          icon: "info",
+        });
       }
-      productos.push(producto);
-      limpiarCampos();
-
-      let fila = `<tr>
-                    <td>${producto.clave}</td>
-                    <td>${producto.nombre}</td>
-                    <td>${producto.precioLista}</td>
-                    <td>${producto.precioOferta}</td>
-                  </tr>`;
-      $('#productos tbody').append(fila);
+      else {
+        let producto = {
+          clave: claveProducto,
+          nombre: datos.nombre,
+          precioLista: datos.precioUnitario,
+          precioOferta: Number(precioOferta),
+        }
+        productos.push(producto);
+        productosComprobar.push(claveProducto);
+        limpiarCampos();
+  
+        let fila = `<tr id="fila-${producto.clave}">
+                      <td>${producto.clave}</td>
+                      <td>${producto.nombre}</td>
+                      <td>${producto.precioLista}</td>
+                      <td>${producto.precioOferta}</td>
+                      <td class="text-center"><button type="button" class="btn btn-danger btn-xs" onclick="removerProducto(${productos.length-1}, '${producto.clave}')"><span class="fas fa-trash-alt"></span></button></td>
+                    </tr>`;
+        $('#productos tbody').append(fila);
+      }
     });
   }
+}
+
+function removerProducto(index, clave) {
+  console.log(productos)
+  productos.splice(index, 1);
+  productosComprobar.splice(index, 1);
+  $(`#fila-${clave}`).remove();
+  console.log(productos)
 }
 
 function limpiarCampos() {
@@ -600,7 +617,6 @@ function mostrarOfertasInactivas() {
   db.ref('ofertas').orderByChild('activa').equalTo(false).on('value', ofertas => {
     
     let filas = "";
-
     let arrOfertas = [];
     ofertas.forEach(oferta => {
       arrOfertas.unshift({
@@ -622,7 +638,7 @@ function mostrarOfertasInactivas() {
                   <td class="text-center"><span class="badge badge-danger lead">${oferta.productos.length}</span></td>
                   <td>${oferta.fechaInicio}</td>
                   <td>${oferta.fechaFin}</td>
-                  <td class="text-center"><a href="oferta.html?id=${oferta.key}" role="button" class="card-link btn btn-xs btn-outline-success"><span class="fas fa-eye"></span> Ver oferta</a></td>
+                  <td class="text-center"><a href="oferta.html?id=${oferta.key}" role="button" class="card-link btn btn-xs btn-outline-info"><span class="fas fa-eye"></span> Ver oferta</a></td>
                 </tr>`;
     });
 
@@ -640,7 +656,7 @@ function finalizarOferta(idOferta) {
   })
   .then((will) => {
     if (will) {
-      db.ref(`oferta/${idOferta}`).update({
+      db.ref(`ofertas/${idOferta}`).update({
         activa: false
       });
 

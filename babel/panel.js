@@ -555,10 +555,11 @@ function mostrarPedidosVerificados() {
           }
         }
       }, { data: 'agente',
+        defaultContent: "",
         className: 'text-center',
         render: function render(agente) {
           if (typeof agente != "undefined") {
-            return "<div class=\"radioBtn btn-group\"><a class=\"btn btn-sm btn-agente\">" + agente + "</a></div>";
+            return "<a class=\"btn btn-sm btn-agente\">" + agente + "</a>";
           } else {
             return "";
           }
