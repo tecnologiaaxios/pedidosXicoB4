@@ -485,6 +485,7 @@ function mostrarUnaChecada(idPedidoHijo) {
                   <td>${cantidadKg.toFixed(2)}</td>
                   <td>${cantidadPzEnt}</td>
                   <td>${cantidadKgEnt.toFixed(2)}</td>
+                  <td>${Number((cantidadKgEnt / cantidadKg).toFixed(4))*100} %</td>
                 </tr>`;
     }
 
@@ -494,8 +495,12 @@ function mostrarUnaChecada(idPedidoHijo) {
                 <td><strong>${totalPiezas}</strong></td>
                 <td><strong>${totalKilos.toFixed(2)}</strong></td>
                 <td><strong>${totalPzEnt}</strong></td>
-                <td><strong>${totalKgEnt}</strong></td> 
+                <td><strong>${totalKgEnt.toFixed(2)}</strong></td>
+                <td></td>
               </tr>`;
+
+    let nivelServicioPedido = Number((Number(totalKgEnt.toFixed(2)) / Number(totalKilos.toFixed(2)) * 100).toFixed(4));
+    $('#nivelServicio').html(`${nivelServicioPedido} %`);
     $('#tablaPedidosChecados tbody').html(filas);
   });
 }

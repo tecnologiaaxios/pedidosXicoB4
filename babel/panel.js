@@ -83,7 +83,7 @@ $(document).ready(function () {
   });
   }); */
 
-  db.ref('pedidoEntrada').on('value', function (pedidos) {
+  db.ref('pedidoEntrada').limitToLast(100).on('value', function (pedidos) {
     var datos = pedidos.val();
     var arrayPedidos = [],
         arrayHistorialPedidos = [],
@@ -243,7 +243,16 @@ function mostrarPedidos() {
           moment.locale('es');
           return moment(fechaCaptura.substr(3, 2) + "/" + fechaCaptura.substr(0, 2) + "/" + fechaCaptura.substr(6, 4)).format('LL');
         }
-      }, { data: 'encabezado.tienda' }, { data: 'encabezado.ruta', className: 'text-center' }, { data: 'id',
+      }, { data: 'encabezado.tienda' }, { data: 'encabezado.ruta', className: 'text-center' }, { data: 'encabezado.pedidoBajo', className: 'text-center',
+        defaultContent: '',
+        render: function render(pedidoBajo) {
+          if (pedidoBajo === true) {
+            return "<a class=\"btn btn-rojo btn-sm\">Pedido bajo <i class=\"fas fa-exclamation-circle\"></i></a>";
+          } else if (pedidoBajo === false) {
+            return "<a class=\"btn btn-verde btn-sm\">Pedido ok <i class=\"fas fa-check-circle\"></i></a>";
+          }
+        }
+      }, { data: 'id',
         className: 'text-center',
         render: function render(id) {
           return "<a href=\"pedido.html?id=" + id + "\" class=\"btn btn-info btn-sm\" role=\"button\"><span class=\"fas fa-eye\"></span> Ver m\xE1s</a>";
@@ -380,7 +389,16 @@ function mostrarHistorialPedidos() {
             moment.locale('es');
             return moment(fechaCaptura.substr(3, 2) + "/" + fechaCaptura.substr(0, 2) + "/" + fechaCaptura.substr(6, 4)).format('LL');
           }
-        }, { data: 'encabezado.tienda' }, { data: 'encabezado.ruta', className: 'text-center' }, { data: 'id',
+        }, { data: 'encabezado.tienda' }, { data: 'encabezado.ruta', className: 'text-center' }, { data: 'encabezado.pedidoBajo', className: 'text-center',
+          defaultContent: '',
+          render: function render(pedidoBajo) {
+            if (pedidoBajo === true) {
+              return "<a class=\"btn btn-rojo btn-sm\">Pedido bajo <i class=\"fas fa-exclamation-circle\"></i></a>";
+            } else if (pedidoBajo === false) {
+              return "<a class=\"btn btn-verde btn-sm\">Pedido ok <i class=\"fas fa-check-circle\"></i></a>";
+            }
+          }
+        }, { data: 'id',
           className: 'text-center',
           render: function render(id) {
             return "<a href=\"pedidoHistorial.html?id=" + id + "\" class=\"btn btn-info btn-sm\"><span class=\"fas fa-eye\"></span> Ver m\xE1s</a>";
@@ -1182,7 +1200,7 @@ function generarPedidoPadre() {
                 //Las siguientes dos líneas guardan en historial los pedidos que se estan agrupando tal
                 //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
                 var rutaHistorialPedidosEntrada = db.ref("historialPedidosEntrada/" + claves[pedido] + "/");
-                rutaHistorialPedidosEntrada.set();
+                rutaHistorialPedidosEntrada.set(pedidos[pedido]);
               });
             });
           });

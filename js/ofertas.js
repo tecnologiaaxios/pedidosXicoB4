@@ -552,6 +552,7 @@ function guardarOferta() {
           $('#fechaInicio').val('');
           $('#fechaFin').val('');
           productos = [];
+          productosComprobar = [];
           $('#productos tbody').html('');
           limpiarCampos();
             

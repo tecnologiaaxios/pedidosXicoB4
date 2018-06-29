@@ -61,18 +61,16 @@ $(document).ready(function () {
     })
   }) */
 
-  db.ref('estadisticasProductos').on('value', function(snapshot) {
+ /*  db.ref('estadisticasProductos').on('value', function(snapshot) {
     let arrayProductos = [];
-    //let productos = snapshot.val();
     snapshot.forEach((producto) => {
       arrayProductos.push(producto.val())
     });
 
-    //localStorage.setItem('estadisticasProductos', JSON.stringify(arrayProductos));
     localforage.setItem('estadisticasProductos', arrayProductos, err => {
       console.log(err ? err : 'Estadisticas guardadas en localforage')
     });
-  });
+  }); */
 
   /* db.ref('regiones').once('value', (regiones) => {
     let zonas = regiones.val(); */
@@ -83,7 +81,7 @@ $(document).ready(function () {
     });
   }); */
 
-  db.ref('pedidoEntrada').on('value', (pedidos) => {
+  db.ref('pedidoEntrada').limitToLast(100).on('value', (pedidos) => {
     let datos = pedidos.val();
     let arrayPedidos = [], arrayHistorialPedidos = [], arrayPedidosFiltrar = [];
 
@@ -252,6 +250,17 @@ function mostrarPedidos() {
         },
         { data: 'encabezado.tienda' },
         { data: 'encabezado.ruta', className: 'text-center' },
+        { data: 'encabezado.pedidoBajo', className: 'text-center',
+          defaultContent: '',
+          render: (pedidoBajo) => {
+            if(pedidoBajo === true ) {
+              return `<a class="btn btn-rojo btn-sm">Pedido bajo <i class="fas fa-exclamation-circle"></i></a>`
+            }
+            else if(pedidoBajo === false) {
+              return `<a class="btn btn-verde btn-sm">Pedido ok <i class="fas fa-check-circle"></i></a>`
+            }
+          }
+        },
         { data: 'id', 
           className: 'text-center', 
           render: (id) => { 
@@ -399,12 +408,23 @@ function mostrarHistorialPedidos() {
           },
           { data: 'encabezado.tienda' },
           { data: 'encabezado.ruta', className: 'text-center' },
+          { data: 'encabezado.pedidoBajo', className: 'text-center',
+            defaultContent: '',
+            render: (pedidoBajo) => {
+              if(pedidoBajo === true ) {
+                return `<a class="btn btn-rojo btn-sm">Pedido bajo <i class="fas fa-exclamation-circle"></i></a>`
+              }
+              else if(pedidoBajo === false) {
+                return `<a class="btn btn-verde btn-sm">Pedido ok <i class="fas fa-check-circle"></i></a>`
+              }
+            }
+          },
           { data: 'id', 
             className: 'text-center', 
             render: (id) => { 
               return `<a href="pedidoHistorial.html?id=${id}" class="btn btn-info btn-sm"><span class="fas fa-eye"></span> Ver más</a>`
             } 
-            }
+          }
         ],
         destroy: true,
         ordering: false,
@@ -1269,7 +1289,7 @@ function generarPedidoPadre() {
               //Las siguientes dos líneas guardan en historial los pedidos que se estan agrupando tal
               //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
               let rutaHistorialPedidosEntrada = db.ref(`historialPedidosEntrada/${claves[pedido]}/`);
-              rutaHistorialPedidosEntrada.set();
+              rutaHistorialPedidosEntrada.set(pedidos[pedido]);
             });
           });
         });
