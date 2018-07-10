@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="css/bootstrap-datepicker3.standalone.css">
     <link rel="stylesheet" href="css/sexyradio.css">
     <script defer src="js/fontawesome-all.min.js"></script>
+    <!-- <link rel="stylesheet" href="css/fontawesome.css"> -->
   </head>
   <body>
     <!-- <nav class="navbar navbar-expand-lg navbar" style="background-color: rgb(255, 110, 2)"> -->
@@ -60,6 +61,11 @@
       <a class="navbar-brand" href="pedidosMateriales.html">
         <div data-toggle="tooltip" data-placement="bottom" title="Pedidos de materiales">
           <span class="fas fa-box-open"></span>
+        </div>
+      </a>
+      <a class="navbar-brand" href="chequeosPrecios.html">
+        <div data-toggle="tooltip" data-placement="bottom" title="Chequeos de precios">
+          <span class="fas fa-money-bill-wave"></span>
         </div>
       </a>
       <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom" title="Notificaciones">
@@ -119,23 +125,25 @@
                 </div>
                 <div class="card">
                   <div class="card-body">
-                    <table width="100%" id="tablaPedidos" cellspacing="0" class="table-hover table table-sm table-bordered table-striped" style="margin-top:15px;">
-                      <thead>
-                        <tr>
-                          <th>Id</th>
-                          <th>Clave</th>
-                          <th>Núm. de orden</th>
-                          <th>Fecha de captura</th>
-                          <th>Tienda</th>
-                          <th>Ruta</th>
-                          <th>Estándar</th>
-                          <th class="text-center">Detalles</th>
-                          <th class="text-center">Estado</th>
-                          <th class="text-center">Eliminar</th>
-                        </tr>
-                      </thead>
-                      <tbody id="tbodyTablaPedidos"></tbody>
-                    </table>
+                    <div class="table-responsive">
+                      <table width="100%" id="tablaPedidos" cellspacing="0" class="table-hover table table-sm table-bordered table-striped">
+                        <thead>
+                          <tr>
+                            <th>Id</th>
+                            <th>Clave</th>
+                            <th>Núm. de orden</th>
+                            <th>Fecha de captura</th>
+                            <th>Tienda</th>
+                            <th>Ruta</th>
+                            <th>Estándar</th>
+                            <th class="text-center">Detalles</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Eliminar</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tbodyTablaPedidos"></tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>

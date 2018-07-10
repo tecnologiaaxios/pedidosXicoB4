@@ -61,18 +61,15 @@ $(document).ready(function () {
      })
    }) */
 
-  db.ref('estadisticasProductos').on('value', function (snapshot) {
-    var arrayProductos = [];
-    //let productos = snapshot.val();
-    snapshot.forEach(function (producto) {
-      arrayProductos.push(producto.val());
-    });
-
-    //localStorage.setItem('estadisticasProductos', JSON.stringify(arrayProductos));
-    localforage.setItem('estadisticasProductos', arrayProductos, function (err) {
-      console.log(err ? err : 'Estadisticas guardadas en localforage');
-    });
-  });
+  /*  db.ref('estadisticasProductos').on('value', function(snapshot) {
+     let arrayProductos = [];
+     snapshot.forEach((producto) => {
+       arrayProductos.push(producto.val())
+     });
+      localforage.setItem('estadisticasProductos', arrayProductos, err => {
+       console.log(err ? err : 'Estadisticas guardadas en localforage')
+     });
+   }); */
 
   /* db.ref('regiones').once('value', (regiones) => {
     let zonas = regiones.val(); */
@@ -243,13 +240,23 @@ function mostrarPedidos() {
           moment.locale('es');
           return moment(fechaCaptura.substr(3, 2) + "/" + fechaCaptura.substr(0, 2) + "/" + fechaCaptura.substr(6, 4)).format('LL');
         }
-      }, { data: 'encabezado.tienda' }, { data: 'encabezado.ruta', className: 'text-center' }, { data: 'encabezado.pedidoBajo', className: 'text-center',
+      }, { data: 'encabezado.tienda' }, { data: 'encabezado.ruta', className: 'text-center' }, { data: null, className: 'text-center',
         defaultContent: '',
-        render: function render(pedidoBajo) {
-          if (pedidoBajo === true) {
-            return "<a class=\"btn btn-rojo btn-sm\">Pedido bajo <i class=\"fas fa-exclamation-circle\"></i></a>";
-          } else if (pedidoBajo === false) {
-            return "<a class=\"btn btn-verde btn-sm\">Pedido ok <i class=\"fas fa-check-circle\"></i></a>";
+        render: function render(data) {
+          if (data.encabezado.pedidoBajo === true) {
+            if (data.encabezado.estandarVenta != undefined) {
+              var texto = data.encabezado.totalKilos + "/" + data.encabezado.estandarVenta;
+              return "<a class=\"btn btn-rojo btn-sm\">" + texto + "</i></a>";
+            } else {
+              return "<a class=\"btn btn-rojo btn-sm\">Pedido bajo <i class=\"fas fa-exclamation-circle\"></i></a>";
+            }
+          } else if (data.encabezado.pedidoBajo === false) {
+            if (data.encabezado.estandarVenta != undefined) {
+              var _texto = data.encabezado.totalKilos + "/" + data.encabezado.estandarVenta;
+              return "<a class=\"btn btn-verde btn-sm\">" + _texto + "</i></a>";
+            } else {
+              return "<a class=\"btn btn-verde btn-sm\">Pedido ok <i class=\"fas fa-check-circle\"></i></a>";
+            }
           }
         }
       }, { data: 'id',
