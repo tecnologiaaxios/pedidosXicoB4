@@ -17,7 +17,7 @@ var LANGUAGE = {
   sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
   sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
   sInfoPostFix: '',
-  sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
+  sSearch: '<i style="color: #4388E5;" class="fas fa-search"></i>',
   sUrl: '',
   sInfoThousands: ',',
   sLoadingRecords: 'Cargando...',
@@ -592,7 +592,6 @@ function mostrarOfertasActivas() {
   });
 
   db.ref('ofertas').orderByChild('activa').equalTo(true).on('value', function (ofertas) {
-
     var filas = "";
     var arrOfertas = [];
     ofertas.forEach(function (oferta) {
@@ -601,10 +600,9 @@ function mostrarOfertasActivas() {
       }, oferta.val()));
     });
 
+    datatable.clear().draw();
     arrOfertas.forEach(function (oferta) {
       // let datosOferta = oferta;
-
-      datatable.clear().draw();
       filas += '<tr>\n                  <td>' + oferta.key + '</td>\n                  <td>' + oferta.clave + '</td>\n                  <td>' + oferta.consorcio + '</td>\n                  <td>' + oferta.tiendas.join(', ') + '</td>\n                  <td class="text-center"><span class="badge badge-danger lead">' + oferta.productos.length + '</span></td>\n                  <td>' + oferta.fechaInicio + '</td>\n                  <td>' + oferta.fechaFin + '</td>\n                  <td class="text-center"><a href="oferta.html?id=' + oferta.key + '" role="button" class="card-link btn btn-xs btn-outline-info"><span class="fas fa-eye"></span> Ver oferta</a></td>\n                  <td class="text-center"><button type="button" onclick="finalizarOferta(\'' + oferta.key + '\')" class="btn btn-xs btn-outline-success"><span class="fas fa-hourglass-end"></span> Finalizar</button></td>\n                </tr>';
     });
 

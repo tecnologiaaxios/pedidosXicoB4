@@ -12,7 +12,7 @@ const LANGUAGE = {
   sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
   sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
   sInfoPostFix: '',   
-  sSearch: '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>',
+  sSearch: '<i style="color: #4388E5;" class="fas fa-search"></i>',
   sUrl: '',
   sInfoThousands: ',',
   sLoadingRecords: 'Cargando...',
@@ -575,7 +575,6 @@ function mostrarOfertasActivas() {
   });
 
   db.ref('ofertas').orderByChild('activa').equalTo(true).on('value', ofertas => {
-    
     let filas = "";
     let arrOfertas = [];
     ofertas.forEach(oferta => {
@@ -585,10 +584,9 @@ function mostrarOfertasActivas() {
       })
     })
 
+    datatable.clear().draw();
     arrOfertas.forEach(oferta => {
       // let datosOferta = oferta;
-
-      datatable.clear().draw();
       filas += `<tr>
                   <td>${oferta.key}</td>
                   <td>${oferta.clave}</td>

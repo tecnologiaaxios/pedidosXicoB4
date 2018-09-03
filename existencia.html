@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
+    <title>Existencia</title>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/bootstrap4.min.css">
+    <link href="css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+    <link href="css/panel.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/icon.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.standalone.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
+    <link href="https://unpkg.com/vue2-datatable-component/dist/min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap-multiselect.css">
+    <style>
+      .fade-enter-active,
+      .fade-leave-active {
+        transition: opacity .5s
+      }
+
+      .fade-enter,
+      .fade-leave-to {
+        opacity: 0
+      }
+    </style>
+    <script defer src="js/fontawesome-all.min.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar" style="background: url(img/FONDO.jpg) no-repeat; background-size: cover;">
+      <a class="navbar-brand" href="#">
+        <img src="logo.png" width="50" height="33" class="d-inline-block align-top" alt=""> Sistema de pedidos
+      </a>
+      <a class="navbar-brand" href="panel.html">
+        <span class="navbar-text material-icons" data-toggle="tooltip" data-placement="bottom" title="Volver al panel">dvr</span>
+      </a>
+      <div id="campana" onclick="mostrarNotificaciones()" class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom"
+        title="Notificaciones">
+        <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="far fa-bell"></span>
+          <span id="spanNotificaciones" style="display: none;" class="badge badge-pill badge-danger"></span>
+        </a>
+        <div id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+
+        </div>
+      </div>
+      <a href="" class="navbar-brand" id="btnPerfil">
+        <img src="http://lorempixel.com/25/25/" alt="..." class="rounded-circle" data-toggle="tooltip" data-placement="bottom" title="Perfil">
+      </a>
+      <div class="navbar-brand dropdown" data-toggle="tooltip" data-placement="bottom" title="Cerrar sesión">
+        <a class="links-panel dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-sign-out-alt"></i>
+        </a>
+        <div class="dropdown-menu dropdown-alerts" aria-labelledby="dropdownMenuButton">
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" onclick="logout()">
+            <span class="fas fa-power-off"></span> Cerrar sesión
+          </a>
+        </div>
+      </div>
+    </nav>
+    <div id="app" class="container-fluid">
+      <div class="row mt-4">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+          <h3 class="display-5">Detalles de la existencia</h3>
+        </div>
+      </div>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="existencias.html"><i class="fas fa-chevron-left"></i> Regresar a Existencias</a></li>
+          <!-- <li class="breadcrumb-item active" aria-current="page">Detalles de la existencia</li> -->
+        </ol>
+      </nav>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col" style="line-height: 10px;">
+                  <p>Consorcio: <span style="font-weight: bold;" id="consorcio"></span></p>
+                  <p>Fecha: <span style="font-weight: bold;" id="fecha"></span></p>
+                  <p>Coordinadora: <span style="font-weight: bold;" id="coordinadora"></span></p>
+                  <p>Tienda: <span style="font-weight: bold;" id="tienda"></span></p>
+                  <p>Zona: <span style="font-weight: bold;" id="zona"></span></p>
+                </div>
+                <div class="col" style="line-height: 10px;">
+                  <p>Total de piezas: <span class="badge badge-pill badge-danger" style="font-weight: bold;" id="totalPiezas"></span></p>
+                  <p>Total de kilos: <span class="badge badge-pill badge-danger" style="font-weight: bold;" id="kilosTotales"></span></p>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <p>Productos:</p>
+                <table width="100%" cellspacing="0" id="tablaProductos" class="table table-sm table-striped">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Piezas</th>
+                      <th>Total de kilos</th>
+                      <th>Editar</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="modalEditar" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Editar existencia de producto</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="nombreProducto">Nombre del producto:</label>
+                  <input type="text" id="nombreProducto" readonly class="form-control">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="piezas">Piezas:</label>
+                  <input type="text" id="piezas" class="form-control">
+                  <span style="display: none;" id="helpblockPiezas" class="help-block">Campo obligatorio</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            <button type="button" id="btnActualizar" class="btn btn-primary">Actualizar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script>if (window.module) module = window.module;</script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap4.min.js"></script>
+    <script src="dist/js/bootstrap-select.js"></script>
+    <script src="vendor/metisMenu/metisMenu.min.js"></script>
+    <script src="js/jquery.dataTables.min.js"></script>
+    <script src="js/dataTables.bootstrap4.min.js"></script>
+    <script src="js/dataTables.responsive.min.js"></script>
+    <script src="dist/js/sb-admin-2.js"></script>
+    <script src="js/bootstrap-datepicker.min.js"></script>
+    <script src="js/bootstrap-datepicker.es.min.js"></script>
+    <script src="js/jquery.toaster.js"></script>
+    <script src="js/bootstrap-multiselect.js"></script>
+    <script src="js/firebase.js"></script>
+    <script>
+      var config = {
+        apiKey: "AIzaSyA19j6-VLNcXLJfBkfd_lZfFFbzg6z0Imc",
+        authDomain: "xico-netcontrol.firebaseapp.com",
+        databaseURL: "https://xico-netcontrol.firebaseio.com",
+        projectId: "xico-netcontrol",
+        storageBucket: "xico-netcontrol.appspot.com",
+        messagingSenderId: "248615705793"
+      };
+      firebase.initializeApp(config);
+    </script>
+    <script src="js/moment-with-locales.js"></script>
+    <script src="js/jspdf.min.js"></script>
+    <script src="js/jspdf.plugin.autotable.js"></script>
+    <script src="js/dataTables.buttons.min.js"></script>
+    <script src="js/jszip.min.js"></script>
+    <script src="js/pdfmake.min.js"></script>
+    <script src="js/vfs_fonts.js"></script>
+    <script src="js/buttons.print.min.js"></script>
+    <script src="js/buttons.bootstrap4.min.js"></script>
+    <script src="js/buttons.html5.min.js"></script>
+    <script src="js/vue.js"></script>
+    <script src="https://unpkg.com/vuefire/dist/vuefire.js"></script>
+    <script src="https://unpkg.com/vue2-datatable-component/dist/min.js"></script>
+    <script src="js/localforage.min.js"></script>
+    <script src="js/Chart.min.js"></script>
+    <script src='js/decimal.min.js'></script>
+    <script src="https://unpkg.com/sweetalert2@7.20.10/dist/sweetalert2.all.js"></script>
+    <script src="babel/existencia.js"></script>
+  </body>
+</html>
