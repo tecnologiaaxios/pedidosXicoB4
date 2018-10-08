@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
-    <title>Existencia</title>
+    <title>Precios</title>
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
     <link rel="stylesheet" href="css/bootstrap4.min.css">
     <link href="css/dataTables.bootstrap4.min.css" rel="stylesheet">
@@ -69,56 +69,31 @@
     <div id="app" class="container-fluid">
       <div class="row mt-4">
         <div class="col-lg-12 col-md-12 col-sm-12">
-          <h3 class="display-5">Detalles de la existencia</h3>
+          <h2 class="display-5">Precios de productos</h2>
         </div>
       </div>
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="existencias.html"><i class="fas fa-chevron-left"></i> Regresar a Existencias</a></li>
-          <!-- <li class="breadcrumb-item active" aria-current="page">Detalles de la existencia</li> -->
-        </ol>
-      </nav>
-      <nav class="navbar navbar-light bg-light">
-        <form class="form-inline text-right">
-          <button type="button" id="btnImprimir" onclick="generarPDF();" class="btn btn-primary my-2 my-sm-0 mr-2">
-            <i class="fas fa-file-pdf"></i> PFD
-          </button>
-          <button type="button" id="btnExcel" class="btn btn-success my-2 my-sm-0 mr-2">
-            <i class="fas fa-file-excel"></i> Excel
-          </button>
-          <button type="button" onclick="exportarCSV()" class="btn btn-danger my-2 my-sm-0">
-            <i class="fas fa-cloud-download-alt"></i> CSV
-          </button>
-        </form>
-      </nav>
       <div class="row">
         <div class="col-md-12">
           <div class="card">
-            <div id="excel" class="card-body">
-              <div class="row">
-                <div class="col" style="line-height: 10px;">
-                  <p>Consorcio: <span style="font-weight: bold;" id="consorcio"></span></p>
-                  <p>Fecha: <span style="font-weight: bold;" id="fecha"></span></p>
-                  <p>Coordinadora: <span style="font-weight: bold;" id="coordinadora"></span></p>
-                  <p>Tienda: <span style="font-weight: bold;" id="tienda"></span></p>
-                  <p>Zona: <span style="font-weight: bold;" id="zona"></span></p>
+            <div class="card-body">
+              <div class="col-md-4">
+                <div class="form-group row">
+                  <label for="consorcio" class="col-sm-4 col-form-label">Consorcio:</label>
+                  <div class="col-sm-8">
+                  <select name="consorcio" id="consorcio" class="form-control">
+                    <option disabled selected>Seleccionar</option>
+                  </select>
                 </div>
-                <div class="col" style="line-height: 10px;">
-                  <p>Total de piezas: <span class="badge badge-pill badge-danger" style="font-weight: bold;" id="totalPiezas"></span></p>
-                  <p>Total de kilos: <span class="badge badge-pill badge-danger" style="font-weight: bold;" id="kilosTotales"></span></p>
-                  
                 </div>
               </div>
               <div class="table-responsive">
-                <p>Productos:</p>
-                <table width="100%" cellspacing="0" id="tablaProductos" class="table table-sm table-striped">
+                <table width="100%" cellspacing="0" id="tablaPrecios" class="table table-sm table-striped table-bordered">
                   <thead>
                     <tr>
+                      <th>Consorcio</th>
                       <th>Clave</th>
                       <th>Nombre</th>
-                      <th>Piezas</th>
-                      <th>Total de kilos</th>
-                      <th>Editar</th>
+                      <th>PrecioUnitario</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -127,41 +102,6 @@
                 </table>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal" id="modalEditar" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Editar existencia de producto</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col">
-                <div class="form-group">
-                  <label for="nombreProducto">Nombre del producto:</label>
-                  <input type="text" id="nombreProducto" readonly class="form-control">
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <div class="form-group">
-                  <label for="piezas">Piezas:</label>
-                  <input type="text" id="piezas" class="form-control">
-                  <span style="display: none;" id="helpblockPiezas" class="help-block">Campo obligatorio</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-            <button type="button" id="btnActualizar" class="btn btn-primary">Actualizar</button>
           </div>
         </div>
       </div>
@@ -210,6 +150,6 @@
     <script src="js/Chart.min.js"></script>
     <script src='js/decimal.min.js'></script>
     <script src="https://unpkg.com/sweetalert2@7.20.10/dist/sweetalert2.all.js"></script>
-    <script src="babel/existencia.js"></script>
+    <script src="babel/precios.js"></script>
   </body>
 </html>

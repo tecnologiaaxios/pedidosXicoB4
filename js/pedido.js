@@ -747,3 +747,93 @@ function generarPDF(){
   x.document.write(iframe);
   x.document.close();
 }*/
+
+$("#btnExcel").click(function(e) {
+  let file = new Blob([$('#panel').html()], {type:"application/vnd.ms-excel"});
+  let url = URL.createObjectURL(file);
+  let a = $("<a />", {
+  href: url,
+  download: "pedido.xls"}).appendTo("body").get(0).click();
+  e.preventDefault();
+});
+
+function exportarCSV() {
+  let idPedido = getQueryVariable('id');
+  let result, ctr, keys, columnDelimiter, lineDelimiter;
+  db.ref(`pedidoEntrada/${idPedido}`).on('value', pedido => {
+    const {clave, tienda, promotora, fechaCaptura, ruta} = pedido.val().encabezado;
+    let cantidadProductos = Object.keys(pedido.val().detalle).length;
+    let arrayProductos = [];
+    let productos = pedido.val().detalle;
+
+    result = `\nPedido: ${clave}\n
+              Enviado de: ${ruta}\n
+              Recibido el ${fechaCaptura}\n
+              Id del pedido: ${idPedido}\n
+              Tienda: ${tienda}\n
+              Promotor(a): ${promotora}\n
+              Productos de este pedido: ${cantidadProductos}\n
+              \n`;
+
+    Object.keys(productos).forEach(key => {
+      const {
+        clave,
+        nombre,
+        pedidoPz,
+        degusPz,
+        cambioFisicoPz,
+        totalPz,
+        totalKg,
+        precioUnitario,
+        unidad
+      } = productos[key];
+
+      arrayProductos.push({
+        Clave: clave,
+        Descripcion: nombre,
+        ['Pedido Pz']: pedidoPz,
+        Degustacion: degusPz,
+        ['Cambio fisico']: cambioFisicoPz,
+        ['Total Pz']: totalPz,
+        ['Total Kg']: totalKg,
+        ['Precio unit.']: precioUnitario,
+        Unidad: unidad
+      });
+    });
+    let data = arrayProductos || null;
+
+    let args = {data:arrayProductos};
+
+    columnDelimiter = args.columnDelimiter || ',';
+    lineDelimiter = args.lineDelimiter || '\n';
+
+    keys = Object.keys(data[0]);
+/*     result = ''; */
+    result += keys.join(columnDelimiter);
+    result += lineDelimiter;
+
+    data.forEach(item => {
+      ctr = 0;
+      keys.forEach(key => {
+        if(ctr > 0) result += columnDelimiter;
+
+        result += item[key];
+        ctr++;
+      })
+      result += lineDelimiter;
+    });
+
+    let csv = result;
+    if(csv == null) return;
+    let filename = 'pedido.csv';
+
+    if(!csv.match(/^data:text\/csv/i)) {
+      csv = 'data:text/csv;charset=utf-8,' + csv;
+    }
+    let datos = encodeURI(csv);
+    let link = document.createElement('a');
+    link.setAttribute('href', datos);
+    link.setAttribute('download', filename);
+    link.click();
+  }) 
+}

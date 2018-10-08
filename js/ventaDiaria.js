@@ -40,7 +40,7 @@ $(document).ready(function () {
     language: "es"
   });
 
-  mostrarDatosExistencia();
+  mostrarDatosVentaDiaria();
 });
 
 function getQueryVariable(variable) {
@@ -108,72 +108,7 @@ function logout() {
   auth.signOut();
 }
 
-function generarPDF() {
-  let contenido= document.getElementById('app').innerHTML;
-  let contenidoOriginal= document.body.innerHTML;
-  document.body.innerHTML = contenido;
-  window.print();
-  document.body.innerHTML = contenidoOriginal;
-}
-
-$("#btnExcel").click(function(e) {
-  let file = new Blob([$('#excel').html()], {type:"application/vnd.ms-excel"});
-let url = URL.createObjectURL(file);
-let a = $("<a />", {
-  href: url,
-  download: "existencia.xls"}).appendTo("body").get(0).click();
-  e.preventDefault();
-});
-
-function exportarCSV() {
-  let idExistencia = getQueryVariable('id');
-  let result, ctr, keys, columnDelimiter, lineDelimiter;
-  db.ref(`existencias/${idExistencia}`).on('value', existencia => {
-    let arrayExistencias = [];
-    let productos = existencia.val().productos;
-    Object.keys(productos).forEach(key => {
-      arrayExistencias.push(productos[key]);
-    });
-    let data = arrayExistencias || null;
-
-    let args = {data:arrayExistencias};
-
-    columnDelimiter = args.columnDelimiter || ',';
-    lineDelimiter = args.lineDelimiter || '\n';
-
-    keys = Object.keys(data[0]);
-    result = '';
-    result += keys.join(columnDelimiter);
-    result += lineDelimiter;
-
-    data.forEach(item => {
-      ctr = 0;
-      keys.forEach(key => {
-        if(ctr > 0) result += columnDelimiter;
-
-        result += item[key];
-        ctr++;
-      })
-      result += lineDelimiter;
-    });
-
-    let csv = result;
-    if(csv == null) return;
-    let filename = 'existencia.csv';
-
-    if(!csv.match(/^data:text\/csv/i)) {
-      csv = 'data:text/csv;charset=utf-8,' + csv;
-    }
-    let datos = encodeURI(csv);
-    let link = document.createElement('a');
-    link.setAttribute('href', datos);
-    link.setAttribute('download', filename);
-    link.click();
-  }) 
-}
-
-
-function mostrarDatosExistencia() {
+function mostrarDatosVentaDiaria() {
   let datatable = $('#tablaProductos').DataTable({
     pageLength: 25,
     lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todas"]],
@@ -182,70 +117,78 @@ function mostrarDatosExistencia() {
     language: LANGUAGE
   });
 
-  let idExistencia = getQueryVariable('id');
+  let idVentaDiaria = getQueryVariable('id');
 
-  db.ref(`existencias/${idExistencia}`).on('value', existencia => {
-    let { consorcio, fecha, coordinadora, tienda, zona } = existencia.val();
+  db.ref(`ventasDiarias/${idVentaDiaria}`).on('value', venta => {
+
+    let { consorcio, fecha, promotora, productos, tienda, zona, totalKilos, totalPesos } = venta.val();
 
     $('#consorcio').html(consorcio);
     $('#fecha').html(fecha);
-    $('#coordinadora').html(coordinadora);
+    $('#promotora').html(nombrePromotora);
+    $('#idPromotora').html(idPromotora);
     $('#tienda').html(tienda);
     $('#zona').html(zona);
 
     let filas = '';
-    let productos = existencia.val().productos;
 
     datatable.clear().draw();
-    let totalPiezas = 0, kilosTotales = 0;
+    // let totalKilos = 0, totalPesos = 0;
     for(let producto in productos) {
       filas += `<tr>
                   <td>${producto}</td>
                   <td>${productos[producto].nombre}</td>
-                  <td>${productos[producto].piezas}</td>
-                  <td>${productos[producto].totalKilos}</td>
+                  <td>${productos[producto].kilos}</td>
+                  <td>$ ${productos[producto].pesos}</td>
                   <td><button class="btn btn-xs btn-warning" onclick="editarProducto('${producto}')"><i class="fas fa-pencil-alt"></i></button></td>
                 </tr>`;
-      totalPiezas += productos[producto].piezas;
-      kilosTotales += productos[producto].totalKilos;
+      // totalKilos += productos[producto].kilos;
+      // totalPesos += productos[producto].pesos;
     }
 
-    $('#totalPiezas').html(totalPiezas);
-    $('#kilosTotales').html(kilosTotales.toFixed(2));
+    $('#totalKilos').html(`${totalKilos} kg`);
+    $('#totalPesos').html(`$ ${totalPesos.toFixed(2)}`);
 
     datatable.rows.add($(filas)).columns.adjust().draw();
   });
 }
 
 function editarProducto(claveProducto) {
-  let idExistencia = getQueryVariable('id');
+  let idVentaDiaria = getQueryVariable('id');
+  let consorcio = $('#consorcio').text();
   $('#modalEditar').modal('show');
   $('#btnActualizar').attr('onclick', `actualizarProducto('${claveProducto}')`);
-  db.ref(`existencias/${idExistencia}/productos/${claveProducto}`).once('value', snapshot => {
+  db.ref(`ventasDiarias/${idVentaDiaria}/productos/${claveProducto}`).once('value', snapshot => {
     $('#nombreProducto').val(snapshot.val().nombre);
-    $('#piezas').val(snapshot.val().piezas);
+    $('#kilos').val(snapshot.val().kilos);
+    $('#pesos').val(snapshot.val().pesos);
+  });
+  db.ref(`consorcios/${consorcio}/productos/${claveProducto}`).once('value', snapshot => {
+    $('#precio').val(snapshot.val().precioUnitario);
   });
 }
 
-function actualizarProducto(claveProducto) {
-  let idExistencia = getQueryVariable('id');
-  let consorcio = $('#consorcio').text();
-  let piezas = Number($('#piezas').val());
-  
-  db.ref(`consorcios/${consorcio}/productos/${claveProducto}`).once('value', producto => {
-    let empaque = Number(producto.val().empaque);
-    let totalKilos = Number((piezas * empaque).toFixed(4));
-      
-    db.ref(`existencias/${idExistencia}/productos/${claveProducto}`).update({
-      piezas,
-      totalKilos,
-    });
-    $('#modalEditar').modal('hide');
+$('#kilos').keyup(() => {
+  let kilos = Number($('#kilos').val());
+  let precio = Number($('#precio').val());
+  let pesos = Number((kilos * precio).toFixed(2));
+  $('#pesos').val(pesos);
+});
 
-    swal({
-      type: 'success',
-      title: 'Mensaje',
-      text: 'La existencia se actualizó con éxito',
-    });
+function actualizarProducto(claveProducto) {
+  let idVenta = getQueryVariable('id');
+  let kilos = Number($('#kilos').val());
+  let pesos = Number($('#pesos').val());
+
+  db.ref(`ventasDiarias/${idVenta}/productos/${claveProducto}`).update({
+    kilos,
+    pesos
+  });
+  $('#modalEditar').modal('hide');
+
+  swal({
+    type: 'success',
+    title: 'Mensaje',
+    text: 'La existencia se actualizó con éxito',
   });
 }

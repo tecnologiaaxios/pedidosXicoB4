@@ -1,5 +1,7 @@
 'use strict';
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var db = firebase.database();
 var auth = firebase.auth();
 
@@ -714,3 +716,91 @@ function generarPDF() {
   x.document.write(iframe);
   x.document.close();
 }*/
+
+$("#btnExcel").click(function (e) {
+  var file = new Blob([$('#panel').html()], { type: "application/vnd.ms-excel" });
+  var url = URL.createObjectURL(file);
+  var a = $("<a />", {
+    href: url,
+    download: "pedido.xls" }).appendTo("body").get(0).click();
+  e.preventDefault();
+});
+
+function exportarCSV() {
+  var idPedido = getQueryVariable('id');
+  var result = void 0,
+      ctr = void 0,
+      keys = void 0,
+      columnDelimiter = void 0,
+      lineDelimiter = void 0;
+  db.ref('pedidoEntrada/' + idPedido).on('value', function (pedido) {
+    var _pedido$val$encabezad = pedido.val().encabezado,
+        clave = _pedido$val$encabezad.clave,
+        tienda = _pedido$val$encabezad.tienda,
+        promotora = _pedido$val$encabezad.promotora,
+        fechaCaptura = _pedido$val$encabezad.fechaCaptura,
+        ruta = _pedido$val$encabezad.ruta;
+
+    var cantidadProductos = Object.keys(pedido.val().detalle).length;
+    var arrayProductos = [];
+    var productos = pedido.val().detalle;
+
+    result = '\nPedido: ' + clave + '\n\n              Enviado de: ' + ruta + '\n\n              Recibido el ' + fechaCaptura + '\n\n              Id del pedido: ' + idPedido + '\n\n              Tienda: ' + tienda + '\n\n              Promotor(a): ' + promotora + '\n\n              Productos de este pedido: ' + cantidadProductos + '\n\n              \n';
+
+    Object.keys(productos).forEach(function (key) {
+      var _arrayProductos$push;
+
+      var _productos$key = productos[key],
+          clave = _productos$key.clave,
+          nombre = _productos$key.nombre,
+          pedidoPz = _productos$key.pedidoPz,
+          degusPz = _productos$key.degusPz,
+          cambioFisicoPz = _productos$key.cambioFisicoPz,
+          totalPz = _productos$key.totalPz,
+          totalKg = _productos$key.totalKg,
+          precioUnitario = _productos$key.precioUnitario,
+          unidad = _productos$key.unidad;
+
+
+      arrayProductos.push((_arrayProductos$push = {
+        Clave: clave,
+        Descripcion: nombre
+      }, _defineProperty(_arrayProductos$push, 'Pedido Pz', pedidoPz), _defineProperty(_arrayProductos$push, 'Degustacion', degusPz), _defineProperty(_arrayProductos$push, 'Cambio fisico', cambioFisicoPz), _defineProperty(_arrayProductos$push, 'Total Pz', totalPz), _defineProperty(_arrayProductos$push, 'Total Kg', totalKg), _defineProperty(_arrayProductos$push, 'Precio unit.', precioUnitario), _defineProperty(_arrayProductos$push, 'Unidad', unidad), _arrayProductos$push));
+    });
+    var data = arrayProductos || null;
+
+    var args = { data: arrayProductos };
+
+    columnDelimiter = args.columnDelimiter || ',';
+    lineDelimiter = args.lineDelimiter || '\n';
+
+    keys = Object.keys(data[0]);
+    /*     result = ''; */
+    result += keys.join(columnDelimiter);
+    result += lineDelimiter;
+
+    data.forEach(function (item) {
+      ctr = 0;
+      keys.forEach(function (key) {
+        if (ctr > 0) result += columnDelimiter;
+
+        result += item[key];
+        ctr++;
+      });
+      result += lineDelimiter;
+    });
+
+    var csv = result;
+    if (csv == null) return;
+    var filename = 'pedido.csv';
+
+    if (!csv.match(/^data:text\/csv/i)) {
+      csv = 'data:text/csv;charset=utf-8,' + csv;
+    }
+    var datos = encodeURI(csv);
+    var link = document.createElement('a');
+    link.setAttribute('href', datos);
+    link.setAttribute('download', filename);
+    link.click();
+  });
+}

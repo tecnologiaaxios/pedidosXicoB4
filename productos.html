@@ -192,6 +192,7 @@
                         <th>Precio unitario</th>
                         <th>Unidad</th>
                         <th class="text-center">Estado</th>
+                        <th class="text-center">Editar</th>
                       </tr>
                     </thead>
                     <tbody style="font-family: OpenSans,Open Sans,sans-serif;">
@@ -203,6 +204,7 @@
                         <td>$ {{ producto.precioUnitario }}</td>
                         <td>{{ producto.unidad }}</td>
                         <td v-html="estado(producto.activo)" class="text-center"></td>
+                        <td class="text-center"><button @click="abrirModalEditar(key)" data-toggle="modal" data-target="#modalEditarProducto" class="btn btn-xs btn-warning"><i class="fas fa-pencil-alt"></i></button></td>
                       </tr>
                     </tbody>
                   </table>
@@ -272,6 +274,86 @@
                   <select id="unidad" v-model="unidad" class="form-control" name="unidad" class="form-control">
                     <option v-for="unidad in unidades" :value="unidad">{{unidad}}</option>
                   </select>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="button" @click="guardarProducto" class="btn btn-primary">Guardar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="modalEditarProducto" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Editar producto</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="claveEditar">Clave:</label>
+                    <input readonly type="text" v-model="clave" id="claveEditar" name="claveEditar" class="form-control">
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-group">
+                    <label for="nombreEditar">Nombre:</label>
+                    <input type="text" v-model="nombre" id="nombreEditar" name="nombreEditar" class="form-control">
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col">
+                  <div class="form-group">
+                    <label for="consorcioEditar">Consorcio:</label>
+                    <!-- <input type="text" list="consorcios" v-model="consorcio" id="consorcio" name="consorcio" class="form-control"> -->
+                    <select id="consorcioEditar" v-model="consorcio" class="form-control" name="consorcioEditar">
+                      <option v-for="consorcio in consorcios" :value="consorcio['.key']">{{ consorcio['.key'] }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-group">
+                    <label for="claveConsorcioEditar">Clave consorcio:</label>
+                    <input type="text" v-model="claveConsorcio" class="form-control" id="claveConsorcioEditar" name="claveConsorcioEditar">
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-group">
+                    <label for="empaqueEditar">Empaque:</label>
+                    <input type="number" min="0" v-model.number="empaque" id="empaqueEditar" name="empaqueEditar" class="form-control">
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col-md-4">
+                  <label for="precioUnitarioEditar">Precio unitario:</label>
+                  <input type="number" v-model.number="precioUnitario" id="precioUnitarioEditar" name="precioUnitarioEditar" class="form-control">
+                </div>
+                <div class="col-md-4">
+                  <label for="unidadEditar">Unidad:</label>
+                  <!-- <input type="text" list="unidades" v-model="unidad" id="unidad" name="unidad" class="form-control"> -->
+                  <select id="unidadEditar" v-model="unidad" class="form-control" name="unidadEditar" class="form-control">
+                    <option v-for="unidad in unidades" :value="unidad">{{unidad}}</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" v-model="activo" id="activoEditar">
+                      <label class="form-check-label" for="activoEditar">
+                        Activo
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
             </form>

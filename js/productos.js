@@ -92,6 +92,7 @@ new Vue({
     unidad: '',
     empaque: 0,
     activo: true,
+    activoEditar: '',
     productos: [],
     consorcioFiltrar: ''
   },
@@ -161,6 +162,20 @@ new Vue({
         })
       }    
     },
+    abrirModalEditar(claveProducto) {
+      db.ref(`consorcios/${this.consorcioFiltrar}/productos/${claveProducto}`).once('value', producto => {
+        let datos = producto.val();
+
+        this.nombre = datos.nombre;
+        this.clave = producto.key;
+        this.claveConsorcio = datos.claveConsorcio;
+        this.precioUnitario = datos.precioUnitario;
+        this.empaque = datos.empaque;
+        this.consorcio = this.consorcioFiltrar;
+        this.unidad = datos.unidad;
+        this.activoEditar = datos.activo
+      });
+    },
     filtrarProductos() {
       this.consorcios.forEach(consorcio => {
         if(consorcio['.key'] == this.consorcioFiltrar) {
@@ -173,8 +188,6 @@ new Vue({
     }
   }
 });
-
-
 
 function mostrarNotificaciones() {
   let usuario = auth.currentUser.uid;

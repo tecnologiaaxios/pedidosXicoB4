@@ -104,6 +104,74 @@ function logout() {
   auth.signOut();
 }
 
+function generarPDF() {
+  var contenido = document.getElementById('app').innerHTML;
+  var contenidoOriginal = document.body.innerHTML;
+  document.body.innerHTML = contenido;
+  window.print();
+  document.body.innerHTML = contenidoOriginal;
+}
+
+$("#btnExcel").click(function (e) {
+  var file = new Blob([$('#excel').html()], { type: "application/vnd.ms-excel" });
+  var url = URL.createObjectURL(file);
+  var a = $("<a />", {
+    href: url,
+    download: "existencia.xls" }).appendTo("body").get(0).click();
+  e.preventDefault();
+});
+
+function exportarCSV() {
+  var idExistencia = getQueryVariable('id');
+  var result = void 0,
+      ctr = void 0,
+      keys = void 0,
+      columnDelimiter = void 0,
+      lineDelimiter = void 0;
+  db.ref('existencias/' + idExistencia).on('value', function (existencia) {
+    var arrayExistencias = [];
+    var productos = existencia.val().productos;
+    Object.keys(productos).forEach(function (key) {
+      arrayExistencias.push(productos[key]);
+    });
+    var data = arrayExistencias || null;
+
+    var args = { data: arrayExistencias };
+
+    columnDelimiter = args.columnDelimiter || ',';
+    lineDelimiter = args.lineDelimiter || '\n';
+
+    keys = Object.keys(data[0]);
+    result = '';
+    result += keys.join(columnDelimiter);
+    result += lineDelimiter;
+
+    data.forEach(function (item) {
+      ctr = 0;
+      keys.forEach(function (key) {
+        if (ctr > 0) result += columnDelimiter;
+
+        result += item[key];
+        ctr++;
+      });
+      result += lineDelimiter;
+    });
+
+    var csv = result;
+    if (csv == null) return;
+    var filename = 'existencia.csv';
+
+    if (!csv.match(/^data:text\/csv/i)) {
+      csv = 'data:text/csv;charset=utf-8,' + csv;
+    }
+    var datos = encodeURI(csv);
+    var link = document.createElement('a');
+    link.setAttribute('href', datos);
+    link.setAttribute('download', filename);
+    link.click();
+  });
+}
+
 function mostrarDatosExistencia() {
   var datatable = $('#tablaProductos').DataTable({
     pageLength: 25,
@@ -136,7 +204,7 @@ function mostrarDatosExistencia() {
     var totalPiezas = 0,
         kilosTotales = 0;
     for (var producto in productos) {
-      filas += '<tr>\n                  <td>' + productos[producto].nombre + '</td>\n                  <td>' + productos[producto].piezas + '</td>\n                  <td>' + productos[producto].totalKilos + '</td>\n                  <td><button class="btn btn-xs btn-warning" onclick="editarProducto(\'' + producto + '\')"><i class="fas fa-pencil-alt"></i></button></td>\n                </tr>';
+      filas += '<tr>\n                  <td>' + producto + '</td>\n                  <td>' + productos[producto].nombre + '</td>\n                  <td>' + productos[producto].piezas + '</td>\n                  <td>' + productos[producto].totalKilos + '</td>\n                  <td><button class="btn btn-xs btn-warning" onclick="editarProducto(\'' + producto + '\')"><i class="fas fa-pencil-alt"></i></button></td>\n                </tr>';
       totalPiezas += productos[producto].piezas;
       kilosTotales += productos[producto].totalKilos;
     }

@@ -90,6 +90,7 @@ new Vue({
     unidad: '',
     empaque: 0,
     activo: true,
+    activoEditar: '',
     productos: [],
     consorcioFiltrar: ''
   },
@@ -157,12 +158,28 @@ new Vue({
         });
       }
     },
-    filtrarProductos: function filtrarProductos() {
+    abrirModalEditar: function abrirModalEditar(claveProducto) {
       var _this2 = this;
 
+      db.ref('consorcios/' + this.consorcioFiltrar + '/productos/' + claveProducto).once('value', function (producto) {
+        var datos = producto.val();
+
+        _this2.nombre = datos.nombre;
+        _this2.clave = producto.key;
+        _this2.claveConsorcio = datos.claveConsorcio;
+        _this2.precioUnitario = datos.precioUnitario;
+        _this2.empaque = datos.empaque;
+        _this2.consorcio = _this2.consorcioFiltrar;
+        _this2.unidad = datos.unidad;
+        _this2.activoEditar = datos.activo;
+      });
+    },
+    filtrarProductos: function filtrarProductos() {
+      var _this3 = this;
+
       this.consorcios.forEach(function (consorcio) {
-        if (consorcio['.key'] == _this2.consorcioFiltrar) {
-          _this2.productos = consorcio.productos;
+        if (consorcio['.key'] == _this3.consorcioFiltrar) {
+          _this3.productos = consorcio.productos;
         }
       });
     },
