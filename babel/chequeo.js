@@ -44,7 +44,7 @@ $(document).ready(function () {
     language: "es"
   });
 
-  mostrarDatosVentaDiaria();
+  mostrarDatosChequeo();
 });
 
 function getQueryVariable(variable) {
@@ -106,7 +106,7 @@ function logout() {
   auth.signOut();
 }
 
-function mostrarDatosVentaDiaria() {
+function mostrarDatosChequeo() {
   var datatable = $('#tablaProductos').DataTable({
     pageLength: 25,
     lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todas"]],
@@ -116,80 +116,76 @@ function mostrarDatosVentaDiaria() {
     scrollCollapse: true
   });
 
-  var idVentaDiaria = getQueryVariable('id');
+  var idChequeo = getQueryVariable('id');
 
-  db.ref('ventasDiarias/' + idVentaDiaria).on('value', function (venta) {
-    var _venta$val = venta.val(),
-        consorcio = _venta$val.consorcio,
-        fecha = _venta$val.fecha,
-        nombrePromotora = _venta$val.nombrePromotora,
-        productos = _venta$val.productos,
-        tienda = _venta$val.tienda,
-        zona = _venta$val.zona,
-        totalKilos = _venta$val.totalKilos,
-        totalPesos = _venta$val.totalPesos;
+  db.ref('chequeosPrecios/' + idChequeo).on('value', function (chequeo) {
+
+    console.log(chequeo.val());
+
+    var _chequeo$val = chequeo.val(),
+        consorcio = _chequeo$val.consorcio,
+        fechaCaptura = _chequeo$val.fechaCaptura,
+        productos = _chequeo$val.productos,
+        zona = _chequeo$val.zona;
 
     $('#consorcio').html(consorcio);
-    $('#fecha').html(fecha);
-    $('#promotora').html(nombrePromotora);
-    $('#idPromotora').html(idPromotora);
-    $('#tienda').html(tienda);
+    $('#fechaCaptura').html(fechaCaptura);
     $('#zona').html(zona);
+    $('#fecha').html(fechaCaptura);
 
     var filas = '';
 
     datatable.clear().draw();
     // let totalKilos = 0, totalPesos = 0;
     for (var producto in productos) {
-      filas += '<tr>\n                  <td>' + producto + '</td>\n                  <td>' + productos[producto].nombre + '</td>\n                  <td>' + productos[producto].kilos + '</td>\n                  <td>$ ' + productos[producto].pesos + '</td>\n                  <td><button class="btn btn-xs btn-warning" onclick="editarProducto(\'' + producto + '\')"><i class="fas fa-pencil-alt"></i></button></td>\n                </tr>';
-      // totalKilos += productos[producto].kilos;
-      // totalPesos += productos[producto].pesos;
+      var _productos$producto = productos[producto],
+          clave = _productos$producto.clave,
+          nombre = _productos$producto.nombre,
+          precioRegular = _productos$producto.precioRegular,
+          precioSugerido = _productos$producto.precioSugerido;
+
+
+      filas += '<tr>\n                  <td>' + clave + '</td>\n                  <td>' + nombre + '</td>\n                  <td>$ ' + precioRegular + '</td>\n                  <td>$ ' + precioSugerido + '</td>\n                  <td><button class="btn btn-xs btn-warning" onclick="editarProducto(\'' + producto + '\')"><i class="fas fa-pencil-alt"></i></button></td>\n                </tr>';
     }
 
-    $('#totalKilos').html(totalKilos + ' kg');
-    $('#totalPesos').html('$ ' + totalPesos.toFixed(2));
+    /* $('#totalKilos').html(`${totalKilos} kg`);
+    $('#totalPesos').html(`$ ${totalPesos.toFixed(2)}`) */;
 
     datatable.rows.add($(filas)).columns.adjust().draw();
   });
 }
 
 function editarProducto(claveProducto) {
-  var idVentaDiaria = getQueryVariable('id');
+  var idChequeo = getQueryVariable('id');
   var consorcio = $('#consorcio').text();
   $('#modalEditar').modal('show');
   $('#btnActualizar').attr('onclick', 'actualizarProducto(\'' + claveProducto + '\')');
-  db.ref('ventasDiarias/' + idVentaDiaria + '/productos/' + claveProducto).once('value', function (snapshot) {
+  db.ref('chequeosPrecios/' + idChequeo + '/productos/' + claveProducto).once('value', function (snapshot) {
     $('#nombreProducto').val(snapshot.val().nombre);
-    $('#kilos').val(snapshot.val().kilos);
-    $('#pesos').val(snapshot.val().pesos);
+    $('#claveProducto').val(snapshot.val().clave);
+    $('#precioRegular').val(snapshot.val().precioRegular);
+    $('#precioSugerido').val(snapshot.val().precioSugerido);
   });
-  db.ref('consorcios/' + consorcio + '/productos/' + claveProducto).once('value', function (snapshot) {
+  /* db.ref(`consorcios/${consorcio}/productos/${claveProducto}`).once('value', snapshot => {
     $('#precio').val(snapshot.val().precioUnitario);
-  });
+  }); */
 }
 
-$('#kilos').keyup(function () {
-  var kilos = Number($('#kilos').val());
-  var precio = Number($('#precio').val());
-  var pesos = Number((kilos * precio).toFixed(2));
-  $('#pesos').val(pesos);
-});
-
 function actualizarProducto(claveProducto) {
-  var idVenta = getQueryVariable('id');
-  var kilos = Number($('#kilos').val());
-  var pesos = Number($('#pesos').val());
+  var idChequeo = getQueryVariable('id');
+  var precioRegular = parseInt($('#precioRegular').val());
+  var precioSugerido = parseInt($('#precioSugerido').val());
 
-  db.ref('ventasDiarias/' + idVenta + '/productos/' + claveProducto).update({
-    kilos: kilos,
-    pesos: pesos
+  db.ref('chequeosPrecios/' + idChequeo + '/productos/' + claveProducto).update({
+    precioRegular: precioRegular,
+    precioSugerido: precioSugerido
   });
   $('#modalEditar').modal('hide');
 
   swal({
     type: 'success',
     title: 'Mensaje',
-    text: 'La venta se actualizó con éxito'
+    text: 'El chequeo se actualizó con éxito'
   });
 }
 
@@ -201,16 +197,16 @@ function exportarCSV() {
       columnDelimiter = void 0,
       lineDelimiter = void 0;
   db.ref('ventasDiarias/' + idVenta).on('value', function (venta) {
-    var _venta$val2 = venta.val(),
-        consorcio = _venta$val2.consorcio,
-        fecha = _venta$val2.fecha,
-        idPromotora = _venta$val2.idPromotora,
-        nombrePromotora = _venta$val2.nombrePromotora,
-        productos = _venta$val2.productos,
-        tienda = _venta$val2.tienda,
-        totalKilos = _venta$val2.totalKilos,
-        totalPesos = _venta$val2.totalPesos,
-        zona = _venta$val2.zona;
+    var _venta$val = venta.val(),
+        consorcio = _venta$val.consorcio,
+        fecha = _venta$val.fecha,
+        idPromotora = _venta$val.idPromotora,
+        nombrePromotora = _venta$val.nombrePromotora,
+        productos = _venta$val.productos,
+        tienda = _venta$val.tienda,
+        totalKilos = _venta$val.totalKilos,
+        totalPesos = _venta$val.totalPesos,
+        zona = _venta$val.zona;
 
     var arrayProductos = [];
 

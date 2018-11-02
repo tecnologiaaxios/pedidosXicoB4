@@ -44,7 +44,7 @@ $(document).ready(function () {
     language: "es"
   });
 
-  mostrarVentasDiarias();
+  mostrarChequeos();
 });
 
 function getQueryVariable(variable) {
@@ -106,8 +106,8 @@ function logout() {
   auth.signOut();
 }
 
-function mostrarVentasDiarias() {
-  var datatable = $('#tablaVentasDiarias').DataTable({
+function mostrarChequeos() {
+  var datatable = $('#tablaChequeos').DataTable({
     pageLength: 25,
     lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todas"]],
     destroy: true,
@@ -123,55 +123,37 @@ function mostrarVentasDiarias() {
     scrollCollapse: true
   });
 
-  db.ref('ventasDiarias').on('value', function (ventasDiarias) {
+  db.ref('chequeosPrecios').on('value', function (chequeosPrecios) {
     var filas = '';
-    var ventas = ventasDiarias.val();
-    var arrVentasDiarias = [];
-    ventasDiarias.forEach(function (venta) {
-      arrVentasDiarias.unshift(_extends({
-        id: venta.key
-      }, venta.val()));
+    var chequeos = chequeosPrecios.val();
+    var arrChequeosPrecios = [];
+    chequeosPrecios.forEach(function (chequeo) {
+      arrChequeosPrecios.unshift(_extends({
+        id: chequeo.key
+      }, chequeo.val()));
     });
 
-    arrVentasDiarias.forEach(function (venta) {
-      //console.log(ventas[key])
-      //let venta = ventas[key];
-      var id = venta.id,
-          consorcio = venta.consorcio,
-          fecha = venta.fecha,
-          idPromotora = venta.idPromotora,
-          nombrePromotora = venta.nombrePromotora,
-          tienda = venta.tienda,
-          zona = venta.zona,
-          totalKilos = venta.totalKilos,
-          totalPesos = venta.totalPesos;
+    arrChequeosPrecios.forEach(function (chequeo) {
+      var id = chequeo.id,
+          consorcio = chequeo.consorcio,
+          fechaCaptura = chequeo.fechaCaptura,
+          zona = chequeo.zona;
 
 
-      filas += '<tr>\n                  <td>' + consorcio + '</td>\n                  <td>' + fecha + '</td>\n                  <td>' + idPromotora + '</td>\n                  <td>' + nombrePromotora + '</td>\n                  <td>' + tienda + '</td>\n                  <td>' + zona + '</td>\n                  <td>' + totalKilos + '</td>\n                  <td>' + totalPesos + '</td>\n                  <td class="text-center"><a class="btn btn-xs btn-primary" href="ventaDiaria.html?id=' + id + '"><i class="fas fa-eye"></i></a></td>\n                  <td class="text-center"><button class="btn btn-xs btn-danger" onclick="eliminarVentaDiaria(\'' + id + '\')"><i class="fas fa-trash-alt"></i></button></td>\n                </tr>';
+      filas += '<tr>\n                  <td>' + consorcio + '</td>\n                  <td>' + fechaCaptura + '</td>\n                  <td>' + zona + '</td>\n                  <td class="text-center"><a class="btn btn-xs btn-primary" href="chequeo.html?id=' + id + '"><i class="fas fa-eye"></i></a></td>\n                  <td class="text-center"><button class="btn btn-xs btn-danger" onclick="eliminarChequeo(\'' + id + '\')"><i class="fas fa-trash-alt"></i></button></td>\n                </tr>';
     });
 
     datatable.clear().draw();
-    /* arrVentasDiarias.forEach(venta => {
-      filas += `<tr>
-                  <td>${venta.consorcio}</td>
-                  <td>${venta.fecha}</td>
-                  <td>${venta.promotora}</td>
-                  <td>${venta.tienda}</td>
-                  <td>${venta.zona}</td>
-                  <td class="text-center"><a class="btn btn-xs btn-primary" href="ventaDiaria.html?id=${venta.id}"><i class="fas fa-eye"></i></a></td>
-                  <td class="text-center"><button class="btn btn-xs btn-danger" onclick="eliminarVentaDiaria('${venta.id}')"><i class="fas fa-trash-alt"></i></button></td>
-                </tr>`;
-    }); */
     datatable.rows.add($(filas)).columns.adjust().draw();
     datatable.buttons().container().appendTo('#example_wrapper .col-md-6:eq(0)');
     $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
   });
 }
 
-function eliminarVentaDiaria(idVentaDiaria) {
+function eliminarChequeo(idChequeo) {
   swal({
     title: 'Advertencia',
-    text: '\xBFEst\xE1 seguro de eliminar esta venta?',
+    text: '\xBFEst\xE1 seguro de eliminar este chequeo?',
     type: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#dc3545',
@@ -181,12 +163,12 @@ function eliminarVentaDiaria(idVentaDiaria) {
     reverseButtons: true
   }).then(function (result) {
     if (result.value) {
-      db.ref('ventasDiarias').child(idVentaDiaria).remove();
+      db.ref('chequeosPrecios').child(idVentaDiaria).remove();
 
       swal({
         type: 'success',
         title: 'Mensaje',
-        text: 'Se ha eliminado la venta'
+        text: 'Se ha eliminado el chequeo'
       });
     }
   });

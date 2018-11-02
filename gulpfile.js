@@ -24,6 +24,8 @@ gulp.task('es6', function() {
     'js/ventasDiarias.js',
     'js/ventaDiaria.js',
     'js/precios.js',
+    'js/chequeo.js',
+    'js/chequeos.js',
   ])
 		.pipe( babel({presets : ['es2015'], plugins: ["transform-object-rest-spread"]}))
 		.pipe(gulp.dest(`babel/`));

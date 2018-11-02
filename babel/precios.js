@@ -153,17 +153,19 @@ function mostrarProductos() {
     arrProductos.forEach(function (producto) {
       var id = producto.id,
           nombre = producto.nombre,
-          precioUnitario = producto.precioUnitario;
+          precioUnitario = producto.precioUnitario,
+          precioOferta = producto.precioOferta;
 
 
-      filas += '<tr>\n                  <td>' + consorcio + '</td>\n                  <td>' + id + '</td>\n                  <td>' + nombre + '</td>\n                  <td>\n                    <div class="input-group">\n                      <div class="input-group-prepend">\n                        <span class="input-group-text">$</span>\n                      </div>\n                      <input type="text" class="form-control" readonly id="precio-' + id + '" value="' + precioUnitario + '">\n                      <div class="input-group-append">\n                        <button class="btn btn-outline-warning" onclick="editar(\'precio-' + id + '\')" type="button"><i class="fas fa-pencil-alt"></i> Editar</button>\n                        <button class="btn btn-outline-success" onclick="guardarPrecio(\'precio-' + id + '\', \'' + id + '\', \'' + consorcio + '\')" type="button"><i class="fas fa-cloud"></i> Guardar</button>\n                      </div>\n                    </div>\n                  </td>\n                </tr>';
+      filas += '<tr>\n                  <td>' + consorcio + '</td>\n                  <td>' + id + '</td>\n                  <td>' + nombre + '</td>\n                  <td>\n                    <div class="input-group">\n                      <div class="input-group-prepend">\n                        <span class="input-group-text">$</span>\n                      </div>\n                      <input type="text" class="form-control" readonly id="precio-' + id + '" value="' + precioUnitario + '">\n                      <div class="input-group-append">\n                        <button class="btn btn-warning" onclick="editar(\'precio-' + id + '\')" type="button" data-toggle="tooltip" data-placement="top" title="Editar"><i class="fas fa-pencil-alt"></i></button>\n                        <button class="btn btn-success" onclick="guardarPrecio(\'precio-' + id + '\', \'' + id + '\', \'' + consorcio + '\')" type="button" data-toggle="tooltip" data-placement="top" title="Guardar"><i class="fas fa-cloud"></i></button>\n                      </div>\n                    </div>\n                  </td>\n                  <td>\n                    <div class="input-group">\n                      <div class="input-group-prepend">\n                        <span class="input-group-text">$</span>\n                      </div>\n                      <input type="text" class="form-control" readonly id="precio-oferta-' + id + '" value="' + precioOferta + '">\n                      <div class="input-group-append">\n                        <button class="btn btn-warning" onclick="editar(\'precio-oferta-' + id + '\')" type="button" data-toggle="tooltip" data-placement="top" title="Editar"><i class="fas fa-pencil-alt"></i></button>\n                        <button class="btn btn-success" onclick="guardarPrecioOferta(\'precio-oferta-' + id + '\', \'' + id + '\', \'' + consorcio + '\')" type="button" data-toggle="tooltip" data-placement="top" title="Guardar"><i class="fas fa-cloud"></i></button>\n                      </div>\n                    </div>\n                  </td>\n                </tr>';
     });
     datatable.rows.add($(filas)).columns.adjust().draw();
+    $('[data-toggle="tooltip"]').tooltip();
   });
 }
 
 function editar(idInput) {
-  $('#' + idInput).attr('readonly', false);
+  $('#' + idInput).attr('readonly', false).focus().select();
 }
 
 function guardarPrecio(idInput, claveProducto, consorcio) {
@@ -179,4 +181,19 @@ function guardarPrecio(idInput, claveProducto, consorcio) {
   $('#' + idInput).attr('readonly', true);
 
   $.toaster({ priority: 'success', title: 'Mensaje', message: 'El precio se actualiz\xF3 correctamente' });
+}
+
+function guardarPrecioOferta(idInput, claveProducto, consorcio) {
+  var nuevoPrecio = Number($('#' + idInput).val());
+
+  db.ref('consorcios/' + consorcio + '/productos/' + claveProducto).update({
+    precioOferta: nuevoPrecio
+  });
+  db.ref('productos/' + consorcio + '/productos/' + claveProducto).update({
+    precioOferta: nuevoPrecio
+  });
+
+  $('#' + idInput).attr('readonly', true);
+
+  $.toaster({ priority: 'success', title: 'Mensaje', message: 'El precio de oferta se actualiz\xF3 correctamente' });
 }

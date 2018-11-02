@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link href='logo.ico' rel='shortcut icon' type='image/x-icon' />
-    <title>Venta diaria</title>
+    <title>Chequeos de precios</title>
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
     <link rel="stylesheet" href="css/bootstrap4.min.css">
     <link href="css/dataTables.bootstrap4.min.css" rel="stylesheet">
@@ -70,48 +70,22 @@
     <div id="app" class="container-fluid">
         <div class="row mt-4">
             <div class="col-lg-12 col-md-12 col-sm-12">
-                <h3 class="display-5">Detalles de la venta diaria</h3>
+                <h1 class="display-5">Chequeos de precios</h1>
             </div>
         </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="ventasDiarias.html"><i class="fas fa-chevron-left"></i> Regresar a ventas diarias</a></li>
-                <!-- <li class="breadcrumb-item active" aria-current="page">Detalles de la existencia</li> -->
-            </ol>
-        </nav>
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col" style="line-height: 10px;">
-                                <p class="lead">Consorcio: <span style="font-weight: bold;" id="consorcio"></span></p>
-                                <p class="lead">Fecha: <span style="font-weight: bold;" id="fecha"></span></p>
-                                <p class="lead">Promotora: <span style="font-weight: bold;" id="promotora"></span></p>
-                                <p class="lead">Nº promotora: <span style="font-weight: bold;" id="idPromotora"></span></p>
-                                <p class="lead">Tienda: <span style="font-weight: bold;" id="tienda"></span></p>
-                                <p class="lead">Zona: <span style="font-weight: bold;" id="zona"></span></p>
-                            </div>
-                            <div class="col" style="line-height: 10px;">
-                                <p class="lead">Total de kilos: <span class="badge badge-danger" style="font-weight: bold;" id="totalKilos"></span></p>
-                                <p class="lead">Total de pesos: <span class="badge badge-danger" style="font-weight: bold;" id="totalPesos"></span></p>
-                            </div>
-                            <div class="col">
-                                <button type="button" onclick="exportarCSV()" class="btn btn-success my-2 my-sm-0">
-                                    <i class="fas fa-file-excel"></i> Excel
-                                </button>
-                            </div>
-                        </div>
-                        <div class="table-responsive table-hover">
-                            <p>Productos:</p>
-                            <table width="100%" cellspacing="0" id="tablaProductos" class="table table-sm table-striped">
+                        <div class="table-responsive">
+                            <table width="100%" cellspacing="0" id="tablaChequeos" class="table table-sm table-striped table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Clave</th>
-                                        <th>Nombre</th>
-                                        <th>Kilos</th>
-                                        <th>Pesos</th>
-                                        <th>Editar</th>
+                                        <th>Consorcio</th>
+                                        <th>Fecha de captura</th>
+                                        <th>Zona</th>       
+                                        <th class="text-center">Ver más</th>
+                                        <th>Eliminar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -120,67 +94,6 @@
                             </table>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal" id="modalEditar" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar producto de venta diaria</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="nombreProducto">Nombre del producto:</label>
-                                <input type="text" id="nombreProducto" readonly class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="kilos">Kilos:</label>
-                                <div class="input-group">
-                                    <input type="number" id="kilos" class="form-control">
-                                    <span style="display: none;" id="helpblockKilos" class="help-block">Campo obligatorio</span>
-                                    <div class="input-group-append">
-                                        <span class="input-group-text" id="basic-addon1">kg</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <input type="hidden" id="precio" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="pesos">Pesos:</label>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="basic-addon1">$</span>
-                                    </div>
-                                    <input readonly type="number" id="pesos" class="form-control">
-                                    <span style="display: none;" id="helpblockPesos" class="help-block">Campo obligatorio</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="button" id="btnActualizar" class="btn btn-primary">Actualizar</button>
                 </div>
             </div>
         </div>
@@ -236,7 +149,7 @@
     <script src="js/Chart.min.js"></script>
     <script src='js/decimal.min.js'></script>
     <script src="https://unpkg.com/sweetalert2@7.20.10/dist/sweetalert2.all.js"></script>
-    <script src="babel/ventaDiaria.js"></script>
+    <script src="babel/chequeos.js"></script>
 </body>
 
 </html>

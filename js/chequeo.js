@@ -40,7 +40,7 @@ $(document).ready(function () {
     language: "es"
   });
 
-  mostrarDatosVentaDiaria();
+  mostrarDatosChequeo();
 });
 
 function getQueryVariable(variable) {
@@ -108,7 +108,7 @@ function logout() {
   auth.signOut();
 }
 
-function mostrarDatosVentaDiaria() {
+function mostrarDatosChequeo() {
   let datatable = $('#tablaProductos').DataTable({
     pageLength: 25,
     lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todas"]],
@@ -118,79 +118,73 @@ function mostrarDatosVentaDiaria() {
     scrollCollapse: true,
   });
 
-  let idVentaDiaria = getQueryVariable('id');
+  let idChequeo = getQueryVariable('id');
 
-  db.ref(`ventasDiarias/${idVentaDiaria}`).on('value', venta => {
+  db.ref(`chequeosPrecios/${idChequeo}`).on('value', chequeo => {
 
-    let { consorcio, fecha, nombrePromotora, productos, tienda, zona, totalKilos, totalPesos } = venta.val();
+    console.log(chequeo.val())
+    let { consorcio, fechaCaptura, productos, zona } = chequeo.val();
 
     $('#consorcio').html(consorcio);
-    $('#fecha').html(fecha);
-    $('#promotora').html(nombrePromotora);
-    $('#idPromotora').html(idPromotora);
-    $('#tienda').html(tienda);
+    $('#fechaCaptura').html(fechaCaptura);
     $('#zona').html(zona);
+    $('#fecha').html(fechaCaptura);
 
     let filas = '';
 
     datatable.clear().draw();
     // let totalKilos = 0, totalPesos = 0;
     for(let producto in productos) {
+      const {clave, nombre, precioRegular, precioSugerido} = productos[producto]; 
+
+
       filas += `<tr>
-                  <td>${producto}</td>
-                  <td>${productos[producto].nombre}</td>
-                  <td>${productos[producto].kilos}</td>
-                  <td>$ ${productos[producto].pesos}</td>
+                  <td>${clave}</td>
+                  <td>${nombre}</td>
+                  <td>$ ${precioRegular}</td>
+                  <td>$ ${precioSugerido}</td>
                   <td><button class="btn btn-xs btn-warning" onclick="editarProducto('${producto}')"><i class="fas fa-pencil-alt"></i></button></td>
                 </tr>`;
-      // totalKilos += productos[producto].kilos;
-      // totalPesos += productos[producto].pesos;
     }
 
-    $('#totalKilos').html(`${totalKilos} kg`);
-    $('#totalPesos').html(`$ ${totalPesos.toFixed(2)}`);
+    /* $('#totalKilos').html(`${totalKilos} kg`);
+    $('#totalPesos').html(`$ ${totalPesos.toFixed(2)}`) */;
 
     datatable.rows.add($(filas)).columns.adjust().draw();
   });
 }
 
 function editarProducto(claveProducto) {
-  let idVentaDiaria = getQueryVariable('id');
+  let idChequeo = getQueryVariable('id');
   let consorcio = $('#consorcio').text();
   $('#modalEditar').modal('show');
   $('#btnActualizar').attr('onclick', `actualizarProducto('${claveProducto}')`);
-  db.ref(`ventasDiarias/${idVentaDiaria}/productos/${claveProducto}`).once('value', snapshot => {
+  db.ref(`chequeosPrecios/${idChequeo}/productos/${claveProducto}`).once('value', snapshot => {
     $('#nombreProducto').val(snapshot.val().nombre);
-    $('#kilos').val(snapshot.val().kilos);
-    $('#pesos').val(snapshot.val().pesos);
+    $('#claveProducto').val(snapshot.val().clave);
+    $('#precioRegular').val(snapshot.val().precioRegular);
+    $('#precioSugerido').val(snapshot.val().precioSugerido);
   });
-  db.ref(`consorcios/${consorcio}/productos/${claveProducto}`).once('value', snapshot => {
+  /* db.ref(`consorcios/${consorcio}/productos/${claveProducto}`).once('value', snapshot => {
     $('#precio').val(snapshot.val().precioUnitario);
-  });
+  }); */
 }
 
-$('#kilos').keyup(() => {
-  let kilos = Number($('#kilos').val());
-  let precio = Number($('#precio').val());
-  let pesos = Number((kilos * precio).toFixed(2));
-  $('#pesos').val(pesos);
-});
-
 function actualizarProducto(claveProducto) {
-  let idVenta = getQueryVariable('id');
-  let kilos = Number($('#kilos').val());
-  let pesos = Number($('#pesos').val());
+  let idChequeo = getQueryVariable('id');
+  let precioRegular = parseInt($('#precioRegular').val());
+  let precioSugerido = parseInt($('#precioSugerido').val());
 
-  db.ref(`ventasDiarias/${idVenta}/productos/${claveProducto}`).update({
-    kilos,
-    pesos
+  db.ref(`chequeosPrecios/${idChequeo}/productos/${claveProducto}`).update({
+    precioRegular,
+    precioSugerido
   });
   $('#modalEditar').modal('hide');
 
   swal({
     type: 'success',
     title: 'Mensaje',
-    text: 'La venta se actualizó con éxito',
+    text: 'El chequeo se actualizó con éxito',
   });
 }
 

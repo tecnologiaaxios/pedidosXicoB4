@@ -40,7 +40,7 @@ $(document).ready(function () {
     language: "es"
   });
 
-  mostrarVentasDiarias();
+  mostrarChequeos();
 });
 
 function getQueryVariable(variable) {
@@ -108,8 +108,8 @@ function logout() {
   auth.signOut();
 }
 
-function mostrarVentasDiarias() {
-  let datatable = $('#tablaVentasDiarias').DataTable({
+function mostrarChequeos() {
+  let datatable = $('#tablaChequeos').DataTable({
     pageLength: 25,
     lengthMenu: [[25, 30, 40, 50, -1], [25, 30, 40, 50, "Todas"]],
     destroy: true,
@@ -126,58 +126,40 @@ function mostrarVentasDiarias() {
     scrollCollapse: true,
   });
 
-  db.ref('ventasDiarias').on('value', ventasDiarias => {
+  db.ref('chequeosPrecios').on('value', chequeosPrecios => {
     let filas = '';
-    let ventas = ventasDiarias.val();
-    let arrVentasDiarias = [];
-    ventasDiarias.forEach(venta => {
-      arrVentasDiarias.unshift({
-        id: venta.key,
-        ...venta.val(),
+    let chequeos = chequeosPrecios.val();
+    let arrChequeosPrecios = [];
+    chequeosPrecios.forEach(chequeo => {
+      arrChequeosPrecios.unshift({
+        id: chequeo.key,
+        ...chequeo.val(),
       });
     });
 
-    arrVentasDiarias.forEach(venta => {
-      //console.log(ventas[key])
-      //let venta = ventas[key];
-      const {id, consorcio, fecha, idPromotora, nombrePromotora, tienda, zona, totalKilos, totalPesos} = venta;
+    arrChequeosPrecios.forEach(chequeo => {
+      const {id, consorcio, fechaCaptura, zona} = chequeo;
 
       filas += `<tr>
                   <td>${consorcio}</td>
-                  <td>${fecha}</td>
-                  <td>${idPromotora}</td>
-                  <td>${nombrePromotora}</td>
-                  <td>${tienda}</td>
+                  <td>${fechaCaptura}</td>
                   <td>${zona}</td>
-                  <td>${totalKilos}</td>
-                  <td>${totalPesos}</td>
-                  <td class="text-center"><a class="btn btn-xs btn-primary" href="ventaDiaria.html?id=${id}"><i class="fas fa-eye"></i></a></td>
-                  <td class="text-center"><button class="btn btn-xs btn-danger" onclick="eliminarVentaDiaria('${id}')"><i class="fas fa-trash-alt"></i></button></td>
+                  <td class="text-center"><a class="btn btn-xs btn-primary" href="chequeo.html?id=${id}"><i class="fas fa-eye"></i></a></td>
+                  <td class="text-center"><button class="btn btn-xs btn-danger" onclick="eliminarChequeo('${id}')"><i class="fas fa-trash-alt"></i></button></td>
                 </tr>`;
     });
 
     datatable.clear().draw();
-    /* arrVentasDiarias.forEach(venta => {
-      filas += `<tr>
-                  <td>${venta.consorcio}</td>
-                  <td>${venta.fecha}</td>
-                  <td>${venta.promotora}</td>
-                  <td>${venta.tienda}</td>
-                  <td>${venta.zona}</td>
-                  <td class="text-center"><a class="btn btn-xs btn-primary" href="ventaDiaria.html?id=${venta.id}"><i class="fas fa-eye"></i></a></td>
-                  <td class="text-center"><button class="btn btn-xs btn-danger" onclick="eliminarVentaDiaria('${venta.id}')"><i class="fas fa-trash-alt"></i></button></td>
-                </tr>`;
-    }); */
     datatable.rows.add($(filas)).columns.adjust().draw();
     datatable.buttons().container().appendTo( '#example_wrapper .col-md-6:eq(0)' );
     $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
   });
 }
 
-function eliminarVentaDiaria(idVentaDiaria) {
+function eliminarChequeo(idChequeo) {
   swal({
     title: 'Advertencia',
-    text: `¿Está seguro de eliminar esta venta?`,
+    text: `¿Está seguro de eliminar este chequeo?`,
     type: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#dc3545',
@@ -187,12 +169,12 @@ function eliminarVentaDiaria(idVentaDiaria) {
     reverseButtons: true
   }).then((result) => {
     if (result.value) {
-      db.ref('ventasDiarias').child(idVentaDiaria).remove();
+      db.ref('chequeosPrecios').child(idVentaDiaria).remove();
  
       swal({
         type: 'success',
         title: 'Mensaje',
-        text: 'Se ha eliminado la venta',
+        text: 'Se ha eliminado el chequeo',
       });
     }
   });

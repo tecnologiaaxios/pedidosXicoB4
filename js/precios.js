@@ -154,7 +154,7 @@ function mostrarProductos() {
 
     datatable.clear().draw();
     arrProductos.forEach(producto => {
-      const {id, nombre, precioUnitario} = producto;
+      const {id, nombre, precioUnitario, precioOferta} = producto;
 
       filas += `<tr>
                   <td>${consorcio}</td>
@@ -167,19 +167,32 @@ function mostrarProductos() {
                       </div>
                       <input type="text" class="form-control" readonly id="precio-${id}" value="${precioUnitario}">
                       <div class="input-group-append">
-                        <button class="btn btn-outline-warning" onclick="editar('precio-${id}')" type="button"><i class="fas fa-pencil-alt"></i> Editar</button>
-                        <button class="btn btn-outline-success" onclick="guardarPrecio('precio-${id}', '${id}', '${consorcio}')" type="button"><i class="fas fa-cloud"></i> Guardar</button>
+                        <button class="btn btn-warning" onclick="editar('precio-${id}')" type="button" data-toggle="tooltip" data-placement="top" title="Editar"><i class="fas fa-pencil-alt"></i></button>
+                        <button class="btn btn-success" onclick="guardarPrecio('precio-${id}', '${id}', '${consorcio}')" type="button" data-toggle="tooltip" data-placement="top" title="Guardar"><i class="fas fa-cloud"></i></button>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                      </div>
+                      <input type="text" class="form-control" readonly id="precio-oferta-${id}" value="${precioOferta}">
+                      <div class="input-group-append">
+                        <button class="btn btn-warning" onclick="editar('precio-oferta-${id}')" type="button" data-toggle="tooltip" data-placement="top" title="Editar"><i class="fas fa-pencil-alt"></i></button>
+                        <button class="btn btn-success" onclick="guardarPrecioOferta('precio-oferta-${id}', '${id}', '${consorcio}')" type="button" data-toggle="tooltip" data-placement="top" title="Guardar"><i class="fas fa-cloud"></i></button>
                       </div>
                     </div>
                   </td>
                 </tr>`;
     });
     datatable.rows.add($(filas)).columns.adjust().draw();
+    $('[data-toggle="tooltip"]').tooltip()
   });
 }
 
 function editar(idInput) {
-  $(`#${idInput}`).attr('readonly', false);
+  $(`#${idInput}`).attr('readonly', false).focus().select();
 }
 
 function guardarPrecio(idInput, claveProducto, consorcio) {
@@ -195,4 +208,19 @@ function guardarPrecio(idInput, claveProducto, consorcio) {
   $(`#${idInput}`).attr('readonly', true);
 
   $.toaster({ priority: 'success', title: 'Mensaje', message: `El precio se actualizó correctamente` });
+}
+
+function guardarPrecioOferta(idInput, claveProducto, consorcio) {
+  let nuevoPrecio = Number($(`#${idInput}`).val());
+
+  db.ref(`consorcios/${consorcio}/productos/${claveProducto}`).update({
+    precioOferta: nuevoPrecio
+  });
+  db.ref(`productos/${consorcio}/productos/${claveProducto}`).update({
+    precioOferta: nuevoPrecio
+  });
+
+  $(`#${idInput}`).attr('readonly', true);
+
+  $.toaster({ priority: 'success', title: 'Mensaje', message: `El precio de oferta se actualizó correctamente` });
 }
